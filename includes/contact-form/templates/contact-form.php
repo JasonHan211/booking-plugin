@@ -32,6 +32,7 @@
             $('#enquiry_form').submit(function (e) {
 
                   e.preventDefault();
+                  $("#form_error").hide();
 
                   var form = $(this);
 
@@ -47,6 +48,7 @@
                         contentType: false,
                         success: function (data) {
 
+                              form.trigger('reset');
                               $('#form_success').html(data.message).show().delay(5000).fadeOut();
 
                         },

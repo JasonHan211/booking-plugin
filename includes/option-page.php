@@ -20,12 +20,18 @@ function load_carbon_fields()
 function create_options_page()
 {
       $main_options_container = Container::make('theme_options', __('BBG'))
-      ->set_page_menu_position(1)
-      ->set_icon('dashicons-media-text');
+      ->set_page_menu_position(3)
+      ->set_icon('dashicons-media-text')
+      ->add_fields(array(
+
+            Field::make('separator', 'bbg_options', __('BBG Options')),
+            Field::make( 'checkbox', 'crb_show_content', 'Show content' )
+            ->set_option_value( 'yes' ),
+
+      ));
 
       // Plugins include
       init_contact_form($main_options_container);
-
 
 }
 
@@ -33,8 +39,8 @@ function create_options_page()
 function init_contact_form($main_options_container)
 {
       Container::make('theme_options', __('Contact Form'))
-        ->set_page_parent($main_options_container)
-        ->add_fields(array(
+            ->set_page_parent($main_options_container)
+            ->add_fields(array(
 
             Field::make('checkbox', 'contact_plugin_active', __('Active')),
 
