@@ -5,6 +5,7 @@ if (!defined('ABSPATH')) {
       exit;
 }
 
+
 use Carbon_Fields\Container;
 use Carbon_Fields\Field;
 
@@ -18,21 +19,32 @@ function load_carbon_fields()
 
 function create_options_page()
 {
-    Container::make('theme_options', __('Contact Form'))
+      $main_options_container = Container::make('theme_options', __('BBG'))
+      ->set_page_menu_position(1)
+      ->set_icon('dashicons-media-text');
 
-    ->set_page_menu_position(1)
+      // Plugins include
+      init_contact_form($main_options_container);
 
-    ->set_icon('dashicons-media-text')
 
-    ->add_fields(array(
+}
 
-          Field::make('checkbox', 'contact_plugin_active', __('Active')),
+// Contact Form
+function init_contact_form($main_options_container)
+{
+      Container::make('theme_options', __('Contact Form'))
+        ->set_page_parent($main_options_container)
+        ->add_fields(array(
 
-          Field::make('text', 'contact_plugin_recipients', __('Recipient Email'))->set_attribute('placeholder', 'eg. your@email.com')->set_help_text('The email that the form is submitted to'),
+            Field::make('checkbox', 'contact_plugin_active', __('Active')),
 
-          Field::make('textarea', 'contact_plugin_message', __('Confirmation Message'))->set_attribute('placeholder', 'Enter confirmation message')->set_help_text('Type the message you want the submitted to receive'),
+            Field::make('text', 'contact_plugin_recipients', __('Recipient Email'))->set_attribute('placeholder', 'eg. your@email.com')->set_help_text('The email that the form is submitted to'),
 
-    ));
+            Field::make('textarea', 'contact_plugin_message', __('Confirmation Message'))->set_attribute('placeholder', 'Enter confirmation message')->set_help_text('Type the message you want the submitted to receive'),
+
+        ));
+
+        include_once PLUGIN_PATH . '/includes/contact-form/contact-form.php';
 }
 
 ?>

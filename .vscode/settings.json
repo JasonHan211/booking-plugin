@@ -1,7 +1,5 @@
 {
   "files.exclude": {
-    "includes\\templates\\index.php": true,
-    "includes\\index.php": true,
     "vendor": true,
     "wp-content": true,
     ".gitattributes": true,
