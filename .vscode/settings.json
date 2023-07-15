@@ -1,3 +1,11 @@
 {
-    "C_Cpp.errorSquiggles": "enabled"
+  "files.exclude": {
+    "includes\\templates\\index.php": true,
+    "includes\\index.php": true,
+    "vendor": true,
+    "wp-content": true,
+    ".gitattributes": true,
+    "composer.json": true,
+    "composer.lock": true
+  }
 }

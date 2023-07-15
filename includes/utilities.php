@@ -1,8 +1,8 @@
 <?php
 
-if( !defined('ABSPATH') )
-{
-      die('You cannot be here');
+// Exit if accessed directly
+if (!defined('ABSPATH')) {
+      exit;
 }
 
 function get_plugin_options($name)

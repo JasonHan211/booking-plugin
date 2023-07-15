@@ -28,6 +28,7 @@ class BookingPlugin
     {
         include_once PLUGIN_PATH . '/includes/utilities.php';
         include_once PLUGIN_PATH . '/includes/option-page.php';
+        include_once PLUGIN_PATH . '/includes/contact-form.php';
     }
 
 }
