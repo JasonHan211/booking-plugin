@@ -1,56 +1,21 @@
 <?php
 
 // Exit if accessed directly
-if (!defined('ABSPATH')) {
-      exit;
-}
+if (!defined('ABSPATH')) exit;
 
+require_once (BI_PLUGIN_PATH . '/includes/booking/option-page.php');
 
-use Carbon_Fields\Container;
-use Carbon_Fields\Field;
-
-add_action('after_setup_theme', 'load_carbon_fields');
-add_action('carbon_fields_register_fields', 'create_options_page');
-
-function load_carbon_fields()
+// Add the top-level menu page
+function bookedIn_add_menu_page()
 {
-      \Carbon_Fields\Carbon_Fields::boot();
+    add_menu_page(
+        'BookedIn',
+        'BookedIn',
+        'manage_options',
+        'bookedin_main_slug',
+        'my_booking_plugin_option_page',
+        'dashicons-calendar', // You can change the icon to suit your needs
+        2 // Adjust the position to place it among other top-level pages (change 30 to any other number)
+    );
 }
-
-function create_options_page()
-{
-      $main_options_container = Container::make('theme_options', __('BBG'))
-      ->set_page_menu_position(3)
-      ->set_icon('dashicons-media-text')
-      ->add_fields(array(
-
-            Field::make('separator', 'bbg_options', __('BBG Options')),
-            Field::make( 'checkbox', 'crb_show_content', 'Show content' )
-            ->set_option_value( 'yes' ),
-
-      ));
-
-      // Plugins include
-      init_contact_form($main_options_container);
-
-}
-
-// Contact Form
-function init_contact_form($main_options_container)
-{
-      Container::make('theme_options', __('Contact Form'))
-            ->set_page_parent($main_options_container)
-            ->add_fields(array(
-
-            Field::make('checkbox', 'contact_plugin_active', __('Active')),
-
-            Field::make('text', 'contact_plugin_recipients', __('Recipient Email'))->set_attribute('placeholder', 'eg. your@email.com')->set_help_text('The email that the form is submitted to'),
-
-            Field::make('textarea', 'contact_plugin_message', __('Confirmation Message'))->set_attribute('placeholder', 'Enter confirmation message')->set_help_text('Type the message you want the submitted to receive'),
-
-        ));
-
-        include_once PLUGIN_PATH . '/includes/contact-form/contact-form.php';
-}
-
-?>
+add_action('admin_menu', 'bookedIn_add_menu_page');

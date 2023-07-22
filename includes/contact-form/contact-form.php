@@ -1,21 +1,18 @@
 <?php
 
 // Exit if accessed directly
-if (!defined('ABSPATH')) {
-      exit;
-}
+if (!defined('ABSPATH')) exit;
+
 
 add_shortcode('contact', 'show_contact_form');
 add_action('rest_api_init', 'create_rest_endpoint');
 add_action('init', 'create_submissions_page');
-
 add_action('add_meta_boxes', 'create_meta_box');
-
 add_filter('manage_submission_posts_columns', 'custom_submission_columns');
-
 add_action('manage_submission_posts_custom_column', 'fill_submission_columns', 10, 2);
-
 add_action('admin_init', 'setup_search');
+
+require_once (BI_PLUGIN_PATH . '/includes/contact-form/option-page.php');
 
 
 function setup_search()
@@ -33,6 +30,7 @@ function setup_search()
 
 function submission_search_override($search, $query)
 {
+
       // Override the submissions page search to include custom meta data
 
       global $wpdb;
@@ -164,7 +162,7 @@ function create_submissions_page()
 
 function show_contact_form()
 {
-      include PLUGIN_PATH . 'includes/contact-form/templates/contact-form.php';
+      include BI_PLUGIN_PATH . 'includes/contact-form/templates/contact-form.php';
 }
 
 function create_rest_endpoint()

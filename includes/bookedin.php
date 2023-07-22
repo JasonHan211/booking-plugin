@@ -1,10 +1,10 @@
 <?php
-// Exit if accessed directly
-if (!defined('ABSPATH')) {
-    exit;
-}
 
-class BookingPlugin
+// Exit if accessed directly
+if (!defined('ABSPATH')) exit;
+
+
+class BookedIn
 {
     public function __construct()
     {
@@ -14,20 +14,13 @@ class BookingPlugin
 
     public function initialize()
     {
-        // Utilities
-        include_once BI_PLUGIN_PATH . '/includes/utilities/utilities.php';
-
-        include_once BI_PLUGIN_PATH . '/includes/includes.php';
+        // Include the required files
+        require_once (BI_PLUGIN_PATH . '/includes/includes.php');
         
         // Register activation and deactivation hooks
         register_activation_hook(__FILE__, array($this,'activate'));
         register_deactivation_hook(__FILE__, array($this,'deactivate'));
 
-        // Custom Contact Form
-        // include_once PLUGIN_PATH . '/includes/option-page.php';
-
-        // Custom Booking 
-        include_once BI_PLUGIN_PATH . '/includes/option-page2.php';
     }
 
     // Function to create the custom database table on plugin activation
@@ -60,7 +53,7 @@ class BookingPlugin
 
 }
 
-if (class_exists('BookingPlugin')) {
-    $bookingPlugin = new BookingPlugin();
-    $bookingPlugin->initialize();
+if (class_exists('BookedIn')) {
+    $bookedIn = new BookedIn();
+    $bookedIn->initialize();
 }

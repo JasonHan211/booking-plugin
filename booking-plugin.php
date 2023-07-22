@@ -8,6 +8,8 @@
  * Author: Jason Han
  * 
  */
+
+// Exit if accessed directly
 if (!defined('ABSPATH')) exit;
 
 // Define constants

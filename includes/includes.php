@@ -1,5 +1,20 @@
 <?php
 
-if ( ! defined( 'ABSPATH' ) ) exit;  
+// Exit if accessed directly
+if (!defined('ABSPATH')) exit;  
 
-require_once( BI_PLUGIN_PATH . '/vendor/autoload.php' );
+// Compulsory files
+require_once (BI_PLUGIN_PATH . '/includes/utilities/utilities.php');
+
+// Option pages
+require_once (BI_PLUGIN_PATH . '/includes/option-page.php');
+
+//Booking
+require_once (BI_PLUGIN_PATH . '/includes/booking/booking.php');
+
+// Contact Form
+if (file_exists(BI_PLUGIN_PATH . '/includes/contact-form/contact-form.php'))
+{ 
+    require_once ( BI_PLUGIN_PATH . '/vendor/autoload.php' );
+    require_once (BI_PLUGIN_PATH . '/includes/contact-form/contact-form.php');
+}
