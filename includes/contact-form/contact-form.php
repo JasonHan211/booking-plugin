@@ -12,11 +12,8 @@ add_filter('manage_submission_posts_columns', 'custom_submission_columns');
 add_action('manage_submission_posts_custom_column', 'fill_submission_columns', 10, 2);
 add_action('admin_init', 'setup_search');
 
-require_once (BI_PLUGIN_PATH . '/includes/contact-form/option-page.php');
 
-
-function setup_search()
-{
+function setup_search() {
 
       // Only apply filter to submissions page
 
@@ -28,8 +25,7 @@ function setup_search()
       }
 }
 
-function submission_search_override($search, $query)
-{
+function submission_search_override($search, $query) {
 
       // Override the submissions page search to include custom meta data
 
@@ -54,8 +50,7 @@ function submission_search_override($search, $query)
       return $search;
 }
 
-function fill_submission_columns($column, $post_id)
-{
+function fill_submission_columns($column, $post_id) {
       // Return meta data for individual posts on table
 
       switch ($column) {
@@ -78,8 +73,7 @@ function fill_submission_columns($column, $post_id)
       }
 }
 
-function custom_submission_columns($columns)
-{
+function custom_submission_columns($columns) {
       // Edit the columns for the submission table
 
       $columns = array(
@@ -96,15 +90,13 @@ function custom_submission_columns($columns)
       return $columns;
 }
 
-function create_meta_box()
-{
+function create_meta_box() {
       // Create custom meta box to display submission
 
       add_meta_box('custom_contact_form', 'Submission', 'display_submission', 'submission');
 }
 
-function display_submission()
-{
+function display_submission() {
       // Display individual submission data on it's page
 
       // $postmetas = get_post_meta( get_the_ID() );
@@ -131,8 +123,7 @@ function display_submission()
       echo '</ul>';
 }
 
-function create_submissions_page()
-{
+function create_submissions_page() {
 
       // Create the submissions post type to store form submissions
 
@@ -160,21 +151,18 @@ function create_submissions_page()
       register_post_type('submission', $args);
 }
 
-function show_contact_form()
-{
+function show_contact_form() {
       include BI_PLUGIN_PATH . 'includes/contact-form/templates/contact-form.php';
 }
 
-function create_rest_endpoint()
-{
+function create_rest_endpoint() {
       register_rest_route('v1/contact-form', 'submit', array(
             'methods' => 'POST',
             'callback' => 'contact_form_callback'
       ));
 }
 
-function contact_form_callback($data)
-{
+function contact_form_callback($data) {
       $params = $data->get_params();
 
       if (!wp_verify_nonce($params['_wpnonce'], 'wp_rest')) {
@@ -208,7 +196,7 @@ function contact_form_callback($data)
       $admin_name = get_bloginfo('name');
 
       // Set recipient email
-      $recipient_email = get_plugin_options('contact_plugin_recipients');
+      $recipient_email = get_option('contact_plugin_recipients');
 
       if (!$recipient_email) {
             // Make all lower case and trim out white space
@@ -270,9 +258,9 @@ function contact_form_callback($data)
 
       $confirmation_message = "The message was sent successfully!!";
 
-      if (get_plugin_options('contact_plugin_message')) {
+      if (get_option('contact_plugin_message')) {
 
-            $confirmation_message = get_plugin_options('contact_plugin_message');
+            $confirmation_message = get_option('contact_plugin_message');
 
             $confirmation_message = str_replace('{name}', $name, $confirmation_message);
       }

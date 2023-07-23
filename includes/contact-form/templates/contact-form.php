@@ -1,4 +1,4 @@
-<?php if( get_plugin_options('contact_plugin_active') ):?>
+<?php if( get_option('contact_plugin_active') ):?>
 
 
 <div id="form_success" style="background-color:green; color:#fff;"></div>

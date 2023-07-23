@@ -1,9 +1,3 @@
 {
-  "files.exclude": {
-    ".gitattributes": true,
-    "composer.json": true,
-    "composer.lock": true,
-    "vendor": true,
-    "wp-content": true
-  }
+  "files.exclude": {}
 }

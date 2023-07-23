@@ -4,16 +4,15 @@
 if (!defined('ABSPATH')) exit;
 
 
-class BookedIn
-{
-    public function __construct()
-    {
-        require_once(BI_PLUGIN_PATH . '/vendor/autoload.php');
+class BookedIn {
+
+    public function __construct() {
+
         require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
     }
 
-    public function initialize()
-    {
+    public function initialize() {
+
         // Include the required files
         require_once (BI_PLUGIN_PATH . '/includes/includes.php');
         
@@ -24,8 +23,8 @@ class BookedIn
     }
 
     // Function to create the custom database table on plugin activation
-    public function activate()
-    {
+    public function activate() {
+
         global $wpdb;
         $table_name = $wpdb->prefix . 'bookings';
         $charset_collate = $wpdb->get_charset_collate();
@@ -43,8 +42,8 @@ class BookedIn
     }
 
     // Function to remove the custom database table on plugin deactivation
-    public function deactivate()
-    {
+    public function deactivate() {
+        
         global $wpdb;
         $table_name = $wpdb->prefix . 'bookings';
         $wpdb->query("DROP TABLE IF EXISTS $table_name");
