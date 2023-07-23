@@ -3,20 +3,40 @@
 // Exit if accessed directly
 if (!defined('ABSPATH')) exit;
 
-class MenuPage {
+class BookedInMenuPage {
+
     public function initialize() {
         
         // Main Menu
-        add_action('admin_menu', array($this, 'bookedIn_add_menu_page'));
+            //Booking
+            require_once (BI_PLUGIN_PATH . '/includes/booking/booking.php');
+            add_action('admin_menu', array($this, 'bookedin_add_menu_page'));
 
         // Submenu
-        add_action( 'admin_menu', array($this,'bookedin_resources_add_submenu'));
-        add_action( 'admin_menu', array($this,'bookedin_contact_form_add_submenu'));
-        add_action( 'admin_menu', array($this,'bookedin_setting_add_submenu'));
+            // Resources
+            require_once (BI_PLUGIN_PATH . '/includes/resources/resources.php');
+            add_action( 'admin_menu', array($this,'bookedin_resources_submenu'));
+            add_action( 'admin_menu', array($this,'bookedin_resources_edit_submenu'));
+
+            // Pricing
+            require_once (BI_PLUGIN_PATH . '/includes/pricing/pricing.php');
+            add_action( 'admin_menu', array($this,'bookedin_pricing_submenu'));
+            add_action( 'admin_menu', array($this,'bookedin_pricing_edit_submenu'));
+        
+        // Optional
+            // Contact Form
+            if (file_exists(BI_PLUGIN_PATH . '/includes/contact-form/contact-form.php')) { 
+                require_once (BI_PLUGIN_PATH . '/includes/contact-form/contact-form.php');
+                add_action( 'admin_menu', array($this,'bookedin_contact_form_submenu'));
+            }
+                
+        // Settings
+            add_action( 'admin_menu', array($this,'bookedin_setting_submenu'));
+    
     }
 
     // Main Menu (Bookings)
-    public function bookedIn_add_menu_page() {
+    public function bookedin_add_menu_page() {
 
         require_once (BI_PLUGIN_PATH . '/includes/booking/menu.php');
         add_menu_page(
@@ -31,7 +51,7 @@ class MenuPage {
     }
 
     // Submenu (Resources)
-    public function bookedin_resources_add_submenu() {
+    public function bookedin_resources_submenu() {
     
         require_once (BI_PLUGIN_PATH . '/includes/resources/menu.php');
         add_submenu_page(
@@ -45,8 +65,51 @@ class MenuPage {
         );
     }
 
+    // Submenu (Resources Edit Page)
+    public function bookedin_resources_edit_submenu() {
+
+        require_once (BI_PLUGIN_PATH . '/includes/resources/edit-menu.php');
+        add_submenu_page(
+            null,                         
+            'Edit Resource',         
+            'Edit Resource',               
+            'manage_options',              
+            'bookedin_resources_edit',        
+            'resources_edit_page'    
+        );
+    }
+
+    // Submenu (pricing)
+    public function bookedin_pricing_submenu() {
+
+        require_once (BI_PLUGIN_PATH . '/includes/pricing/menu.php');
+        add_submenu_page(
+            'bookedin_main_menu',       
+            'Pricing',       
+            'Pricing',           
+            'manage_options',         
+            'bookedin_pricing_submenu',       
+            'bookedin_pricing_submenu_page',  
+            3
+        );
+    }
+
+    // Submenu (pricing Edit Page)
+    public function bookedin_pricing_edit_submenu() {
+
+        require_once (BI_PLUGIN_PATH . '/includes/pricing/edit-menu.php');
+        add_submenu_page(
+            null,                         
+            'Edit Pricing',         
+            'Edit Pricing',               
+            'manage_options',              
+            'bookedin_pricing_edit',        
+            'pricing_edit_page'    
+        );
+    }
+
     // Submenu (Contact Form)
-    public function bookedin_contact_form_add_submenu() {
+    public function bookedin_contact_form_submenu() {
 
         require_once (BI_PLUGIN_PATH . '/includes/contact-form/menu.php');
         add_submenu_page(
@@ -61,7 +124,7 @@ class MenuPage {
     }
 
     // Submenu (Settings)
-    public function bookedin_setting_add_submenu() {
+    public function bookedin_setting_submenu() {
 
         require_once (BI_PLUGIN_PATH . '/includes/Settings/menu.php');
         add_submenu_page(
@@ -77,7 +140,7 @@ class MenuPage {
 
 }
 
-$menuPage = new MenuPage();
+$menuPage = new BookedInMenuPage();
 $menuPage->initialize();
 
 

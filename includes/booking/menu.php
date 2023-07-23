@@ -17,6 +17,7 @@ function my_booking_plugin_option_page() {
     $bookings = $wpdb->get_results("SELECT * FROM $table_name", ARRAY_A);
 
     // Display the bookings on the option page
+    bookedInNavigation('Dashboard');
     ?>
     <div class="wrap">
         <h1><?php echo esc_html(get_admin_page_title()); ?></h1>

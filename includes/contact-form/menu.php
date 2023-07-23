@@ -27,6 +27,7 @@ function bookedin_contact_form_submenu_page() {
       $recipients = get_option( 'contact_plugin_recipients', '' );
       $confirmation_message = get_option( 'contact_plugin_message', '' );
       
+      bookedInNavigation('Contact Form');
       ?>
 
             <div class="wrap">
