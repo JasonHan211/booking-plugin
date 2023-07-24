@@ -16,10 +16,12 @@ function bookedin_resources_submenu_page() {
     // Handle form submissions to add new resources
     if (isset($_POST['add_resource'])) {
         $resource_name = sanitize_text_field($_POST['resource_name']);
+        $resource_price = sanitize_text_field($_POST['resource_price']);
         $resource_description = sanitize_textarea_field($_POST['resource_description']);
 
         $wpdb->insert($table_name, array(
             'resource_name' => $resource_name,
+            'resource_price' => $resource_price,
             'resource_description' => $resource_description
         ));
     }
@@ -42,6 +44,8 @@ function bookedin_resources_submenu_page() {
         <form method="post" action="">
             <label for="resource_name">Name:</label>
             <input type="text" name="resource_name" required>
+            <label for="resource_price">Price:</label>
+            <input type="text" name="resource_price" required>
             <label for="resource_description">Description:</label>
             <textarea name="resource_description"></textarea>
             <input type="submit" name="add_resource" value="Add Resource">
@@ -53,6 +57,7 @@ function bookedin_resources_submenu_page() {
             <thead>
                 <tr>
                     <th>Name</th>
+                    <th>Price</th>
                     <th>Description</th>
                     <th>Actions</th>
                 </tr>
@@ -61,6 +66,7 @@ function bookedin_resources_submenu_page() {
                 <?php foreach ($resources as $resource) { ?>
                     <tr>
                         <td><?php echo $resource['resource_name']; ?></td>
+                        <td><?php echo $resource['resource_price']; ?></td>
                         <td><?php echo $resource['resource_description']; ?></td>
                         <td>
                             <a href="<?php echo admin_url('admin.php?page=bookedin_resources_edit&action=edit&resource_id=' . $resource['id']); ?>">Edit</a> |

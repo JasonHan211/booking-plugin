@@ -14,10 +14,12 @@ function resources_edit_page() {
 
     if (isset($_POST['update_resource'])) {
         $resource_name = sanitize_text_field($_POST['resource_name']);
+        $resource_price = sanitize_text_field($_POST['resource_price']);
         $resource_description = sanitize_textarea_field($_POST['resource_description']);
 
         $wpdb->update($table_name, array(
             'resource_name' => $resource_name,
+            'resource_price' => $resource_price,
             'resource_description' => $resource_description
         ), array('id' => $resource_id));
 
@@ -32,6 +34,8 @@ function resources_edit_page() {
         <form method="post" action="">
             <label for="resource_name">resource Name:</label>
             <input type="text" name="resource_name" value="<?php echo esc_attr($resource['resource_name']); ?>" required>
+            <label for="resource_price">resource Price:</label>
+            <input type="text" name="resource_price" value="<?php echo esc_attr($resource['resource_price']); ?>" required>
             <label for="resource_description">resource_description:</label>
             <textarea name="resource_description"><?php echo esc_textarea($resource['resource_description']); ?></textarea>
             <input type="submit" name="update_resource" value="Update Resource">

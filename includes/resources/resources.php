@@ -13,6 +13,7 @@ class BookedInResources {
         $sql = "CREATE TABLE IF NOT EXISTS $table_name (
             id INT NOT NULL AUTO_INCREMENT,
             resource_name VARCHAR(255) NOT NULL,
+            resource_price VARCHAR(255) NOT NULL,
             resource_description TEXT,
             PRIMARY KEY (id)
         ) $charset_collate;";
@@ -30,6 +31,6 @@ class BookedInResources {
 if (class_exists('BookedInResources')) {
     $resources = new BookedInResources();
     register_activation_hook(BI_FILE, array($resources,'resources_activate'));
-    // register_deactivation_hook(BI_FILE, array($resources,'resources_deactivate'));    
+    register_deactivation_hook(BI_FILE, array($resources,'resources_deactivate'));    
 }
 

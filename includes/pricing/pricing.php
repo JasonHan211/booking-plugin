@@ -30,6 +30,6 @@ class BookedInpricings {
 if (class_exists('BookedInpricings')) {
     $pricings = new BookedInpricings();
     register_activation_hook(BI_FILE, array($pricings,'pricings_activate'));
-    // register_deactivation_hook(BI_FILE, array($pricings,'pricings_deactivate'));    
+    register_deactivation_hook(BI_FILE, array($pricings,'pricings_deactivate'));    
 }
 

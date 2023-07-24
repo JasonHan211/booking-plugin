@@ -11,6 +11,7 @@ class BookedInMenuPage {
             //Booking
             require_once (BI_PLUGIN_PATH . '/includes/booking/booking.php');
             add_action('admin_menu', array($this, 'bookedin_add_menu_page'));
+            add_action( 'admin_menu', array($this,'bookedin_booking_edit_submenu'));
 
         // Submenu
             // Resources
@@ -19,9 +20,9 @@ class BookedInMenuPage {
             add_action( 'admin_menu', array($this,'bookedin_resources_edit_submenu'));
 
             // Pricing
-            require_once (BI_PLUGIN_PATH . '/includes/pricing/pricing.php');
-            add_action( 'admin_menu', array($this,'bookedin_pricing_submenu'));
-            add_action( 'admin_menu', array($this,'bookedin_pricing_edit_submenu'));
+            // require_once (BI_PLUGIN_PATH . '/includes/pricing/pricing.php');
+            // add_action( 'admin_menu', array($this,'bookedin_pricing_submenu'));
+            // add_action( 'admin_menu', array($this,'bookedin_pricing_edit_submenu'));
         
         // Optional
             // Contact Form
@@ -31,7 +32,7 @@ class BookedInMenuPage {
             }
                 
         // Settings
-            add_action( 'admin_menu', array($this,'bookedin_setting_submenu'));
+            // add_action( 'admin_menu', array($this,'bookedin_setting_submenu'));
     
     }
 
@@ -47,6 +48,19 @@ class BookedInMenuPage {
             'my_booking_plugin_option_page',
             'dashicons-calendar', 
             2
+        );
+    }
+
+    public function bookedin_booking_edit_submenu() {
+
+        require_once (BI_PLUGIN_PATH . '/includes/booking/edit-menu.php');
+        add_submenu_page(
+            null,                         
+            'Edit Booking',         
+            'Edit Booking',               
+            'manage_options',              
+            'bookedin_booking_edit',        
+            'booking_edit_page'    
         );
     }
 
