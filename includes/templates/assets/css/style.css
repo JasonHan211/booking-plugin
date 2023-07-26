@@ -3,3 +3,14 @@
     background-color: #cca264;
     color: #000000;
 }
+
+/* Style for available days */
+.available-day {
+    background-color: #c3e6cb;
+    cursor: pointer;
+}
+
+/* Style for unavailable days */
+.unavailable-day {
+    background-color: #f8d7da;
+}

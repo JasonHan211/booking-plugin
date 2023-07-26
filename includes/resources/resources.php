@@ -31,6 +31,6 @@ class BookedInResources {
 if (class_exists('BookedInResources')) {
     $resources = new BookedInResources();
     register_activation_hook(BI_FILE, array($resources,'resources_activate'));
-    register_deactivation_hook(BI_FILE, array($resources,'resources_deactivate'));    
+    // register_deactivation_hook(BI_FILE, array($resources,'resources_deactivate'));    
 }
 

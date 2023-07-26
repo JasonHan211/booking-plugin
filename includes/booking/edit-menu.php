@@ -18,6 +18,9 @@ function booking_edit_page() {
         $booking_date_to = sanitize_text_field($_POST['booking_date_to']);
         $booking_resource = sanitize_text_field($_POST['booking_resource']);
         $booking_description = sanitize_textarea_field($_POST['booking_description']);
+        $booking_paid = sanitize_text_field($_POST['booking_paid']);
+        $booking_adults = sanitize_text_field($_POST['booking_adults']);
+        $booking_children = sanitize_text_field($_POST['booking_children']);
         
         $booking_user = sanitize_text_field($_POST['booking_user']);
         $booking_email = sanitize_text_field($_POST['booking_email']);
@@ -29,6 +32,10 @@ function booking_edit_page() {
             'booking_date_to' => $booking_date_to,
             'booking_resource' => $booking_resource,
             'booking_description' => $booking_description,
+            'booking_paid' => $booking_paid,
+            'booking_adults' => $booking_adults,
+            'booking_children' => $booking_children,
+
             'booking_user' => $booking_user,
             'booking_email' => $booking_email,
             'booking_phone' => $booking_phone,
@@ -53,6 +60,15 @@ function booking_edit_page() {
             <input type="text" name="booking_resource" value="<?php echo esc_attr($booking['booking_resource']); ?>" required>
             <label for="booking_details">Description:</label>
             <textarea name="booking_description"><?php echo esc_textarea($booking['booking_description']); ?></textarea>
+            <label for="booking_paid">Paid:</label>
+            <select name="booking_paid">
+                <option value="YES" <?php if ($booking['booking_paid'] === 'YES') echo 'selected'; ?>>YES</option>
+                <option value="NO" <?php if ($booking['booking_paid'] === 'NO') echo 'selected'; ?>>NO</option>
+            </select>
+            <label for="booking_adults">Adults:</label>
+            <input type="number" name="booking_adults" value="<?php echo esc_attr($booking['booking_adults']); ?>" required>
+            <label for="booking_children">Children:</label>
+            <input type="number" name="booking_children" value="<?php echo esc_attr($booking['booking_children']); ?>" required>
             <label for="booking_user">Name:</label>
             <input type="text" name="booking_user" value="<?php echo esc_attr($booking['booking_user']); ?>" required>
             <label for="booking_email">Email:</label>
