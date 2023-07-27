@@ -5,7 +5,7 @@ if (!defined('ABSPATH')) exit;
 
 // Function to display the option page and bookings
 function my_booking_plugin_option_page() {
-    
+
     // Check user capabilities
     if (!current_user_can('manage_options')) {
         return;
@@ -31,7 +31,6 @@ function my_booking_plugin_option_page() {
         $booking_user = sanitize_text_field($_POST['booking_user']);
         $booking_email = sanitize_text_field($_POST['booking_email']);
         $booking_phone = sanitize_text_field($_POST['booking_phone']);
-        $booking_user_details = sanitize_textarea_field($_POST['booking_user_details']);
 
         $wpdb->insert($bookings_table_name, array(
             'booking_date_from' => $booking_date_from,
@@ -44,8 +43,9 @@ function my_booking_plugin_option_page() {
             'booking_user' => $booking_user,
             'booking_email' => $booking_email,
             'booking_phone' => $booking_phone,
-            'booking_user_details' => $booking_user_details
         ));
+
+        // echo $wpdb->insert_id;
             
     }
 
@@ -115,7 +115,7 @@ function my_booking_plugin_option_page() {
             <table id="availability-table" class="table table-bordered">
                 <thead>
                     <tr>
-                        <th colspan="7"><?php echo date('F Y'); ?></th>
+                        <th colspan="7"></th>
                     </tr>
                     <tr>
                         <th>Sun</th>

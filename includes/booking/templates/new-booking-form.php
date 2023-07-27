@@ -62,10 +62,6 @@ function newBookingForm($resources) {
                             <label for="booking_phone" class="form-label">Phone:</label>
                             <input type="text" class="form-control" name="booking_phone" required>
                         </div>
-                        <div class="mb-3">
-                            <label for="booking_user_details" class="form-label">User details:</label>
-                            <textarea class="form-control" name="booking_user_details"></textarea>
-                        </div>
                     </div>
                 </div>
 

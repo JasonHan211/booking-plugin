@@ -25,7 +25,6 @@ function booking_edit_page() {
         $booking_user = sanitize_text_field($_POST['booking_user']);
         $booking_email = sanitize_text_field($_POST['booking_email']);
         $booking_phone = sanitize_text_field($_POST['booking_phone']);
-        $booking_user_details = sanitize_textarea_field($_POST['booking_user_details']);
 
         $wpdb->update($table_name, array(
             'booking_date_from' => $booking_date_from,
@@ -39,7 +38,6 @@ function booking_edit_page() {
             'booking_user' => $booking_user,
             'booking_email' => $booking_email,
             'booking_phone' => $booking_phone,
-            'booking_user_details' => $booking_user_details
 
         ), array('id' => $booking_id));
 
@@ -75,8 +73,6 @@ function booking_edit_page() {
             <input type="text" name="booking_email" value="<?php echo esc_attr($booking['booking_email']); ?>" required>
             <label for="booking_phone">Phone:</label>
             <input type="text" name="booking_phone" value="<?php echo esc_attr($booking['booking_phone']); ?>" required>
-            <label for="booking_user_details">User Details:</label>
-            <textarea name="booking_user_details"><?php echo esc_textarea($booking['booking_user_details']); ?></textarea>
             <input type="submit" name="update_booking" value="Update booking">
         </form>
     </div>

@@ -3,7 +3,7 @@
 function bookingTable($bookings) {
     ?>
 
-        <table class="wp-list-table widefat fixed striped">
+        <table class="wp-list-table widefat striped">
             <thead>
                 <tr>
                     <th>Date From</th>
@@ -16,7 +16,6 @@ function bookingTable($bookings) {
                     <th>Name</th>
                     <th>Email</th>
                     <th>Phone</th>
-                    <th>User details</th>
                     <th>Actions</th>
                 </tr>
             </thead>
@@ -33,7 +32,6 @@ function bookingTable($bookings) {
                         <td><?php echo $booking['booking_user']; ?></td>
                         <td><?php echo $booking['booking_email']; ?></td>
                         <td><?php echo $booking['booking_phone']; ?></td>
-                        <td><?php echo $booking['booking_user_details']; ?></td>
                         <td>
                             <a href="<?php echo admin_url('admin.php?page=bookedin_booking_edit&action=edit&booking_id=' . $booking['id']); ?>">Edit</a> |
                             <a href="<?php echo admin_url('admin.php?page=bookedin_main_menu&action=delete&booking_id=' . $booking['id']); ?>" onclick="return confirm('Are you sure you want to delete this booking?')">Delete</a>

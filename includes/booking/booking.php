@@ -24,7 +24,6 @@ class BookedInBookings {
             booking_user VARCHAR(255) NOT NULL,
             booking_email VARCHAR(255) NOT NULL,
             booking_phone VARCHAR(255) NOT NULL,
-            booking_user_details TEXT,
             PRIMARY KEY (id)
         ) $charset_collate;";
 
@@ -41,6 +40,8 @@ class BookedInBookings {
 
     }
 
+
+    
 }
 
 if (class_exists('BookedInBookings')) {
