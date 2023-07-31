@@ -39,7 +39,7 @@ class BookedInMenuPage {
     // Main Menu (Bookings)
     public function bookedin_add_menu_page() {
 
-        require_once (BI_PLUGIN_PATH . '/includes/booking/menu.php');
+        require_once (BI_PLUGIN_PATH . '/includes/booking/admin/menu.php');
         add_menu_page(
             'BookedIn',
             'BookedIn',
@@ -53,7 +53,7 @@ class BookedInMenuPage {
 
     public function bookedin_booking_edit_submenu() {
 
-        require_once (BI_PLUGIN_PATH . '/includes/booking/edit-menu.php');
+        require_once (BI_PLUGIN_PATH . '/includes/booking/admin/edit-menu.php');
         add_submenu_page(
             null,                         
             'Edit Booking',         
@@ -140,7 +140,7 @@ class BookedInMenuPage {
     // Submenu (Settings)
     public function bookedin_setting_submenu() {
 
-        require_once (BI_PLUGIN_PATH . '/includes/Settings/menu.php');
+        require_once (BI_PLUGIN_PATH . '/includes/settings/menu.php');
         add_submenu_page(
             'bookedin_main_menu',       
             'Settings',         
