@@ -19,6 +19,11 @@ class BookedInMenuPage {
             add_action( 'admin_menu', array($this,'bookedin_resources_submenu'));
             add_action( 'admin_menu', array($this,'bookedin_resources_edit_submenu'));
 
+            // Addons
+            require_once (BI_PLUGIN_PATH . '/includes/addons/addons.php');
+            add_action( 'admin_menu', array($this,'bookedin_addons_submenu'));
+            add_action( 'admin_menu', array($this,'bookedin_addons_edit_submenu'));
+
             // Pricing
             // require_once (BI_PLUGIN_PATH . '/includes/pricing/pricing.php');
             // add_action( 'admin_menu', array($this,'bookedin_pricing_submenu'));
@@ -90,6 +95,35 @@ class BookedInMenuPage {
             'manage_options',              
             'bookedin_resources_edit',        
             'resources_edit_page'    
+        );
+    }
+
+    // Submenu (Addons)
+    public function bookedin_addons_submenu() {
+
+        require_once (BI_PLUGIN_PATH . '/includes/addons/menu.php');
+        add_submenu_page(
+            'bookedin_main_menu',       
+            'addons',       
+            'addons',           
+            'manage_options',         
+            'bookedin_addons_submenu',       
+            'bookedin_addons_submenu_page',  
+            3
+        );
+    }
+
+    // Submenu (addons Edit Page)
+    public function bookedin_addons_edit_submenu() {
+
+        require_once (BI_PLUGIN_PATH . '/includes/addons/edit-menu.php');
+        add_submenu_page(
+            null,                         
+            'Edit addon',         
+            'Edit addon',               
+            'manage_options',              
+            'bookedin_addons_edit',        
+            'addons_edit_page'    
         );
     }
 
