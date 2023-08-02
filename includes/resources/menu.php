@@ -18,11 +18,13 @@ function bookedin_resources_submenu_page() {
         $resource_name = sanitize_text_field($_POST['resource_name']);
         $resource_price = sanitize_text_field($_POST['resource_price']);
         $resource_description = sanitize_textarea_field($_POST['resource_description']);
+        $resource_activeFlag = sanitize_text_field($_POST['resource_activeFlag']);
 
         $wpdb->insert($table_name, array(
             'resource_name' => $resource_name,
             'resource_price' => $resource_price,
-            'resource_description' => $resource_description
+            'resource_description' => $resource_description,
+            'activeFlag' => $resource_activeFlag
         ));
     }
 
@@ -48,6 +50,10 @@ function bookedin_resources_submenu_page() {
             <input type="text" name="resource_price" required>
             <label for="resource_description">Description:</label>
             <textarea name="resource_description"></textarea>
+            <label for="resource_activeFlag">Active:</label>
+            <select name="resource_activeFlag">
+                <option value="Y">Yes</option>
+                <option value="N">No</option>
             <input type="submit" name="add_resource" value="Add Resource">
         </form>
 
@@ -59,6 +65,7 @@ function bookedin_resources_submenu_page() {
                     <th>Name</th>
                     <th>Price</th>
                     <th>Description</th>
+                    <th>Active</th>
                     <th>Actions</th>
                 </tr>
             </thead>
@@ -68,6 +75,7 @@ function bookedin_resources_submenu_page() {
                         <td><?php echo $resource['resource_name']; ?></td>
                         <td><?php echo $resource['resource_price']; ?></td>
                         <td><?php echo $resource['resource_description']; ?></td>
+                        <td><?php echo $resource['activeFlag']; ?></td>
                         <td>
                             <a href="<?php echo admin_url('admin.php?page=bookedin_resources_edit&action=edit&resource_id=' . $resource['id']); ?>">Edit</a> |
                             <a href="<?php echo admin_url('admin.php?page=bookedin_resources_submenu&action=delete&resource_id=' . $resource['id']); ?>" onclick="return confirm('Are you sure you want to delete this resource?')">Delete</a>

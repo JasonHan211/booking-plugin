@@ -16,11 +16,13 @@ function resources_edit_page() {
         $resource_name = sanitize_text_field($_POST['resource_name']);
         $resource_price = sanitize_text_field($_POST['resource_price']);
         $resource_description = sanitize_textarea_field($_POST['resource_description']);
+        $resource_activeFlag = sanitize_text_field($_POST['resource_activeFlag']);
 
         $wpdb->update($table_name, array(
             'resource_name' => $resource_name,
             'resource_price' => $resource_price,
-            'resource_description' => $resource_description
+            'resource_description' => $resource_description,
+            'activeFlag' => $resource_activeFlag
         ), array('id' => $resource_id));
 
         wp_redirect(admin_url('admin.php?page=bookedin_resources_submenu'));
@@ -38,6 +40,10 @@ function resources_edit_page() {
             <input type="text" name="resource_price" value="<?php echo esc_attr($resource['resource_price']); ?>" required>
             <label for="resource_description">resource_description:</label>
             <textarea name="resource_description"><?php echo esc_textarea($resource['resource_description']); ?></textarea>
+            <label for="resource_activeFlag">Active:</label>
+            <select name="resource_activeFlag">
+                <option value="Y" <?php selected($resource['activeFlag'], 'Y'); ?>>Yes</option>
+                <option value="N" <?php selected($resource['activeFlag'], 'N'); ?>>No</option>
             <input type="submit" name="update_resource" value="Update Resource">
         </form>
     </div>

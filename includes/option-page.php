@@ -101,7 +101,7 @@ class BookedInMenuPage {
     // Submenu (Addons)
     public function bookedin_addons_submenu() {
 
-        require_once (BI_PLUGIN_PATH . '/includes/addons/menu.php');
+        require_once (BI_PLUGIN_PATH . '/includes/addons/admin/menu.php');
         add_submenu_page(
             'bookedin_main_menu',       
             'addons',       
@@ -116,7 +116,7 @@ class BookedInMenuPage {
     // Submenu (addons Edit Page)
     public function bookedin_addons_edit_submenu() {
 
-        require_once (BI_PLUGIN_PATH . '/includes/addons/edit-menu.php');
+        require_once (BI_PLUGIN_PATH . '/includes/addons/admin/edit-menu.php');
         add_submenu_page(
             null,                         
             'Edit addon',         

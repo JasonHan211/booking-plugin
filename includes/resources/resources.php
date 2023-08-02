@@ -15,6 +15,7 @@ class BookedInResources {
             resource_name VARCHAR(255) NOT NULL,
             resource_price VARCHAR(255) NOT NULL,
             resource_description TEXT,
+            activeFlag char(1) NOT NULL DEFAULT 'Y',
             PRIMARY KEY (id)
         ) $charset_collate;";
 
