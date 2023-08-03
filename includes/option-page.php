@@ -72,7 +72,7 @@ class BookedInMenuPage {
     // Submenu (Resources)
     public function bookedin_resources_submenu() {
     
-        require_once (BI_PLUGIN_PATH . '/includes/resources/menu.php');
+        require_once (BI_PLUGIN_PATH . '/includes/resources/admin/menu.php');
         add_submenu_page(
             'bookedin_main_menu',       
             'Resources',       
@@ -87,7 +87,7 @@ class BookedInMenuPage {
     // Submenu (Resources Edit Page)
     public function bookedin_resources_edit_submenu() {
 
-        require_once (BI_PLUGIN_PATH . '/includes/resources/edit-menu.php');
+        require_once (BI_PLUGIN_PATH . '/includes/resources/admin/edit-menu.php');
         add_submenu_page(
             null,                         
             'Edit Resource',         
