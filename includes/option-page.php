@@ -104,8 +104,8 @@ class BookedInMenuPage {
         require_once (BI_PLUGIN_PATH . '/includes/addons/admin/menu.php');
         add_submenu_page(
             'bookedin_main_menu',       
-            'addons',       
-            'addons',           
+            'Addons',       
+            'Addons',           
             'manage_options',         
             'bookedin_addons_submenu',       
             'bookedin_addons_submenu_page',  
