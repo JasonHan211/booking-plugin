@@ -16,6 +16,8 @@ class BookedInAddons {
             addon_price VARCHAR(255) NOT NULL,
             addon_description TEXT,
             activeFlag char(1) NOT NULL DEFAULT 'Y',
+            created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+            edited_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
             PRIMARY KEY (id)
         ) $charset_collate;";
 
@@ -32,6 +34,6 @@ class BookedInAddons {
 if (class_exists('BookedInAddons')) {
     $addons = new BookedInAddons();
     register_activation_hook(BI_FILE, array($addons,'addons_activate'));
-    // register_deactivation_hook(BI_FILE, array($addons,'addons_deactivate'));    
+    register_deactivation_hook(BI_FILE, array($addons,'addons_deactivate'));    
 }
 

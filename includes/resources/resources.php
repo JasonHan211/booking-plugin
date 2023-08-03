@@ -16,6 +16,8 @@ class BookedInResources {
             resource_price VARCHAR(255) NOT NULL,
             resource_description TEXT,
             activeFlag char(1) NOT NULL DEFAULT 'Y',
+            created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+            edited_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
             PRIMARY KEY (id)
         ) $charset_collate;";
 
@@ -32,6 +34,6 @@ class BookedInResources {
 if (class_exists('BookedInResources')) {
     $resources = new BookedInResources();
     register_activation_hook(BI_FILE, array($resources,'resources_activate'));
-    // register_deactivation_hook(BI_FILE, array($resources,'resources_deactivate'));    
+    register_deactivation_hook(BI_FILE, array($resources,'resources_deactivate'));    
 }
 
