@@ -3,39 +3,37 @@
 // Exit if accessed directly
 if (!defined('ABSPATH')) exit;
 
+
 function bookedin_addons_submenu_page() {
+
+    $addonsClass = new BookedInAddons();
     
     // Check user capabilities
     if (!current_user_can('manage_options')) {
         return;
     }
 
-    global $wpdb;
-    $table_name = $wpdb->prefix . 'bookedin_addons';
-
     // Handle form submissions to add new addons
     if (isset($_POST['add_addon'])) {
+        
         $addon_name = sanitize_text_field($_POST['addon_name']);
         $addon_price = sanitize_text_field($_POST['addon_price']);
         $addon_description = sanitize_textarea_field($_POST['addon_description']);
         $addon_activeFlag = sanitize_text_field($_POST['addon_activeFlag']);
 
-        $wpdb->insert($table_name, array(
-            'addon_name' => $addon_name,
-            'addon_price' => $addon_price,
-            'addon_description' => $addon_description,
-            'activeFlag' => $addon_activeFlag
-        ));
+        $addonsClass->add_addon($addon_name, $addon_price, $addon_description, $addon_activeFlag);
     }
 
     // Handle addon deletion
     if (isset($_GET['action']) && $_GET['action'] === 'delete' && isset($_GET['addon_id'])) {
+        
         $addon_id = intval($_GET['addon_id']);
-        $wpdb->delete($table_name, array('id' => $addon_id));
+
+        $addonsClass->delete_addon($addon_id);
     }
 
     // Fetch all addons from the database
-    $addons = $wpdb->get_results("SELECT * FROM $table_name", ARRAY_A);
+    $addons = $addonsClass->get_addon();
     
     bookedInNavigation('Addons');
     ?>

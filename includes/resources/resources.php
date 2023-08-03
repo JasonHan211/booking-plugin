@@ -5,35 +5,95 @@ if (!defined('ABSPATH')) exit;
 
 class BookedInResources {
 
-    public function resources_activate(){
-        global $wpdb;
-        $table_name = $wpdb->prefix . 'bookedin_resources';
-        $charset_collate = $wpdb->get_charset_collate();
+    private $db;
+    private $charset_collate;
+    public $resources_table = 'bookedin_resources';
+    public $table_name;
 
-        $sql = "CREATE TABLE IF NOT EXISTS $table_name (
+    public function __construct() {
+        global $wpdb;
+        $this->db = $wpdb;
+        $this->charset_collate = $this->db->get_charset_collate();
+        $this->table_name = $this->db->prefix . $this->resources_table;
+    }
+
+    public function add_resource($resource_name, $resource_price, $resource_description, $resource_activeFlag ) {
+
+        $this->db->insert($this->table_name, array(
+            'resource_name' => $resource_name,
+            'resource_price' => $resource_price,
+            'resource_description' => $resource_description,
+            'activeFlag' => $resource_activeFlag
+        ));
+
+        return $this->db->insert_id;
+    }
+
+    public function update_resource($resource_id, $resource_name, $resource_price, $resource_description, $resource_activeFlag ) {
+
+        $this->db->update($this->table_name, array(
+            'resource_name' => $resource_name,
+            'resource_price' => $resource_price,
+            'resource_description' => $resource_description,
+            'activeFlag' => $resource_activeFlag
+        ), array('id' => $resource_id));
+
+    }
+
+    public function delete_resource($resource_id) {
+
+        $this->db->delete($this->table_name, array('id' => $resource_id));
+
+    }
+
+    public function get_resource($resource_id = null) {
+
+        if ($resource_id === null) {
+            $resource = $this->db->get_results("SELECT * FROM $this->table_name", ARRAY_A);
+            
+            return $resource;
+        }
+        
+        $resource = $this->db->get_row("SELECT * FROM $this->table_name WHERE id = $resource_id", ARRAY_A);
+
+        return $resource;
+    }
+
+    public function createDB() {
+
+        $sql = "CREATE TABLE IF NOT EXISTS $this->table_name (
             id INT NOT NULL AUTO_INCREMENT,
             resource_name VARCHAR(255) NOT NULL,
             resource_price VARCHAR(255) NOT NULL,
             resource_description TEXT,
-            activeFlag char(1) NOT NULL DEFAULT 'Y',
+            activeFlag CHAR(1) NOT NULL DEFAULT 'Y',
             created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
             edited_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
             PRIMARY KEY (id)
-        ) $charset_collate;";
+        ) $this->charset_collate;";
 
         dbDelta($sql);
+
+    }
+
+    public function deleteDB() {
+
+        $this->db->query("DROP TABLE IF EXISTS $this->table_name");
+
+    }
+
+    public function resources_activate(){
+        
+        $this->createDB();
+
     }
 
     public function resources_deactivate(){
-        global $wpdb;
-        $table_name = $wpdb->prefix . 'bookedin_resources';
-        $wpdb->query("DROP TABLE IF EXISTS $table_name");
+        
+        $this->deleteDB();
+
     }
 }
 
-if (class_exists('BookedInResources')) {
-    $resources = new BookedInResources();
-    register_activation_hook(BI_FILE, array($resources,'resources_activate'));
-    register_deactivation_hook(BI_FILE, array($resources,'resources_deactivate'));    
-}
+
 

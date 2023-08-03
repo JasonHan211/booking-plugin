@@ -5,13 +5,12 @@ if (!defined('ABSPATH')) exit;
 
 function bookedin_resources_submenu_page() {
     
+    $resourcesClass = new BookedInResources();
+
     // Check user capabilities
     if (!current_user_can('manage_options')) {
         return;
     }
-
-    global $wpdb;
-    $table_name = $wpdb->prefix . 'bookedin_resources';
 
     // Handle form submissions to add new resources
     if (isset($_POST['add_resource'])) {
@@ -20,22 +19,18 @@ function bookedin_resources_submenu_page() {
         $resource_description = sanitize_textarea_field($_POST['resource_description']);
         $resource_activeFlag = sanitize_text_field($_POST['resource_activeFlag']);
 
-        $wpdb->insert($table_name, array(
-            'resource_name' => $resource_name,
-            'resource_price' => $resource_price,
-            'resource_description' => $resource_description,
-            'activeFlag' => $resource_activeFlag
-        ));
+        $resourcesClass->add_resource($resource_name, $resource_price, $resource_description, $resource_activeFlag);
     }
 
     // Handle resource deletion
     if (isset($_GET['action']) && $_GET['action'] === 'delete' && isset($_GET['resource_id'])) {
         $resource_id = intval($_GET['resource_id']);
-        $wpdb->delete($table_name, array('id' => $resource_id));
+        
+        $resourcesClass->delete_resource($resource_id);
     }
 
     // Fetch all resources from the database
-    $resources = $wpdb->get_results("SELECT * FROM $table_name", ARRAY_A);
+    $resources = $resourcesClass->get_resource();
     
     bookedInNavigation('Resources');
     ?>

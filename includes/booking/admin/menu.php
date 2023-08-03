@@ -6,11 +6,14 @@ if (!defined('ABSPATH')) exit;
 // Function to display the option page and bookings
 function my_booking_plugin_option_page() {
 
+    $bookingClass = new BookedInBookings();
+
     // Check user capabilities
     if (!current_user_can('manage_options')) {
         return;
     }
 
+    // Include the template files
     include_once('templates/new-booking-form.php');
     include_once('templates/booking-table.php');
 

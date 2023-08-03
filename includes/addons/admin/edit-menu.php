@@ -4,12 +4,16 @@
 if (!defined('ABSPATH')) exit;
 
 function addons_edit_page() {
+
+    $addonsClass = new BookedInAddons();
+
     global $wpdb;
     $table_name = $wpdb->prefix . 'bookedin_addons';
 
     if (isset($_GET['action']) && $_GET['action'] === 'edit' && isset($_GET['addon_id'])) {
         $addon_id = intval($_GET['addon_id']);
-        $addon = $wpdb->get_row("SELECT * FROM $table_name WHERE id = $addon_id", ARRAY_A);
+
+        $addon = $addonsClass->get_addon($addon_id);
     }
 
     if (isset($_POST['update_addon'])) {
@@ -18,12 +22,7 @@ function addons_edit_page() {
         $addon_description = sanitize_textarea_field($_POST['addon_description']);
         $addon_activeFlag = sanitize_text_field($_POST['addon_activeFlag']);
 
-        $wpdb->update($table_name, array(
-            'addon_name' => $addon_name,
-            'addon_price' => $addon_price,
-            'addon_description' => $addon_description,
-            'activeFlag' => $addon_activeFlag
-        ), array('id' => $addon_id));
+        $addonsClass->update_addon($addon_id, $addon_name, $addon_price, $addon_description, $addon_activeFlag);
 
         wp_redirect(admin_url('admin.php?page=bookedin_addons_submenu'));
         exit;

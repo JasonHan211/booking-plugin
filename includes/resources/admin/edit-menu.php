@@ -4,12 +4,12 @@
 if (!defined('ABSPATH')) exit;
 
 function resources_edit_page() {
-    global $wpdb;
-    $table_name = $wpdb->prefix . 'bookedin_resources';
+    
+    $resourcesClass = new BookedInResources();
 
     if (isset($_GET['action']) && $_GET['action'] === 'edit' && isset($_GET['resource_id'])) {
         $resource_id = intval($_GET['resource_id']);
-        $resource = $wpdb->get_row("SELECT * FROM $table_name WHERE id = $resource_id", ARRAY_A);
+        $resource = $resourcesClass->get_resource($resource_id);
     }
 
     if (isset($_POST['update_resource'])) {
@@ -18,12 +18,7 @@ function resources_edit_page() {
         $resource_description = sanitize_textarea_field($_POST['resource_description']);
         $resource_activeFlag = sanitize_text_field($_POST['resource_activeFlag']);
 
-        $wpdb->update($table_name, array(
-            'resource_name' => $resource_name,
-            'resource_price' => $resource_price,
-            'resource_description' => $resource_description,
-            'activeFlag' => $resource_activeFlag
-        ), array('id' => $resource_id));
+        $resourcesClass->update_resource($resource_id, $resource_name, $resource_price, $resource_description, $resource_activeFlag);
 
         wp_redirect(admin_url('admin.php?page=bookedin_resources_submenu'));
         exit;
