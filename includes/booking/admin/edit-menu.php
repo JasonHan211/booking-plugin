@@ -17,6 +17,7 @@ function booking_edit_page() {
         $booking_date_from = sanitize_text_field($_POST['booking_date_from']);
         $booking_date_to = sanitize_text_field($_POST['booking_date_to']);
         $booking_resource = sanitize_text_field($_POST['booking_resource']);
+        $booking_notes = sanitize_text_field($_POST['booking_notes']);
         $booking_description = sanitize_textarea_field($_POST['booking_description']);
         $booking_paid = sanitize_text_field($_POST['booking_paid']);
         $booking_adults = sanitize_text_field($_POST['booking_adults']);
@@ -30,6 +31,7 @@ function booking_edit_page() {
             'booking_date_from' => $booking_date_from,
             'booking_date_to' => $booking_date_to,
             'booking_resource' => $booking_resource,
+            'booking_notes' => $booking_notes,
             'booking_description' => $booking_description,
             'booking_paid' => $booking_paid,
             'booking_adults' => $booking_adults,
@@ -56,12 +58,14 @@ function booking_edit_page() {
             <input type="date" name="booking_date_to" value="<?php echo esc_attr($booking['booking_date_to']); ?>" required>
             <label for="booking_resource">Resource:</label>
             <input type="text" name="booking_resource" value="<?php echo esc_attr($booking['booking_resource']); ?>" required>
+            <label for="booking_notes">Notes:</label>
+            <textarea name="booking_notes"><?php echo esc_textarea($booking['booking_notes']); ?></textarea>
             <label for="booking_details">Description:</label>
             <textarea name="booking_description"><?php echo esc_textarea($booking['booking_description']); ?></textarea>
             <label for="booking_paid">Paid:</label>
             <select name="booking_paid">
-                <option value="YES" <?php if ($booking['booking_paid'] === 'YES') echo 'selected'; ?>>YES</option>
-                <option value="NO" <?php if ($booking['booking_paid'] === 'NO') echo 'selected'; ?>>NO</option>
+                <option value="Y" <?php if ($booking['booking_paid'] === 'Y') echo 'selected'; ?>>YES</option>
+                <option value="N" <?php if ($booking['booking_paid'] === 'N') echo 'selected'; ?>>NO</option>
             </select>
             <label for="booking_adults">Adults:</label>
             <input type="number" name="booking_adults" value="<?php echo esc_attr($booking['booking_adults']); ?>" required>

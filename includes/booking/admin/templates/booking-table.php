@@ -9,6 +9,7 @@ function bookingTable($bookings) {
                     <th>Date From</th>
                     <th>Date To</th>
                     <th>Resource</th>
+                    <th>Notes</th>
                     <th>Description</th>
                     <th>Paid</th>
                     <th>Adults</th>
@@ -25,6 +26,7 @@ function bookingTable($bookings) {
                         <td><?php echo $booking['booking_date_from']; ?></td>
                         <td><?php echo $booking['booking_date_to']; ?></td>
                         <td><?php echo $booking['resource_name']; ?></td>
+                        <td><?php echo $booking['booking_notes']; ?></td>
                         <td><?php echo $booking['booking_description']; ?></td>
                         <td><?php echo $booking['booking_paid']; ?></td>
                         <td><?php echo $booking['booking_adults']; ?></td>

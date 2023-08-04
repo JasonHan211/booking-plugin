@@ -25,14 +25,18 @@ function newBookingForm($resources) {
                             </select>
                         </div>
                         <div class="mb-3">
+                            <label for="booking_notes" class="form-label">Notes:</label>
+                            <textarea class="form-control" name="booking_notes"></textarea>
+                        </div>
+                        <div class="mb-3">
                             <label for="booking_description" class="form-label">Description:</label>
                             <textarea class="form-control" name="booking_description"></textarea>
                         </div>
                         <div class="mb-3">
                             <label for="booking_paid" class="form-label">Paid:</label>
                             <select class="form-select" name="booking_paid">
-                                <option value="NO">No</option>
-                                <option value="YES">Yes</option>
+                                <option value="N">No</option>
+                                <option value="Y">Yes</option>
                             </select>
                         </div>
                         <div class="mb-3">

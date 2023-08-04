@@ -23,7 +23,56 @@ class BookedInBookings {
         $this->booking_addons_table_name = $this->db->prefix . $this->booking_addons_table;
     }
 
-    
+    public function add_booking_header($booking_date_from, $booking_date_to, $booking_notes, $booking_description, $booking_paid, $booking_adults, $booking_children, $booking_user, $booking_email, $booking_phone ) {
+
+        $this->db->insert($this->booking_header_table_name, array(
+            'booking_date_from' => $booking_date_from,
+            'booking_date_to' => $booking_date_to,
+            'booking_notes' => $booking_notes,
+            'booking_description' => $booking_description,
+            'booking_paid' => $booking_paid,
+            'booking_adults' => $booking_adults,
+            'booking_children' => $booking_children,
+            'booking_user' => $booking_user,
+            'booking_email' => $booking_email,
+            'booking_phone' => $booking_phone,
+        ));
+
+        $id = $this->db->insert_id;
+
+        return $id;
+
+    }
+
+    public function add_booking($booking_header_id, $booking_date, $booking_resource, $booking_paid) {
+
+        $this->db->insert($this->booking_table_name, array(
+            'booking_header_id' => $booking_header_id,
+            'booking_date' => $booking_date,
+            'booking_resource' => $booking_resource,
+            'booking_paid' => $booking_paid
+        ));
+
+        $id = $this->db->insert_id;
+
+        return $id;
+
+    }
+
+    public function add_booking_addon($booking_header_id, $booking_date, $booking_addon, $booking_paid) {
+
+        $this->db->insert($this->booking_addons_table_name, array(
+            'booking_header_id' => $booking_header_id,
+            'booking_date' => $booking_date,
+            'booking_addon' => $booking_addon,
+            'booking_paid' => $booking_paid
+        ));
+
+        $id = $this->db->insert_id;
+
+        return $id;
+
+    }
 
     public function createBookingHeaderDB() {
 
@@ -31,6 +80,7 @@ class BookedInBookings {
             id INT NOT NULL AUTO_INCREMENT,
             booking_date_from DATE NOT NULL,
             booking_date_to DATE NOT NULL,
+            booking_notes TEXT,
             booking_description TEXT,
             booking_paid CHAR(1) NOT NULL DEFAULT 'N',
             booking_adults INT NOT NULL DEFAULT 0,
@@ -89,10 +139,8 @@ class BookedInBookings {
     // Function to create the custom database table on plugin activation
     public function activate() {
 
-        $this->createBookingHeaderDB();
-        
+        $this->createBookingHeaderDB();    
         $this->createBookingsDB();
-
         $this->createBookingAddonsDB();
 
     }

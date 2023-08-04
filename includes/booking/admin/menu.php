@@ -26,27 +26,41 @@ function my_booking_plugin_option_page() {
         $booking_date_from = sanitize_text_field($_POST['booking_date_from']);
         $booking_date_to = sanitize_text_field($_POST['booking_date_to']);
         $booking_resource = sanitize_text_field($_POST['booking_resource']);
+        $booking_notes = sanitize_text_field($_POST['booking_notes']);
         $booking_description = sanitize_textarea_field($_POST['booking_description']);
         $booking_paid = sanitize_text_field($_POST['booking_paid']);
         $booking_adults = sanitize_text_field($_POST['booking_adults']);
-        $booking_children = sanitize_text_field($_POST['booking_children']);
-        
+        $booking_children = sanitize_text_field($_POST['booking_children']);    
         $booking_user = sanitize_text_field($_POST['booking_user']);
         $booking_email = sanitize_text_field($_POST['booking_email']);
         $booking_phone = sanitize_text_field($_POST['booking_phone']);
 
-        $wpdb->insert($bookings_table_name, array(
-            'booking_date_from' => $booking_date_from,
-            'booking_date_to' => $booking_date_to,
-            'booking_resource' => $booking_resource,
-            'booking_description' => $booking_description,
-            'booking_paid' => $booking_paid,
-            'booking_adults' => $booking_adults,
-            'booking_children' => $booking_children,
-            'booking_user' => $booking_user,
-            'booking_email' => $booking_email,
-            'booking_phone' => $booking_phone,
-        ));
+        // How many nights from 2 dates
+        $date1 = new DateTime($booking_date_from);
+        $date2 = new DateTime($booking_date_to);
+        $interval = $date1->diff($date2);
+        $nights = $interval->format('%a');
+
+        // echo $nights;
+
+        // Get date after date1
+        $date = new DateTime($booking_date_from);
+        $date->modify('+1 day');
+        // echo $date->format('Y-m-d');
+
+        // $wpdb->insert($bookings_table_name, array(
+        //     'booking_date_from' => $booking_date_from,
+        //     'booking_date_to' => $booking_date_to,
+        //     'booking_resource' => $booking_resource,
+        //     'booking_notes' => $booking_notes,
+        //     'booking_description' => $booking_description,
+        //     'booking_paid' => $booking_paid,
+        //     'booking_adults' => $booking_adults,
+        //     'booking_children' => $booking_children,
+        //     'booking_user' => $booking_user,
+        //     'booking_email' => $booking_email,
+        //     'booking_phone' => $booking_phone,
+        // ));
 
         // echo $wpdb->insert_id;
             
@@ -61,7 +75,7 @@ function my_booking_plugin_option_page() {
     // Fetch all bookings from the database
     $bookings = $wpdb->get_results("SELECT * FROM $bookings_table_name LEFT JOIN $resources_table_name on $resources_table_name.id = $bookings_table_name.booking_resource", ARRAY_A);
 
-    $resources = $wpdb->get_results("SELECT * FROM $resources_table_name", ARRAY_A);
+    $resources = $wpdb->get_results("SELECT * FROM $resources_table_name WHERE activeFlag = 'Y'", ARRAY_A);
     $totalResources = count($resources);
 
     $bookingSlots = $wpdb->get_results("SELECT DATE(booking_date_from) as 'date', 

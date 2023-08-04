@@ -14,7 +14,7 @@ class BookedInMenuPage {
             if (class_exists('BookedInBookings')) {
                 $bookings = new BookedInBookings();
                 register_activation_hook(BI_FILE, array($bookings,'activate'));
-                // register_deactivation_hook(BI_FILE, array($bookings,'deactivate'));    
+                register_deactivation_hook(BI_FILE, array($bookings,'deactivate'));    
             }
 
             add_action('admin_menu', array($this, 'bookedin_add_menu_page'));
