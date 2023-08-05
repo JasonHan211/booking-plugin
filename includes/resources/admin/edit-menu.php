@@ -9,7 +9,7 @@ function resources_edit_page() {
 
     if (isset($_GET['action']) && $_GET['action'] === 'edit' && isset($_GET['resource_id'])) {
         $resource_id = intval($_GET['resource_id']);
-        $resource = $resourcesClass->get_resource($resource_id);
+        $resource = $resourcesClass->get_resources($resource_id);
     }
 
     if (isset($_POST['update_resource'])) {

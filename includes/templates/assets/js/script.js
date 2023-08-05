@@ -34,7 +34,7 @@ function formatDateToYYYYMMDD(date) {
 }
 
 // Set the selected date range into the hidden input fields before form submission
-$('form').submit(function () {
+$('form').submit(function (e) {
     const selectedDates = $('#booking_dates').datepicker('getDates');
     if (selectedDates.length === 2) {
         
@@ -48,5 +48,9 @@ $('form').submit(function () {
         const endDate = formatDateToYYYYMMDD(selectedDates[1]);
         $('[name="booking_date_from"]').val(startDate);
         $('[name="booking_date_to"]').val(endDate);
+    }
+    else {
+        alert('Please select a date range.');
+        e.preventDefault();
     }
 });

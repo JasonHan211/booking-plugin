@@ -7,6 +7,7 @@ if (!defined('ABSPATH')) exit;
 function my_booking_plugin_option_page() {
 
     $bookingClass = new BookedInBookings();
+    $resourceClass = new BookedInResources();
 
     // Check user capabilities
     if (!current_user_can('manage_options')) {
@@ -17,10 +18,6 @@ function my_booking_plugin_option_page() {
     include_once('templates/new-booking-form.php');
     include_once('templates/booking-table.php');
 
-    global $wpdb;
-    $bookings_table_name = $wpdb->prefix . 'bookedin_bookings';
-    $resources_table_name = $wpdb->prefix . 'bookedin_resources';
-
     // Handle form submissions to add new bookings
     if (isset($_POST['add_booking'])) {
         $booking_date_from = sanitize_text_field($_POST['booking_date_from']);
@@ -29,40 +26,21 @@ function my_booking_plugin_option_page() {
         $booking_notes = sanitize_text_field($_POST['booking_notes']);
         $booking_description = sanitize_textarea_field($_POST['booking_description']);
         $booking_paid = sanitize_text_field($_POST['booking_paid']);
+        $booking_price = sanitize_text_field($_POST['booking_price']);
         $booking_adults = sanitize_text_field($_POST['booking_adults']);
         $booking_children = sanitize_text_field($_POST['booking_children']);    
         $booking_user = sanitize_text_field($_POST['booking_user']);
         $booking_email = sanitize_text_field($_POST['booking_email']);
         $booking_phone = sanitize_text_field($_POST['booking_phone']);
 
-        // How many nights from 2 dates
-        $date1 = new DateTime($booking_date_from);
-        $date2 = new DateTime($booking_date_to);
-        $interval = $date1->diff($date2);
-        $nights = $interval->format('%a');
+        $booking_header_id = $bookingClass->add_booking_header($booking_date_from, $booking_date_to, $booking_resource, $booking_notes, $booking_description, $booking_paid, $booking_price, $booking_adults, $booking_children, $booking_user, $booking_email, $booking_phone);
 
-        // echo $nights;
+        $nights = $bookingClass->get_nights($booking_date_from, $booking_date_to);
 
-        // Get date after date1
-        $date = new DateTime($booking_date_from);
-        $date->modify('+1 day');
-        // echo $date->format('Y-m-d');
-
-        // $wpdb->insert($bookings_table_name, array(
-        //     'booking_date_from' => $booking_date_from,
-        //     'booking_date_to' => $booking_date_to,
-        //     'booking_resource' => $booking_resource,
-        //     'booking_notes' => $booking_notes,
-        //     'booking_description' => $booking_description,
-        //     'booking_paid' => $booking_paid,
-        //     'booking_adults' => $booking_adults,
-        //     'booking_children' => $booking_children,
-        //     'booking_user' => $booking_user,
-        //     'booking_email' => $booking_email,
-        //     'booking_phone' => $booking_phone,
-        // ));
-
-        // echo $wpdb->insert_id;
+        for ($i = 0; $i < $nights; $i++) {
+            $booking_date = date('Y-m-d', strtotime("$booking_date_from + $i days"));           
+            $bookingClass->add_booking($booking_header_id, $booking_date, $booking_resource, $booking_paid);
+        }
             
     }
 
@@ -72,16 +50,8 @@ function my_booking_plugin_option_page() {
         $wpdb->delete($bookings_table_name, array('id' => $booking_id));
     }
 
-    // Fetch all bookings from the database
-    $bookings = $wpdb->get_results("SELECT * FROM $bookings_table_name LEFT JOIN $resources_table_name on $resources_table_name.id = $bookings_table_name.booking_resource", ARRAY_A);
-
-    $resources = $wpdb->get_results("SELECT * FROM $resources_table_name WHERE activeFlag = 'Y'", ARRAY_A);
-    $totalResources = count($resources);
-
-    $bookingSlots = $wpdb->get_results("SELECT DATE(booking_date_from) as 'date', 
-    ($totalResources-COUNT(*)) AS 'availableSlots'
-    from wp_bookedin_bookings wbb 
-    GROUP BY DATE(booking_date_from)", ARRAY_A);
+    $totalResources = $resourceClass->get_total_resources();
+    $bookingSlots = $bookingClass->get_booking_slots();
 
     // Get the current month and year
     $currentMonth = date('n'); // n returns month without leading zeros
@@ -116,7 +86,7 @@ function my_booking_plugin_option_page() {
 
         <h2>Add New booking</h2>
         
-        <?php newBookingForm($resources) ?>
+        <?php newBookingForm() ?>
 
         <br>
         <br>
@@ -196,7 +166,7 @@ function my_booking_plugin_option_page() {
         <!-- Display existing bookings -->
         <h2>Existing bookings</h2>
         
-        <?php bookingTable($bookings) ?>
+        <?php bookingTable() ?>
 
     </div>
     <?php

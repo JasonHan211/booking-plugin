@@ -46,17 +46,33 @@ class BookedInResources {
 
     }
 
-    public function get_resource($resource_id = null) {
+    public function get_resources($resource_id = null, $activeFlag = 'A') {      
 
         if ($resource_id === null) {
-            $resource = $this->db->get_results("SELECT * FROM $this->table_name", ARRAY_A);
+
+            if ($activeFlag != 'A') {
+                
+                $resources = $this->db->get_results("SELECT * FROM $this->table_name WHERE activeFlag = '$activeFlag'", ARRAY_A);
+                echo $this->db->last_error;
+                return $resources;
+            }
+
+            $resources = $this->db->get_results("SELECT * FROM $this->table_name", ARRAY_A);
             
-            return $resource;
+            return $resources;
         }
         
         $resource = $this->db->get_row("SELECT * FROM $this->table_name WHERE id = $resource_id", ARRAY_A);
 
         return $resource;
+    }
+
+    public function get_total_resources() {
+
+        $total_resources = $this->db->get_var("SELECT COUNT(*) FROM $this->table_name WHERE activeFlag = 'Y'");
+
+        return $total_resources;
+
     }
 
     public function createDB() {

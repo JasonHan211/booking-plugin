@@ -30,7 +30,7 @@ function bookedin_resources_submenu_page() {
     }
 
     // Fetch all resources from the database
-    $resources = $resourcesClass->get_resource();
+    $resources = $resourcesClass->get_resources();
     
     bookedInNavigation('Resources');
     ?>

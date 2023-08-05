@@ -1,6 +1,11 @@
 <?php
 
-function bookingTable($bookings) {
+function bookingTable() {
+
+    $bookingClass = new BookedInBookings();
+
+    $bookings = $bookingClass->get_booking_header();
+
     ?>
 
         <table class="wp-list-table widefat striped">
@@ -12,6 +17,7 @@ function bookingTable($bookings) {
                     <th>Notes</th>
                     <th>Description</th>
                     <th>Paid</th>
+                    <th>Price</th>
                     <th>Adults</th>
                     <th>Children</th>
                     <th>Name</th>
@@ -29,6 +35,7 @@ function bookingTable($bookings) {
                         <td><?php echo $booking['booking_notes']; ?></td>
                         <td><?php echo $booking['booking_description']; ?></td>
                         <td><?php echo $booking['booking_paid']; ?></td>
+                        <td><?php echo $booking['booking_price']; ?></td>
                         <td><?php echo $booking['booking_adults']; ?></td>
                         <td><?php echo $booking['booking_children']; ?></td>
                         <td><?php echo $booking['booking_user']; ?></td>
