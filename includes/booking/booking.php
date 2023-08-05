@@ -30,7 +30,6 @@ class BookedInBookings {
 
     public function check_available($booking_date_from, $booking_date_to) {
             
-
             $totalResources = $this->resoucesClass->get_total_resources();
 
             $availableSlots = $this->db->get_var(
@@ -107,19 +106,6 @@ class BookedInBookings {
 
         return $booking_header;
 
-    }
-
-    public function get_booking_table() {
-            
-            $booking_table = $this->db->get_results(
-                "SELECT * 
-                FROM $this->booking_header_table_name
-                LEFT JOIN $this->booking_table_name on $this->booking_table_name.booking_header_id = $this->booking_header_table_name.id
-                "
-                , ARRAY_A);
-    
-            return $booking_table;
-    
     }
 
     public function get_nights($booking_date_from, $booking_date_to) {
