@@ -30,6 +30,26 @@ class BookedInBookings {
 
     public function check_available($booking_date_from, $booking_date_to) {
             
+            $nights = $this->get_nights($booking_date_from, $booking_date_to);
+            $resources = $this->resoucesClass->get_resources(null,'Y');
+
+            for ($i = 0; $i < $nights; $i++) {
+
+                $booking_date = date('Y-m-d', strtotime($booking_date_from . ' + ' . $i . ' days'));
+
+                foreach ($resources as $resource) {
+
+                    $availableSlots = $this->get_available_slots($booking_date);
+
+                    if ($availableSlots <= 0) {
+                        return false;
+                    }
+
+                }
+
+            }
+
+
             $totalResources = $this->resoucesClass->get_total_resources();
 
             $availableSlots = $this->db->get_var(
