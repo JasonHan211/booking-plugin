@@ -4,12 +4,14 @@
 if (!defined('ABSPATH')) exit;
 
 require_once (BI_PLUGIN_PATH . '/includes/resources/resources.php');
+require_once (BI_PLUGIN_PATH . '/includes/addons/addons.php');
 
 class BookedInBookings {
 
     private $db;
     private $charset_collate;
     private $resoucesClass;
+    private $addonsClass;
     public $booking_header_table = 'bookedin_booking_header';
     public $booking_table = 'bookedin_bookings';
     public $booking_addons_table = 'bookedin_booking_addons';
@@ -22,43 +24,54 @@ class BookedInBookings {
         global $wpdb;
         $this->db = $wpdb;
         $this->resoucesClass = new BookedInResources();
+        $this->addonsClass = new BookedInAddons();
         $this->charset_collate = $this->db->get_charset_collate();
         $this->booking_header_table_name = $this->db->prefix . $this->booking_header_table;
         $this->booking_table_name = $this->db->prefix . $this->booking_table;
         $this->booking_addons_table_name = $this->db->prefix . $this->booking_addons_table;
     }
 
-    public function check_available($booking_date_from, $booking_date_to) {
-            
-            $nights = $this->get_nights($booking_date_from, $booking_date_to);
-            $resources = $this->resoucesClass->get_resources(null,'Y');
+    public function get_available($booking_date_from, $booking_date_to) {
+        
+        // booking to - 1 day
+        $booking_date_to = date('Y-m-d', strtotime("$booking_date_to - 1 days"));
 
-            for ($i = 0; $i < $nights; $i++) {
+        // SQL get all bookings between dates
+        $bookings = $this->db->get_results(
+            "SELECT * FROM $this->booking_table_name WHERE booking_date BETWEEN '$booking_date_from' AND '$booking_date_to'"
+            , ARRAY_A);    
 
-                $booking_date = date('Y-m-d', strtotime($booking_date_from . ' + ' . $i . ' days'));
+        // SQL get all resources
+        $resources = $this->resoucesClass->get_resources(null,'Y');
 
-                foreach ($resources as $resource) {
+        // Get available resources thats not in bookings
+        $availableResources = array();
 
-                    $availableSlots = $this->get_available_slots($booking_date);
+        foreach ($resources as $resource) {
+            $resourceId = $resource['id'];
+            $resourceName = $resource['resource_name'];
+            $resourceDescription = $resource['resource_description'];
+            $resourcePrice = $resource['resource_price'];
+            $resourceAvailable = true;
 
-                    if ($availableSlots <= 0) {
-                        return false;
-                    }
-
+            foreach ($bookings as $booking) {
+                if ($booking['booking_resource'] == $resourceId) {
+                    $resourceAvailable = false;
                 }
-
             }
 
+            if ($resourceAvailable) {
+                $availableResources[] = array(
+                    'id' => $resourceId,
+                    'name' => $resourceName,
+                    'description' => $resourceDescription,
+                    'price' => $resourcePrice
+                );
+            }
+        }
 
-            $totalResources = $this->resoucesClass->get_total_resources();
+        return $availableResources;
 
-            $availableSlots = $this->db->get_var(
-                "SELECT ($totalResources-COUNT(*)) AS 'availableSlots'
-                from $this->booking_table_name wbb 
-                WHERE wbb.booking_date = '$booking_date_from'"
-            );
-    
-            return $availableSlots;
     }
 
     public function add_booking_header($booking_date_from, $booking_date_to,$booking_resource, $booking_notes, $booking_description, $booking_paid, $booking_price, $booking_adults, $booking_children, $booking_user, $booking_email, $booking_phone ) {
@@ -117,8 +130,21 @@ class BookedInBookings {
 
         if ($booking_id === null) {
             $resourceTable = $this->resoucesClass->table_name;
-            $booking_header = $this->db->get_results("SELECT * FROM $this->booking_header_table_name LEFT JOIN $resourceTable on $resourceTable.id = $this->booking_header_table_name.booking_resource", ARRAY_A);
-            echo $this->db->last_error;
+            $booking_header = $this->db->get_results("SELECT 
+            bh.id as 'id',
+            bh.booking_date_from as 'booking_date_from',
+            bh.booking_date_to as 'booking_date_to',
+            bh.booking_notes as 'booking_notes',
+            bh.booking_description as 'booking_description',
+            bh.booking_paid as 'booking_paid',
+            bh.booking_price as 'booking_price',
+            bh.booking_adults as 'booking_adults',
+            bh.booking_children as 'booking_children',
+            bh.booking_user as 'booking_user',
+            bh.booking_email as 'booking_email',
+            bh.booking_phone as 'booking_phone',
+            br.resource_name as 'resource_name'
+            FROM $this->booking_header_table_name bh LEFT JOIN $resourceTable br on br.id = bh.booking_resource", ARRAY_A);
             return $booking_header;
         }
 
@@ -151,6 +177,14 @@ class BookedInBookings {
                 , ARRAY_A);
     
             return $bookingSlots;
+    
+    }
+
+    public function delete_booking($booking_id) {
+            
+            $this->db->delete($this->booking_header_table_name, array('id' => $booking_id));
+            $this->db->delete($this->booking_table_name, array('booking_header_id' => $booking_id));
+            $this->db->delete($this->booking_addons_table_name, array('booking_header_id' => $booking_id));
     
     }
 
@@ -237,4 +271,23 @@ class BookedInBookings {
     
 }
 
+// REST API ENDPOINTS
+add_action('rest_api_init', 'register_get_available');
+
+function register_get_available() {
+    register_rest_route('v1/resources', 'get_available', array(
+          'methods' => 'POST',
+          'callback' => 'get_available_callback'
+    ));
+} 
+
+function get_available_callback($request) {
+
+    $date_from = $request->get_param('booking_date_from');
+    $date_to = $request->get_param('booking_date_to');
+
+    $bookingsClass = new BookedInBookings();
+    $available = $bookingsClass->get_available($date_from, $date_to);
+    return new WP_REST_Response(array('availables'=>$available,'message'=>'Success'), 200);
+}
 

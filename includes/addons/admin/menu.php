@@ -33,7 +33,7 @@ function bookedin_addons_submenu_page() {
     }
 
     // Fetch all addons from the database
-    $addons = $addonsClass->get_addon();
+    $addons = $addonsClass->get_addons();
     
     bookedInNavigation('Addons');
     ?>

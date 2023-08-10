@@ -13,7 +13,7 @@ function addons_edit_page() {
     if (isset($_GET['action']) && $_GET['action'] === 'edit' && isset($_GET['addon_id'])) {
         $addon_id = intval($_GET['addon_id']);
 
-        $addon = $addonsClass->get_addon($addon_id);
+        $addon = $addonsClass->get_addons($addon_id);
     }
 
     if (isset($_POST['update_addon'])) {

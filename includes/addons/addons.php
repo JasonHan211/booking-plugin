@@ -46,9 +46,17 @@ class BookedInAddons {
 
     }
 
-    public function get_addon($addon_id = null) {
+    public function get_addons($addon_id = null, $activeFlag = 'A') {
 
         if ($addon_id === null) {
+
+            if ($activeFlag != 'A') {
+                
+                $addon = $this->db->get_results("SELECT * FROM $this->table_name WHERE activeFlag = '$activeFlag'", ARRAY_A);
+                echo $this->db->last_error;
+                return $addon;
+            }
+
             $addon = $this->db->get_results("SELECT * FROM $this->table_name", ARRAY_A);
             
             return $addon;

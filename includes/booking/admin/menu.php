@@ -23,6 +23,8 @@ function my_booking_plugin_option_page() {
         $booking_date_from = sanitize_text_field($_POST['booking_date_from']);
         $booking_date_to = sanitize_text_field($_POST['booking_date_to']);
         $booking_resource = sanitize_text_field($_POST['booking_resource']);
+        // $booking_addon = array_map('sanitize_text_field', $_POST['booking_addon']);
+        $booking_addon = $_POST['booking_addon'];
         $booking_notes = sanitize_text_field($_POST['booking_notes']);
         $booking_description = sanitize_textarea_field($_POST['booking_description']);
         $booking_paid = sanitize_text_field($_POST['booking_paid']);
@@ -32,6 +34,15 @@ function my_booking_plugin_option_page() {
         $booking_user = sanitize_text_field($_POST['booking_user']);
         $booking_email = sanitize_text_field($_POST['booking_email']);
         $booking_phone = sanitize_text_field($_POST['booking_phone']);
+
+        echo var_dump($booking_addon);
+
+        // Check if its available
+        $available = $bookingClass->get_available($booking_date_from, $booking_date_to);
+        if (count($available) == 0) {
+            echo '<script>alert("Sorry, this date is not available. Please try another date.");location.reload(); </script>';
+            return;
+        }
 
         $booking_header_id = $bookingClass->add_booking_header($booking_date_from, $booking_date_to, $booking_resource, $booking_notes, $booking_description, $booking_paid, $booking_price, $booking_adults, $booking_children, $booking_user, $booking_email, $booking_phone);
 
@@ -47,7 +58,7 @@ function my_booking_plugin_option_page() {
     // Handle booking deletion
     if (isset($_GET['action']) && $_GET['action'] === 'delete' && isset($_GET['booking_id'])) {
         $booking_id = intval($_GET['booking_id']);
-        $wpdb->delete($bookings_table_name, array('id' => $booking_id));
+        $bookingClass->delete_booking($booking_id);
     }
 
     $totalResources = $resourceClass->get_total_resources();

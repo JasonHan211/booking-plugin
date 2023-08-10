@@ -5,7 +5,7 @@ function bookingTable() {
     $bookingClass = new BookedInBookings();
 
     $bookings = $bookingClass->get_booking_header();
-
+    
     ?>
 
         <table class="wp-list-table widefat striped">
