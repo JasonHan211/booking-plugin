@@ -30,7 +30,7 @@ function newBookingForm() {
                             <?php foreach($addons as $addon) { ?>
 
                                 <label class="form-label"><?php echo $addon['addon_name']; ?></label>
-                                <input type="checkbox" class="form-control" name="booking_addon" value="<?php echo $addon['id']; ?>" data-price="<?php echo $addon['addon_price']; ?>" onclick="updatePriceField(this)">
+                                <input type="checkbox" class="form-control" name="booking_addon[]" value="<?php echo $addon['id']; ?>" data-price="<?php echo $addon['addon_price']; ?>" onclick="updatePriceField(this)">
 
                              <?php } ?>
 
