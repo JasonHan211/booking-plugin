@@ -18,3 +18,9 @@
 .text-muted {
     color: #6c757d;
 }
+
+/* Style for selected days */
+.selected {
+    background-color: #cca264;
+    color: #000000;
+}
