@@ -17,24 +17,26 @@ class BookedInAddons {
         $this->table_name = $this->db->prefix . $this->addons_table;
     }
 
-    public function add_addon($addon_name, $addon_price, $addon_description, $addon_activeFlag ) {
+    public function add_addon($addon_name, $addon_price, $addon_description, $addon_perday, $addon_activeFlag ) {
 
         $this->db->insert($this->table_name, array(
             'addon_name' => $addon_name,
             'addon_price' => $addon_price,
             'addon_description' => $addon_description,
+            'addon_perday' => $addon_perday,
             'activeFlag' => $addon_activeFlag
         ));
 
         return $this->db->insert_id;
     }
 
-    public function update_addon($addon_id, $addon_name, $addon_price, $addon_description, $addon_activeFlag ) {
+    public function update_addon($addon_id, $addon_name, $addon_price, $addon_description, $addon_perday, $addon_activeFlag ) {
 
         $this->db->update($this->table_name, array(
             'addon_name' => $addon_name,
             'addon_price' => $addon_price,
             'addon_description' => $addon_description,
+            'addon_perday' => $addon_perday,
             'activeFlag' => $addon_activeFlag
         ), array('id' => $addon_id));
 

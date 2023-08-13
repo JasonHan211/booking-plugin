@@ -141,7 +141,7 @@ function newBookingForm() {
                     selectElement.innerHTML = '<option value="">Please select dates</option>';
                     return;
                 }
-
+                selectElement.innerHTML = '<option value="">Loading Please Wait</option>';
                 // Query for available resources
                 $.ajax({
                     url: '<?php echo get_rest_url(null, 'v1/resources/get_available');?>',
@@ -184,20 +184,6 @@ function newBookingForm() {
 
                 startDate = document.getElementById('booking_date_from').value;
                 endDate = document.getElementById('booking_date_to').value;
-
-                // Check booking addon if checked
-                var checkboxes = document.querySelectorAll('input[name="booking_addon[]"]:checked');
-
-                // Fake a checkbox that has a value of -1 if no checkbox is checked
-                if (checkboxes.length == 0) {
-                    var fakeCheckbox = document.createElement('input');
-                    fakeCheckbox.type = 'checkbox';
-                    fakeCheckbox.name = 'booking_addon[]';
-                    fakeCheckbox.value = '-1';
-                    fakeCheckbox.checked = true;
-                    fakeCheckbox.style.display = 'none';
-                    document.getElementById('booking_addon').appendChild(fakeCheckbox);
-                }
 
                 if (startDate === '' || endDate === '') {
                     alert('Please select a date range.');

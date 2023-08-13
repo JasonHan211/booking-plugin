@@ -195,6 +195,7 @@ class BookedInBookings {
             booking_date_from DATE NOT NULL,
             booking_date_to DATE NOT NULL,
             booking_resource VARCHAR(255),
+            booking_resource_qty INT DEFAULT 1,
             booking_notes TEXT,
             booking_description TEXT,
             booking_paid CHAR(1) NOT NULL DEFAULT 'N',

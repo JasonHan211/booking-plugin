@@ -7,6 +7,7 @@ if (!defined('ABSPATH')) exit;
 function my_booking_plugin_option_page() {
 
     $bookingClass = new BookedInBookings();
+    $addonClass = new BookedInAddons();
 
     // Check user capabilities
     if (!current_user_can('manage_options')) {
@@ -33,8 +34,19 @@ function my_booking_plugin_option_page() {
         $booking_email = sanitize_text_field($_POST['booking_email']);
         $booking_phone = sanitize_text_field($_POST['booking_phone']);
 
+        
+        $selectedAddons = array();
+        
         if (isset($_POST['booking_addon']) && !empty($_POST['booking_addon'])) {
             $booking_addon = array_map('sanitize_text_field', $_POST['booking_addon']);
+            $allAddon = $addonClass->get_addons(null,'Y');
+
+            // Get all addon that are selected
+            foreach ($allAddon as $addon) {
+                if (in_array($addon['id'], $booking_addon)) {
+                    $selectedAddons[] = $addon;
+                }
+            }
         }
 
         // Check if its available
@@ -46,14 +58,23 @@ function my_booking_plugin_option_page() {
 
         $booking_header_id = $bookingClass->add_booking_header($booking_date_from, $booking_date_to, $booking_resource, $booking_notes, $booking_description, $booking_paid, $booking_price, $booking_adults, $booking_children, $booking_user, $booking_email, $booking_phone);
 
+        // Add booking for selected addon with charge once
+        foreach ($selectedAddons as $addon) {
+            if ($addon['addon_perday'] == 'N') {
+                $bookingClass->add_booking_addon($booking_header_id, $booking_date_from, $addon['id'], $booking_paid);
+            }
+        }
+
         $nights = $bookingClass->get_nights($booking_date_from, $booking_date_to);
 
         for ($i = 0; $i < $nights; $i++) {
             $booking_date = date('Y-m-d', strtotime("$booking_date_from + $i days"));           
             $bookingClass->add_booking($booking_header_id, $booking_date, $booking_resource, $booking_paid);
-            if (isset($booking_addon) && !empty($booking_addon)) {
-                foreach ($booking_addon as $addon) {
-                    $bookingClass->add_booking_addon($booking_header_id, $booking_date, $addon, $booking_paid);
+            
+            // Add booking for selected addon with charge per day
+            foreach ($selectedAddons as $addon) {
+                if ($addon['addon_perday'] == 'Y') {
+                    $bookingClass->add_booking_addon($booking_header_id, $booking_date, $addon['id'], $booking_paid);
                 }
             }
         }

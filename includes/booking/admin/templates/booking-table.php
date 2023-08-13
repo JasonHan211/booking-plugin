@@ -42,7 +42,7 @@ function bookingTable() {
                         <td><?php echo $booking['booking_email']; ?></td>
                         <td><?php echo $booking['booking_phone']; ?></td>
                         <td>
-                            <a href="<?php echo admin_url('admin.php?page=bookedin_booking_edit&action=edit&booking_id=' . $booking['id']); ?>">Edit</a> |
+                            <!-- <a href="<?php echo admin_url('admin.php?page=bookedin_booking_edit&action=edit&booking_id=' . $booking['id']); ?>">Edit</a> | -->
                             <a href="<?php echo admin_url('admin.php?page=bookedin_main_menu&action=delete&booking_id=' . $booking['id']); ?>" onclick="return confirm('Are you sure you want to delete this booking?')">Delete</a>
                         </td>
                     </tr>

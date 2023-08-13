@@ -39,6 +39,7 @@ function resources_edit_page() {
             <select name="resource_activeFlag">
                 <option value="Y" <?php selected($resource['activeFlag'], 'Y'); ?>>Yes</option>
                 <option value="N" <?php selected($resource['activeFlag'], 'N'); ?>>No</option>
+            </select>
             <input type="submit" name="update_resource" value="Update Resource">
         </form>
     </div>

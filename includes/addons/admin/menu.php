@@ -19,9 +19,10 @@ function bookedin_addons_submenu_page() {
         $addon_name = sanitize_text_field($_POST['addon_name']);
         $addon_price = sanitize_text_field($_POST['addon_price']);
         $addon_description = sanitize_textarea_field($_POST['addon_description']);
+        $addon_perday = sanitize_text_field($_POST['addon_perday']);
         $addon_activeFlag = sanitize_text_field($_POST['addon_activeFlag']);
 
-        $addonsClass->add_addon($addon_name, $addon_price, $addon_description, $addon_activeFlag);
+        $addonsClass->add_addon($addon_name, $addon_price, $addon_description, $addon_perday, $addon_activeFlag);
     }
 
     // Handle addon deletion
@@ -48,10 +49,16 @@ function bookedin_addons_submenu_page() {
             <input type="text" name="addon_price" required>
             <label for="addon_description">Description:</label>
             <textarea name="addon_description"></textarea>
+            <label for="addon_perday">Per Day:</label>
+            <select name="addon_perday">
+                <option value="Y">Yes</option>
+                <option value="N">No</option>
+            </select>
             <label for="addon_activeFlag">Active:</label>
             <select name="addon_activeFlag">
                 <option value="Y">Yes</option>
                 <option value="N">No</option>
+            </select>
             <input type="submit" name="add_addon" value="Add addon">
         </form>
 
@@ -63,6 +70,7 @@ function bookedin_addons_submenu_page() {
                     <th>Name</th>
                     <th>Price</th>
                     <th>Description</th>
+                    <th>Per Day</th>
                     <th>Active</th>
                     <th>Actions</th>
                 </tr>
@@ -73,6 +81,7 @@ function bookedin_addons_submenu_page() {
                         <td><?php echo $addon['addon_name']; ?></td>
                         <td><?php echo $addon['addon_price']; ?></td>
                         <td><?php echo $addon['addon_description']; ?></td>
+                        <td><?php echo $addon['addon_perday']; ?></td>
                         <td><?php echo $addon['activeFlag']; ?></td>
                         <td>
                             <a href="<?php echo admin_url('admin.php?page=bookedin_addons_edit&action=edit&addon_id=' . $addon['id']); ?>">Edit</a> |

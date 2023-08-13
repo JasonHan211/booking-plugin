@@ -49,6 +49,7 @@ function bookedin_resources_submenu_page() {
             <select name="resource_activeFlag">
                 <option value="Y">Yes</option>
                 <option value="N">No</option>
+            </select>
             <input type="submit" name="add_resource" value="Add Resource">
         </form>
 
