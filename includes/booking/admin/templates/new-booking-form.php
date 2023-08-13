@@ -14,9 +14,9 @@ function newBookingForm() {
                     <!-- Left Column -->
                     <div class="col-md-6">
                         <div class="mb-3">
-                            <div id="booking_dates" data-date=""></div>
-                            <input type="hidden" name="booking_date_from">
-                            <input type="hidden" name="booking_date_to">
+                            
+                            <?php bookingCalendar($display=false) ?>
+
                         </div>
                         <div class="mb-3">
                             <label for="booking_resource" class="form-label">Resource:</label>
@@ -111,108 +111,99 @@ function newBookingForm() {
                 return `${start} - ${end}`;
             }
 
-            // Initialize the Bootstrap Datepicker
-            $(document).ready(function () {
-                $('#booking_dates').datepicker({
-                    format: 'yyyy-mm-dd',
-                    multidate: 2,
-                    startDate: new Date(),
-                    showOnFocus: true, // Calendar won't close on first selection
-                    autoclose: false,
-                    multidateSeparator: ' - ',
-                });
+            // Function to handle mutations
+            function handleMutations(mutationsList, observer) {
+                for (var mutation of mutationsList) {
+                    if (mutation.type === 'attributes' && mutation.attributeName === 'value') {
+                        getResources();
+                    }
+                }
+            }
 
-                // Show the datepicker when the input field is focused
-                $('#booking_dates').focus(function () {
-                    $(this).datepicker('show');
-                });
+            // Create a new MutationObserver instance
+            var observer = new MutationObserver(handleMutations);
 
-                // Do something when 2 dates is selected
-                $('#booking_dates').datepicker().on('changeDate', function (e) {
-                    const selectedDates = $(this).datepicker('getDates');
+            // Observe changes in childList of the target element
+            observer.observe(document.getElementById('booking_date_to'), { attributes: true, attributeFilter: ['value'] });
+    
+            // Function to get the available resources
+            function getResources() {
+                
+                // Get the select element
+                var selectElement = document.getElementsByName('booking_resource')[0];
 
-                    var selectElement = document.querySelector('select[name="booking_resource"]');
+                startDate = document.getElementById('booking_date_from').value;
+                endDate = document.getElementById('booking_date_to').value;
+                
+                // If the start date or end date is empty, disable the select element and return
+                if (startDate == '' || endDate == '') {
                     selectElement.disabled = true;
+                    selectElement.innerHTML = '<option value="">Please select dates</option>';
+                    return;
+                }
 
-                    if (selectedDates.length === 2) {
+                // Query for available resources
+                $.ajax({
+                    url: '<?php echo get_rest_url(null, 'v1/resources/get_available');?>',
+                    type: 'POST',
+                    data: {
+                        action: 'get_available',
+                        booking_date_from: startDate,
+                        booking_date_to: endDate
+                    },
+                    success: function (data) {
 
-                        if (selectedDates[0] > selectedDates[1]) {
-                            const temp = selectedDates[0];
-                            selectedDates[0] = selectedDates[1];
-                            selectedDates[1] = temp;
+                        selectElement.disabled = false;
+
+                        // Remove all options from the select element
+                        selectElement.innerHTML = '';
+
+                        let availableResources = data.availables;
+
+                        if (availableResources.length == 0) {
+                            let option = document.createElement('option');
+                            option.value = "";
+                            option.text = 'No available resources';
+                            selectElement.appendChild(option);
                         }
 
-                        // Get the start and end dates
-                        let startDate = formatDateToYYYYMMDD(selectedDates[0]);
-                        let endDate = formatDateToYYYYMMDD(selectedDates[1]);
-
-                        // Update the input fields with the selected dates
-                        $('input[name="booking_date_from"]').val(startDate);
-                        $('input[name="booking_date_to"]').val(endDate);
-                        
-                        // Update the input field with the formatted date range string
-                        $(this).val(formatDateRange(selectedDates[0], selectedDates[1]));
-
-                        // Query for available resources
-                        $.ajax({
-                            url: '<?php echo get_rest_url(null, 'v1/resources/get_available');?>',
-                            type: 'POST',
-                            data: {
-                                action: 'get_available',
-                                booking_date_from: startDate,
-                                booking_date_to: endDate
-                            },
-                            success: function (data) {
-
-                                selectElement.disabled = false;
-
-                                // Remove all options from the select element
-                                selectElement.innerHTML = '';
-
-                                let availableResources = data.availables;
-
-                                if (availableResources.length == 0) {
-                                    let option = document.createElement('option');
-                                    option.value = '';
-                                    option.text = 'No available resources';
-                                    selectElement.appendChild(option);
-                                }
-
-                                // Add the available resources as options to the select element
-                                availableResources.forEach(function (resource) {
-                                    var option = document.createElement('option');
-                                    option.value = resource.id;
-                                    option.text = resource.name;
-                                    option.setAttribute('data-price', resource.price);
-                                    selectElement.appendChild(option);
-                                });
-                            }
+                        // Add the available resources as options to the select element
+                        availableResources.forEach(function (resource) {
+                            var option = document.createElement('option');
+                            option.value = resource.id;
+                            option.text = resource.name;
+                            option.setAttribute('data-price', resource.price);
+                            selectElement.appendChild(option);
                         });
-
                     }
                 });
-
-            });
-
-            // Function to format the date in yyyy-mm-dd format
-            function formatDateToYYYYMMDD(date) {
-                const year = date.getFullYear();
-                const month = String(date.getMonth() + 1).padStart(2, '0');
-                const day = String(date.getDate()).padStart(2, '0');
-                return `${year}-${month}-${day}`;
             }
 
             // Set the selected date range into the hidden input fields before form submission
             $('form').submit(function (e) {
 
-                // Check if the form is the booking form
-                if ($(this).attr('id') === 'booking_form') {
-                    const selectedDates = $('#booking_dates').datepicker('getDates');
-                    if (selectedDates.length === 0) {
-                        alert('Please select a date range.');
-                        e.preventDefault();
-                    }
+                startDate = document.getElementById('booking_date_from').value;
+                endDate = document.getElementById('booking_date_to').value;
+
+                // Check booking addon if checked
+                var checkboxes = document.querySelectorAll('input[name="booking_addon[]"]:checked');
+
+                // Fake a checkbox that has a value of -1 if no checkbox is checked
+                if (checkboxes.length == 0) {
+                    var fakeCheckbox = document.createElement('input');
+                    fakeCheckbox.type = 'checkbox';
+                    fakeCheckbox.name = 'booking_addon[]';
+                    fakeCheckbox.value = '-1';
+                    fakeCheckbox.checked = true;
+                    fakeCheckbox.style.display = 'none';
+                    document.getElementById('booking_addon').appendChild(fakeCheckbox);
                 }
+
+                if (startDate === '' || endDate === '') {
+                    alert('Please select a date range.');
+                    e.preventDefault();
+                }
+                
             });
 
         </script>

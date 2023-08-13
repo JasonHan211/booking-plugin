@@ -1,6 +1,6 @@
 <?php
 
-function bookingCalendar() {
+function bookingCalendar($display=true) {
 
     $resourceClass = new BookedInResources();
     $bookingClass = new BookedInBookings();
@@ -10,10 +10,11 @@ function bookingCalendar() {
 
     ?>
         <div class="container" id="calendarContainer"></div>
-
+        <div class="mt-3 d-flex justify-content-between align-items-center" id="calendarStatus"></div>
 
         <script>
             // Parse the PHP values into JavaScript variables
+            var display = <?php echo $display ? 'true' : 'false'; ?>;
             var totalResources = <?php echo $totalResources; ?>;
             var bookingSlots = <?php echo json_encode($bookingSlots); ?>;
                    
@@ -21,6 +22,11 @@ function bookingCalendar() {
             var currentDate = new Date();
             var currentMonth = currentDate.getMonth() + 1; // Adding 1 to get 1-12 range
             var currentYear = currentDate.getFullYear();
+
+            // Selected dates
+            var selectedDates = [];
+            var selectedStartDate = null;
+            var selectedEndDate = null;
 
             // Function to format the date in "YYYY-MM-DD" format
             function formatDate(date) {
@@ -169,56 +175,76 @@ function bookingCalendar() {
                 
                 calendarHTML += '</tbody></table>';
 
-                // Output the calendar HTML
-                calendarHTML += '<div class="mt-3 d-flex justify-content-between align-items-center">';
-                calendarHTML += '<span id="selectedDatesOutput"></span>';
-                calendarHTML += '</div>'; 
+                
 
                 calendarContainer.innerHTML = calendarHTML;
 
                 previousMonth();
+                if (!display) {
+                    addHoverEvent();
+                    highlightSelectedRange();
+                }
+            }
+
+            // Function to generate the selected dates
+            function generateSelectedDate() {
+                let calendarStatus = document.getElementById('calendarStatus');
+                let calendarHTML = '';
+
+                // Output the calendar HTML
+                calendarHTML += '<span id="selectedDatesOutput"></span>';
+                calendarHTML += '<input type="hidden" name="booking_date_from" id="booking_date_from">';
+                calendarHTML += '<input type="hidden" name="booking_date_to" id="booking_date_to">';
+
+                calendarStatus.innerHTML = calendarHTML;
             }
 
             generateCalendar();
+            generateSelectedDate();
 
-
-            // Selected dates
-            var selectedDates = [];
-            var selectedStartDate = null;
-            var selectedEndDate = null;
 
             // Function to handle date selection
             function selectDate(cell) {
 
+                if (display) {
+                    return;
+                }
+
                 var selectedDate = new Date(cell.getAttribute('data-date'));
-                
-                // Check if the selectedDate is in array
-                var dateIndex = selectedDates.findIndex(function(date) {
-                    return date.getTime() === selectedDate.getTime();
-                });
 
-                if (dateIndex > -1) {
-                    // Remove the date from the array
-                    selectedDates.splice(dateIndex, 1);
-                    cell.classList.remove('selected');
+                // Reset
+                if (selectedDate === selectedStartDate || selectDate === selectedEndDate || (selectedStartDate !== null && selectedEndDate !== null)) {
+                    removeSelectedRange();
+                }
 
+                if (selectedStartDate === null) {
 
-
-                } else {
-                    // Add the date to the array
+                    selectedStartDate = selectedDate;
+                    selectedEndDate = null;
                     selectedDates.push(selectedDate);
-                    cell.classList.add('selected');
+                    cell.classList.add('selected-start');
+                    outputSelectedDates();
 
-                    if (selectedDates.length >= 2) {
-                    
-                        // Sort the selected dates
-                        selectedDates.sort(function(a, b) {
-                            return a.getTime() - b.getTime();
-                        });
+                } else if (selectedStartDate !== null && selectedEndDate === null) {
 
+                    if (selectedDate < selectedStartDate) {
+
+                        removeSelectedRange();
+                        selectedStartDate = selectedDate;
+                        selectedEndDate = null;
+                        selectedDates.push(selectedDate);
+                        cell.classList.add('selected-start');
+                        outputSelectedDates();
+
+                    } else {
+
+                        selectedEndDate = selectedDate;
+                        selectedDates.push(selectedDate);
+                        cell.classList.add('selected-end');
+                        
                         // Add all dates in between to the array
-                        var currentDate = new Date(selectedDates[0]);
-                        var oneDayBeforeLastDate = new Date(selectedDates[selectedDates.length - 1]);
+                        var currentDate = new Date(selectedStartDate);
+                        var oneDayBeforeLastDate = new Date(selectedEndDate);
                         oneDayBeforeLastDate.setDate(oneDayBeforeLastDate.getDate() - 1);
 
                         while (currentDate.getTime() !== oneDayBeforeLastDate.getTime()) {
@@ -226,19 +252,68 @@ function bookingCalendar() {
                             selectedDates.push(new Date(currentDate));
                         }
 
-                        // Sort the selected dates
+                        // Sort the selected dates array
                         selectedDates.sort(function(a, b) {
                             return a.getTime() - b.getTime();
                         });
 
-                        selectedStartDate = selectedDates[0];
-                        selectedEndDate = selectedDates[selectedDates.length - 1];
-
                         highlightSelectedRange();
-                        outputSelectedDates();
-                    
                     }
+                    
                 }
+
+            }
+
+            // Function that add listener when mouse over the date
+            function addHoverEvent() {
+
+                var allCells = document.querySelectorAll('#availability-table div[data-slots]');
+                
+                allCells.forEach(function(cell) {
+                    
+                    cell.addEventListener('mouseover', function(elem) {
+                        
+                        // Get the date of the cell
+                        var selectedDate = new Date(cell.getAttribute('data-date'));
+                        
+                        // Check if the cell date that is hovering on is after selected start date
+                        if (selectedStartDate !== null && selectedEndDate === null && selectedDate > selectedStartDate) {
+                            
+                            // Highlight all the cell from the selected start date until on hover date
+                            var currentDate = new Date(selectedStartDate);
+                            var hoverOnDate = new Date(selectedDate);
+
+                            while (currentDate.getTime() !== hoverOnDate.getTime()) {
+                                currentDate.setDate(currentDate.getDate() + 1);
+                                
+                                // Get the cell of the current date
+                                var currentCell = document.querySelector('#availability-table div[data-date="' + currentDate + '"]');
+                                if (currentCell) {
+                                    currentCell.classList.add('selected-middle');
+                                }
+                            }
+
+                        } else if (selectedStartDate !== null && selectedEndDate === null && selectedDate < selectedStartDate) {
+                            
+                            // Highlight only the cell that is being hovered on
+                            cell.classList.add('selected-middle');
+
+                        }
+
+                    });
+
+                    cell.addEventListener('mouseout', function(elem) {
+                        
+                        if (selectedStartDate !== null && selectedEndDate === null) {
+                            var allCells = document.querySelectorAll('#availability-table div[data-slots].selected-middle');
+                            allCells.forEach(function(cell) {
+                                cell.classList.remove('selected-middle');
+                            });
+                        }
+                    });
+                });
+
+
             }
 
             // Function to remove all selected range
@@ -248,31 +323,71 @@ function bookingCalendar() {
                 selectedDates = [];
 
                 // Remove the selected range
-                var allCells = document.querySelectorAll('#availability-table div[data-slots].selected');
+                var allCells = document.querySelectorAll('#availability-table div[data-slots]');
                 allCells.forEach(function(cell) {
-                    cell.classList.remove('selected');
+                    cell.classList.remove('selected-start');
+                    cell.classList.remove('selected-middle');
+                    cell.classList.remove('selected-end');
                 });
             }
 
             // Function to highlight the selected date range
             function highlightSelectedRange() {
                 
-                selectedDates.forEach(function(date) {
-                    var cell = document.querySelector('#availability-table div[data-date="' + date + '"]');
-                    cell.classList.add('selected');
-                });
+                if (selectedStartDate === null) {
+                    return;
+                }
 
+                for (let i = 0; i < selectedDates.length; i++) {
+                    
+                    var date = selectedDates[i];
+                    var cell = document.querySelector('#availability-table div[data-date="' + date + '"]');
+                    
+                    if (cell) {
+
+                        if (i === 0) {
+                            cell.classList.add('selected-start');
+                        } else if (i === selectedDates.length - 1) {
+                            cell.classList.add('selected-end');
+                        } else {
+                            cell.classList.add('selected-middle');
+                        }
+
+                    }      
+                }
+
+                outputSelectedDates();
+            }
+
+            // Function to format the date in yyyy-mm-dd format
+            function formatDateToYYYYMMDD(date) {
+                if (date === null) {
+                    return null;
+                }
+                const year = date.getFullYear();
+                const month = String(date.getMonth() + 1).padStart(2, '0');
+                const day = String(date.getDate()).padStart(2, '0');
+                return `${year}-${month}-${day}`;
             }
 
             // Function to output the selected dates
             function outputSelectedDates() {
                 var outputElement = document.getElementById('selectedDatesOutput');
+                var outputStartElement = document.getElementById('booking_date_from');
+                var outputEndElement = document.getElementById('booking_date_to');
                 if (selectedStartDate && selectedEndDate) {
                     var startDateString = selectedStartDate.toLocaleDateString();
                     var endDateString = selectedEndDate.toLocaleDateString();
                     outputElement.innerHTML = 'Selected Dates: ' + startDateString + ' to ' + endDateString;
+
+                    outputStartElement.value = formatDateToYYYYMMDD(selectedStartDate);
+                    outputEndElement.value = formatDateToYYYYMMDD(selectedEndDate);
+
                 } else {
                     outputElement.innerHTML = 'Select a date range';
+                    outputStartElement.value = formatDateToYYYYMMDD(selectedStartDate);
+                    outputEndElement.value = formatDateToYYYYMMDD(selectedEndDate);
+
                 }
             }
 

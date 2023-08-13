@@ -20,7 +20,25 @@
 }
 
 /* Style for selected days */
-.selected {
+.selected-start {
     background-color: #cca264;
     color: #000000;
+}
+
+.selected-middle {
+    background-color: #e2bd84;
+    color: #000000;
+}
+
+.selected-end {
+    background-color: #cca264;
+    color: #000000;
+}
+
+#availability-table td {
+    padding: 0px;
+}
+
+#availability-table div {
+    padding: 8px;
 }

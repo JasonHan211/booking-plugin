@@ -7,7 +7,6 @@ if (!defined('ABSPATH')) exit;
 function my_booking_plugin_option_page() {
 
     $bookingClass = new BookedInBookings();
-    $resourceClass = new BookedInResources();
 
     // Check user capabilities
     if (!current_user_can('manage_options')) {
@@ -24,7 +23,6 @@ function my_booking_plugin_option_page() {
         $booking_date_from = sanitize_text_field($_POST['booking_date_from']);
         $booking_date_to = sanitize_text_field($_POST['booking_date_to']);
         $booking_resource = sanitize_text_field($_POST['booking_resource']);
-        $booking_addon = array_map('sanitize_text_field', $_POST['booking_addon']);
         $booking_notes = sanitize_text_field($_POST['booking_notes']);
         $booking_description = sanitize_textarea_field($_POST['booking_description']);
         $booking_paid = sanitize_text_field($_POST['booking_paid']);
@@ -35,7 +33,9 @@ function my_booking_plugin_option_page() {
         $booking_email = sanitize_text_field($_POST['booking_email']);
         $booking_phone = sanitize_text_field($_POST['booking_phone']);
 
-        // echo var_dump($booking_addon);
+        if (isset($_POST['booking_addon']) && !empty($_POST['booking_addon'])) {
+            $booking_addon = array_map('sanitize_text_field', $_POST['booking_addon']);
+        }
 
         // Check if its available
         $available = $bookingClass->get_available($booking_date_from, $booking_date_to);
@@ -51,6 +51,11 @@ function my_booking_plugin_option_page() {
         for ($i = 0; $i < $nights; $i++) {
             $booking_date = date('Y-m-d', strtotime("$booking_date_from + $i days"));           
             $bookingClass->add_booking($booking_header_id, $booking_date, $booking_resource, $booking_paid);
+            if (isset($booking_addon) && !empty($booking_addon)) {
+                foreach ($booking_addon as $addon) {
+                    $bookingClass->add_booking_addon($booking_header_id, $booking_date, $addon, $booking_paid);
+                }
+            }
         }
             
     }
@@ -72,13 +77,6 @@ function my_booking_plugin_option_page() {
         <h2>Add New booking</h2>
         
         <?php newBookingForm() ?>
-
-        <br>
-        <br>
-
-        <h2>Availability Calendar</h2>
-
-        <?php bookingCalendar(); ?>
 
         <br>
         <br>
