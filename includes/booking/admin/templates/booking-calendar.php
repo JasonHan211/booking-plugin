@@ -227,7 +227,7 @@ function bookingCalendar($display=true) {
 
                 } else if (selectedStartDate !== null && selectedEndDate === null) {
 
-                    if (selectedDate < selectedStartDate) {
+                    if (selectedDate <= selectedStartDate) {
 
                         removeSelectedRange();
                         selectedStartDate = selectedDate;

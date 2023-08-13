@@ -42,3 +42,73 @@
 #availability-table div {
     padding: 8px;
 }
+
+.tomorrow {
+    background-color: #e2bd84 !important;
+}
+
+/* Pagination container */
+.pagination {
+    margin-top: 20px;
+    text-align: center;
+}
+
+/* Pagination links */
+.pagination a {
+    display: inline-block;
+    padding: 8px 12px;
+    margin: 2px;
+    background-color: #f4f4f4;
+    color: #333;
+    border: 1px solid #ddd;
+    text-decoration: none;
+    border-radius: 4px;
+    transition: background-color 0.3s ease;
+}
+
+/* Hover effect */
+.pagination a:hover {
+    background-color: #ddd;
+}
+
+/* Active page */
+.pagination a.active {
+    background-color: #007bff;
+    color: #fff;
+    border-color: #007bff;
+}
+
+/* Styling for the page search form */
+.page-search {
+    margin-top: 20px;
+    text-align: center;
+}
+
+.page-search form {
+    display: inline-block;
+}
+
+.page-search label {
+    font-weight: bold;
+    margin-right: 5px;
+}
+
+.page-search input[type="number"] {
+    padding: 5px;
+    width: 50px;
+    text-align: center;
+}
+
+.page-search button {
+    padding: 6px 10px;
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.page-search button:hover {
+    background-color: #0056b3;
+}

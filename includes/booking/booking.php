@@ -18,6 +18,7 @@ class BookedInBookings {
     public $booking_header_table_name;
     public $booking_table_name;
     public $booking_addons_table_name;
+    public $addon_table_name;
 
 
     public function __construct() {
@@ -25,6 +26,7 @@ class BookedInBookings {
         $this->db = $wpdb;
         $this->resoucesClass = new BookedInResources();
         $this->addonsClass = new BookedInAddons();
+        $this->addon_table_name = $this->addonsClass->table_name;
         $this->charset_collate = $this->db->get_charset_collate();
         $this->booking_header_table_name = $this->db->prefix . $this->booking_header_table;
         $this->booking_table_name = $this->db->prefix . $this->booking_table;
@@ -126,9 +128,10 @@ class BookedInBookings {
 
     }
 
-    public function get_booking_header($booking_id = null) {
+    public function get_booking_header($booking_id = null, $recordsPerPage = 10, $offset = 0) {
 
         if ($booking_id === null) {
+            $offset = intval($offset);
             $resourceTable = $this->resoucesClass->table_name;
             $booking_header = $this->db->get_results("SELECT 
             bh.id as 'id',
@@ -144,13 +147,47 @@ class BookedInBookings {
             bh.booking_email as 'booking_email',
             bh.booking_phone as 'booking_phone',
             br.resource_name as 'resource_name'
-            FROM $this->booking_header_table_name bh LEFT JOIN $resourceTable br on br.id = bh.booking_resource", ARRAY_A);
+            FROM $this->booking_header_table_name bh 
+            LEFT JOIN $resourceTable br on br.id = bh.booking_resource
+            ORDER BY bh.booking_date_from DESC
+            LIMIT $recordsPerPage
+            OFFSET $offset", ARRAY_A);
             return $booking_header;
         }
 
         $booking_header = $this->db->get_row("SELECT * FROM $this->booking_header_table_name WHERE id = $booking_id", ARRAY_A);
 
         return $booking_header;
+
+    }
+
+    public function get_booking_header_count() {
+            
+            $booking_header = $this->db->get_row("SELECT COUNT(*) as 'count' FROM $this->booking_header_table_name", ARRAY_A);
+    
+            return $booking_header['count'];
+    
+    }
+
+    public function get_booking_addons($booking_id = null) {
+
+        if ($booking_id === null) {
+            $booking_addons = $this->db->get_results(
+                "SELECT * 
+                FROM $this->booking_addons_table_name 
+                LEFT JOIN $this->addon_table_name ON $this->booking_addons_table_name.booking_addon = $this->addon_table_name.id
+                ORDER BY 'booking_addon' ASC", ARRAY_A);
+            return $booking_addons;
+        }
+
+        $booking_addons = $this->db->get_results(
+            "SELECT * 
+            FROM $this->booking_addons_table_name 
+            LEFT JOIN $this->addon_table_name ON $this->booking_addons_table_name.booking_addon = $this->addon_table_name.id
+            WHERE booking_header_id = $booking_id
+            ORDER BY 'booking_addon' ASC", ARRAY_A);
+        return $booking_addons;
+
 
     }
 
