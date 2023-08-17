@@ -4,22 +4,21 @@
 if (!defined('ABSPATH')) exit;
 
 function pricing_edit_page() {
-    global $wpdb;
-    $table_name = $wpdb->prefix . 'bookedin_pricings';
+    
+    $pricingClass = new BookedInpricings();
 
     if (isset($_GET['action']) && $_GET['action'] === 'edit' && isset($_GET['pricing_id'])) {
         $pricing_id = intval($_GET['pricing_id']);
-        $pricing = $wpdb->get_row("SELECT * FROM $table_name WHERE id = $pricing_id", ARRAY_A);
+        
+        $pricing = $pricingClass->get_pricings($pricing_id);
+
     }
 
     if (isset($_POST['update_pricing'])) {
         $pricing_name = sanitize_text_field($_POST['pricing_name']);
         $pricing_description = sanitize_textarea_field($_POST['pricing_description']);
 
-        $wpdb->update($table_name, array(
-            'pricing_name' => $pricing_name,
-            'pricing_description' => $pricing_description
-        ), array('id' => $pricing_id));
+        $pricingClass->update_pricing($pricing_id, $pricing_name, $pricing_description);
 
         wp_redirect(admin_url('admin.php?page=bookedin_pricing_submenu'));
         exit;

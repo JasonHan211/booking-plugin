@@ -4,34 +4,33 @@
 if (!defined('ABSPATH')) exit;
 
 function bookedin_pricing_submenu_page() {
+
+    $pricingClass = new BookedInpricings();
     
     // Check user capabilities
     if (!current_user_can('manage_options')) {
         return;
     }
 
-    global $wpdb;
-    $table_name = $wpdb->prefix . 'bookedin_pricings';
-
     // Handle form submissions to add new pricings
     if (isset($_POST['add_pricing'])) {
         $pricing_name = sanitize_text_field($_POST['pricing_name']);
         $pricing_description = sanitize_textarea_field($_POST['pricing_description']);
 
-        $wpdb->insert($table_name, array(
-            'pricing_name' => $pricing_name,
-            'pricing_description' => $pricing_description
-        ));
+        $pricingClass->add_pricing($pricing_name, $pricing_description);
+        
     }
 
     // Handle pricing deletion
     if (isset($_GET['action']) && $_GET['action'] === 'delete' && isset($_GET['pricing_id'])) {
         $pricing_id = intval($_GET['pricing_id']);
-        $wpdb->delete($table_name, array('id' => $pricing_id));
+        
+        $pricingClass->delete_pricing($pricing_id);
+
     }
 
     // Fetch all pricings from the database
-    $pricings = $wpdb->get_results("SELECT * FROM $table_name", ARRAY_A);
+    $pricings = $pricingClass->get_pricings();
     
     bookedInNavigation('Pricing');
     ?>

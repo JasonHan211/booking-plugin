@@ -25,7 +25,7 @@ function bookedInNavigation($activeNavTab) {
                 <a href="?page=bookedin_main_menu" class="nav-tab <?php echo ($activeNavTab === 'Dashboard') ? 'active' : ''; ?>">Dashboard</a>
                 <a href="?page=bookedin_resources_submenu" class="nav-tab <?php echo ($activeNavTab === 'Resources') ? 'active' : ''; ?>">Resources</a>
                 <a href="?page=bookedin_addons_submenu" class="nav-tab <?php echo ($activeNavTab === 'Addons') ? 'active' : ''; ?>">Addons</a>
-                <!-- <a href="?page=bookedin_pricing_submenu" class="nav-tab <?php echo ($activeNavTab === 'Pricing') ? 'active' : ''; ?>">Pricing</a> -->
+                <a href="?page=bookedin_pricing_submenu" class="nav-tab <?php echo ($activeNavTab === 'Pricing') ? 'active' : ''; ?>">Pricing</a>
                 <a href="?page=bookedin_contact_form_submenu" class="nav-tab <?php echo ($activeNavTab === 'Contact Form') ? 'active' : ''; ?>">Contact Form</a>
                 <!-- <a href="?page=bookedin_setting_submenu" class="nav-tab <?php echo ($activeNavTab === 'Settings') ? 'active' : ''; ?>">Settings</a> -->
             </h2>

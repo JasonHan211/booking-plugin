@@ -14,11 +14,13 @@ class BookedInMenuPage {
             if (class_exists('BookedInBookings')) {
                 $bookings = new BookedInBookings();
                 register_activation_hook(BI_FILE, array($bookings,'activate'));
-                // register_deactivation_hook(BI_FILE, array($bookings,'deactivate'));    
+                // register_deactivation_hook(BI_FILE, array($bookings,'deactivate')); 
+                
+                add_action('admin_menu', array($this, 'bookedin_add_menu_page'));
+                add_action( 'admin_menu', array($this,'bookedin_booking_edit_submenu'));
+            
             }
 
-            add_action('admin_menu', array($this, 'bookedin_add_menu_page'));
-            add_action( 'admin_menu', array($this,'bookedin_booking_edit_submenu'));
 
         // Submenu
             // Resources
@@ -28,11 +30,12 @@ class BookedInMenuPage {
                 $resources = new BookedInResources();
                 register_activation_hook(BI_FILE, array($resources,'resources_activate'));
                 // register_deactivation_hook(BI_FILE, array($resources,'resources_deactivate'));    
-            }
             
-            add_action( 'admin_menu', array($this,'bookedin_resources_submenu'));
-            add_action( 'admin_menu', array($this,'bookedin_resources_edit_submenu'));
-
+                add_action( 'admin_menu', array($this,'bookedin_resources_submenu'));
+                add_action( 'admin_menu', array($this,'bookedin_resources_edit_submenu'));
+    
+            }
+                    
             // Addons
             require_once (BI_PLUGIN_PATH . '/includes/addons/addons.php');
 
@@ -40,15 +43,24 @@ class BookedInMenuPage {
                 $addons = new BookedInAddons();
                 register_activation_hook(BI_FILE, array($addons,'addons_activate'));
                 // register_deactivation_hook(BI_FILE, array($addons,'addons_deactivate'));    
+            
+                add_action( 'admin_menu', array($this,'bookedin_addons_submenu'));
+                add_action( 'admin_menu', array($this,'bookedin_addons_edit_submenu'));
+    
             }
-
-            add_action( 'admin_menu', array($this,'bookedin_addons_submenu'));
-            add_action( 'admin_menu', array($this,'bookedin_addons_edit_submenu'));
-
+      
             // Pricing
-            // require_once (BI_PLUGIN_PATH . '/includes/pricing/pricing.php');
-            // add_action( 'admin_menu', array($this,'bookedin_pricing_submenu'));
-            // add_action( 'admin_menu', array($this,'bookedin_pricing_edit_submenu'));
+            require_once (BI_PLUGIN_PATH . '/includes/pricing/pricing.php');
+
+            if (class_exists('BookedInPricings')) {
+                $pricing = new BookedInPricings();
+                register_activation_hook(BI_FILE, array($pricing,'pricing_activate'));
+                // register_deactivation_hook(BI_FILE, array($pricing,'pricing_deactivate'));    
+            
+                add_action( 'admin_menu', array($this,'bookedin_pricing_submenu'));
+                add_action( 'admin_menu', array($this,'bookedin_pricing_edit_submenu'));
+    
+            }
         
         // Optional
             // Contact Form
@@ -151,7 +163,7 @@ class BookedInMenuPage {
     // Submenu (pricing)
     public function bookedin_pricing_submenu() {
 
-        require_once (BI_PLUGIN_PATH . '/includes/pricing/menu.php');
+        require_once (BI_PLUGIN_PATH . '/includes/pricing/admin/menu.php');
         add_submenu_page(
             'bookedin_main_menu',       
             'Pricing',       
@@ -166,7 +178,7 @@ class BookedInMenuPage {
     // Submenu (pricing Edit Page)
     public function bookedin_pricing_edit_submenu() {
 
-        require_once (BI_PLUGIN_PATH . '/includes/pricing/edit-menu.php');
+        require_once (BI_PLUGIN_PATH . '/includes/pricing/admin/edit-menu.php');
         add_submenu_page(
             null,                         
             'Edit Pricing',         

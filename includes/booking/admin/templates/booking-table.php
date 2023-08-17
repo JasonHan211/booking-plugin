@@ -31,6 +31,13 @@ function bookingTable() {
                 <option value="resource2">Resource 2</option>
                 <!-- Add more resource options as needed -->
             </select>
+            <!-- Birthday Setup -->
+            <label for="filterBirthday">Filter by Birthday:</label>
+            <select id="filterBirthday" name="filterBirthday">
+                <option value="">All</option>
+                <option value="1">Birthday</option>
+                <option value="0">Not Birthday</option>
+            </select>
             
             <label for="filterPaid">Filter by Paid Status:</label>
             <select id="filterPaid" name="filterPaid">
@@ -153,29 +160,29 @@ function bookingTable() {
         </div>
 
         <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            var goToPageLink = document.getElementById('goToPageLink');
-            var recordPageInput = document.getElementById('recordPage');
-            
-            goToPageLink.addEventListener('click', function(e) {
-                e.preventDefault();
+            document.addEventListener('DOMContentLoaded', function() {
+                var goToPageLink = document.getElementById('goToPageLink');
+                var recordPageInput = document.getElementById('recordPage');
                 
-                var pageNumber = parseInt(recordPageInput.value);
-                if (pageNumber >= 1 && pageNumber <= <?php echo $totalPages; ?>) {
-                    window.location.href = '?page=bookedin_main_menu&recordPage=' + pageNumber;
-                }
-            });
-
-            recordPageInput.addEventListener('keydown', function(e) {
-                if (e.key === 'Enter') {
+                goToPageLink.addEventListener('click', function(e) {
                     e.preventDefault();
+                    
                     var pageNumber = parseInt(recordPageInput.value);
                     if (pageNumber >= 1 && pageNumber <= <?php echo $totalPages; ?>) {
                         window.location.href = '?page=bookedin_main_menu&recordPage=' + pageNumber;
                     }
-                }
+                });
+
+                recordPageInput.addEventListener('keydown', function(e) {
+                    if (e.key === 'Enter') {
+                        e.preventDefault();
+                        var pageNumber = parseInt(recordPageInput.value);
+                        if (pageNumber >= 1 && pageNumber <= <?php echo $totalPages; ?>) {
+                            window.location.href = '?page=bookedin_main_menu&recordPage=' + pageNumber;
+                        }
+                    }
+                });
             });
-        });
         </script>
 
 
