@@ -63,6 +63,8 @@ class BookedInpricings {
             id INT NOT NULL AUTO_INCREMENT,
             pricing_name VARCHAR(255) NOT NULL,
             pricing_description TEXT,
+            pricing_structure TEXT,
+            pricing_structure_type VARCHAR(255),
             PRIMARY KEY (id)
         ) $this->charset_collate;";
 
