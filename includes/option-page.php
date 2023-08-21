@@ -50,15 +50,15 @@ class BookedInMenuPage {
             }
       
             // Pricing
-            require_once (BI_PLUGIN_PATH . '/includes/pricing/pricing.php');
+            require_once (BI_PLUGIN_PATH . '/includes/pricings/pricing.php');
 
             if (class_exists('BookedInPricings')) {
                 $pricing = new BookedInPricings();
-                register_activation_hook(BI_FILE, array($pricing,'pricing_activate'));
-                // register_deactivation_hook(BI_FILE, array($pricing,'pricing_deactivate'));    
+                register_activation_hook(BI_FILE, array($pricing,'pricings_activate'));
+                // register_deactivation_hook(BI_FILE, array($pricing,'pricings_deactivate'));    
             
-                add_action( 'admin_menu', array($this,'bookedin_pricing_submenu'));
-                add_action( 'admin_menu', array($this,'bookedin_pricing_edit_submenu'));
+                add_action( 'admin_menu', array($this,'bookedin_pricings_submenu'));
+                add_action( 'admin_menu', array($this,'bookedin_pricings_edit_submenu'));
     
             }
         
@@ -161,31 +161,31 @@ class BookedInMenuPage {
     }
 
     // Submenu (pricing)
-    public function bookedin_pricing_submenu() {
+    public function bookedin_pricings_submenu() {
 
-        require_once (BI_PLUGIN_PATH . '/includes/pricing/admin/menu.php');
+        require_once (BI_PLUGIN_PATH . '/includes/pricings/admin/menu.php');
         add_submenu_page(
             'bookedin_main_menu',       
             'Pricing',       
             'Pricing',           
             'manage_options',         
-            'bookedin_pricing_submenu',       
-            'bookedin_pricing_submenu_page',  
+            'bookedin_pricings_submenu',       
+            'bookedin_pricings_submenu_page',  
             3
         );
     }
 
     // Submenu (pricing Edit Page)
-    public function bookedin_pricing_edit_submenu() {
+    public function bookedin_pricings_edit_submenu() {
 
-        require_once (BI_PLUGIN_PATH . '/includes/pricing/admin/edit-menu.php');
+        require_once (BI_PLUGIN_PATH . '/includes/pricings/admin/edit-menu.php');
         add_submenu_page(
             null,                         
             'Edit Pricing',         
             'Edit Pricing',               
             'manage_options',              
-            'bookedin_pricing_edit',        
-            'pricing_edit_page'    
+            'bookedin_pricings_edit',        
+            'pricings_edit_page'    
         );
     }
 
