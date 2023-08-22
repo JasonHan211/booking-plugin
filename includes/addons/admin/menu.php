@@ -47,14 +47,14 @@ function bookedin_addons_submenu_page() {
         <form method="post" action="">
             <label for="addon_name">Name:</label>
             <input type="text" name="addon_name" required>
+            <label for="addon_description">Description:</label>
+            <textarea name="addon_description"></textarea>
             <label for="addon_price">Price:</label>
             <select name="addon_price">
                 <?php foreach ($pricings as $pricing) { ?>
                     <option value="<?php echo $pricing['id']; ?>"><?php echo $pricing['pricing_name']; ?></option>
                 <?php } ?>
             </select>
-            <label for="addon_description">Description:</label>
-            <textarea name="addon_description"></textarea>
             <label for="addon_perday">Per Day:</label>
             <select name="addon_perday">
                 <option value="Y">Yes</option>
@@ -74,8 +74,8 @@ function bookedin_addons_submenu_page() {
             <thead>
                 <tr>
                     <th>Name</th>
-                    <th>Price</th>
                     <th>Description</th>
+                    <th>Price</th>
                     <th>Per Day</th>
                     <th>Active</th>
                     <th>Actions</th>
@@ -85,8 +85,8 @@ function bookedin_addons_submenu_page() {
                 <?php foreach ($addons as $addon) { ?>
                     <tr>
                         <td><?php echo $addon['addon_name']; ?></td>
-                        <td><?php echo $addon['pricing_name']; ?></td>
                         <td><?php echo $addon['addon_description']; ?></td>
+                        <td><?php echo $addon['pricing_name']; ?></td>
                         <td><?php echo $addon['addon_perday']; ?></td>
                         <td><?php echo $addon['activeFlag']; ?></td>
                         <td>

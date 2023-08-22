@@ -43,14 +43,14 @@ function bookedin_resources_submenu_page() {
         <form method="post" action="">
             <label for="resource_name">Name:</label>
             <input type="text" name="resource_name" required>
+            <label for="resource_description">Description:</label>
+            <textarea name="resource_description"></textarea>
             <label for="resource_price">Price:</label>
             <select name="resource_price">
                 <?php foreach ($pricings as $pricing) { ?>
                     <option value="<?php echo $pricing['id']; ?>"><?php echo $pricing['pricing_name']; ?></option>
                 <?php } ?>
             </select>
-            <label for="resource_description">Description:</label>
-            <textarea name="resource_description"></textarea>
             <label for="resource_activeFlag">Active:</label>
             <select name="resource_activeFlag">
                 <option value="Y">Yes</option>
@@ -65,8 +65,8 @@ function bookedin_resources_submenu_page() {
             <thead>
                 <tr>
                     <th>Name</th>
-                    <th>Price</th>
                     <th>Description</th>
+                    <th>Price</th>
                     <th>Active</th>
                     <th>Actions</th>
                 </tr>
@@ -75,8 +75,8 @@ function bookedin_resources_submenu_page() {
                 <?php foreach ($resources as $resource) { ?>
                     <tr>
                         <td><?php echo $resource['resource_name']; ?></td>
-                        <td><?php echo $resource['pricing_name']; ?></td>
                         <td><?php echo $resource['resource_description']; ?></td>
+                        <td><?php echo $resource['pricing_name']; ?></td>
                         <td><?php echo $resource['activeFlag']; ?></td>
                         <td>
                             <a href="<?php echo admin_url('admin.php?page=bookedin_resources_edit&action=edit&resource_id=' . $resource['id']); ?>">Edit</a> |

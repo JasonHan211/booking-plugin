@@ -34,14 +34,14 @@ function resources_edit_page() {
         <form method="post" action="">
             <label for="resource_name">resource Name:</label>
             <input type="text" name="resource_name" value="<?php echo esc_attr($resource['resource_name']); ?>" required>
+            <label for="resource_description">resource_description:</label>
+            <textarea name="resource_description"><?php echo esc_textarea($resource['resource_description']); ?></textarea>
             <label for="resource_price">resource Price:</label>
             <select name="resource_price">
                 <?php foreach ($pricings as $pricing) { ?>
                     <option value="<?php echo $pricing['id']; ?>" <?php selected($resource['resource_price'], $pricing['id']); ?>><?php echo $pricing['pricing_name']; ?></option>
                 <?php } ?>
             </select>
-            <label for="resource_description">resource_description:</label>
-            <textarea name="resource_description"><?php echo esc_textarea($resource['resource_description']); ?></textarea>
             <label for="resource_activeFlag">Active:</label>
             <select name="resource_activeFlag">
                 <option value="Y" <?php selected($resource['activeFlag'], 'Y'); ?>>Yes</option>

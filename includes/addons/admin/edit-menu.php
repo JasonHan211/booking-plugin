@@ -36,14 +36,14 @@ function addons_edit_page() {
         <form method="post" action="">
             <label for="addon_name">Name:</label>
             <input type="text" name="addon_name" value="<?php echo esc_attr($addon['addon_name']); ?>" required>
+            <label for="addon_description">Description:</label>
+            <textarea name="addon_description"><?php echo esc_textarea($addon['addon_description']); ?></textarea>
             <label for="addon_price">Price:</label>
             <select name="addon_price">
                 <?php foreach ($pricings as $pricing) { ?>
                     <option value="<?php echo $pricing['id']; ?>" <?php selected($addon['addon_price'], $pricing['id']); ?>><?php echo $pricing['pricing_name']; ?></option>
                 <?php } ?>
             </select>
-            <label for="addon_description">Description:</label>
-            <textarea name="addon_description"><?php echo esc_textarea($addon['addon_description']); ?></textarea>
             <label for="addon_perday">Per Day:</label>
             <select name="addon_perday">
                 <option value="Y" <?php selected($addon['addon_perday'], 'Y'); ?>>Yes</option>
