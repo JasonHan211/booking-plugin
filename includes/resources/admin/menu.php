@@ -6,6 +6,7 @@ if (!defined('ABSPATH')) exit;
 function bookedin_resources_submenu_page() {
     
     $resourcesClass = new BookedInResources();
+    $pricingClass = new BookedInPricings();
 
     // Check user capabilities
     if (!current_user_can('manage_options')) {
@@ -31,6 +32,7 @@ function bookedin_resources_submenu_page() {
 
     // Fetch all resources from the database
     $resources = $resourcesClass->get_resources();
+    $pricings = $pricingClass->get_pricings();
     
     bookedInNavigation('Resources');
     ?>
@@ -42,7 +44,11 @@ function bookedin_resources_submenu_page() {
             <label for="resource_name">Name:</label>
             <input type="text" name="resource_name" required>
             <label for="resource_price">Price:</label>
-            <input type="text" name="resource_price" required>
+            <select name="resource_price">
+                <?php foreach ($pricings as $pricing) { ?>
+                    <option value="<?php echo $pricing['id']; ?>"><?php echo $pricing['pricing_name']; ?></option>
+                <?php } ?>
+            </select>
             <label for="resource_description">Description:</label>
             <textarea name="resource_description"></textarea>
             <label for="resource_activeFlag">Active:</label>
@@ -69,7 +75,7 @@ function bookedin_resources_submenu_page() {
                 <?php foreach ($resources as $resource) { ?>
                     <tr>
                         <td><?php echo $resource['resource_name']; ?></td>
-                        <td><?php echo $resource['resource_price']; ?></td>
+                        <td><?php echo $resource['pricing_name']; ?></td>
                         <td><?php echo $resource['resource_description']; ?></td>
                         <td><?php echo $resource['activeFlag']; ?></td>
                         <td>

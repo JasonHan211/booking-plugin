@@ -1,3 +1,13 @@
+.btn {
+    background-color: #e2bd84;
+    border-color: #e2bd84;
+}
+
+.btn:hover {
+    background-color: #cca264;
+    border-color: #cca264;
+}
+
 /* Header */
 .active{
     background-color: #cca264;

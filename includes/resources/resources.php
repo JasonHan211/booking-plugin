@@ -1,5 +1,7 @@
 <?php
 
+require_once (BI_PLUGIN_PATH . '/includes/pricings/pricing.php');
+
 // Exit if accessed directly
 if (!defined('ABSPATH')) exit;
 
@@ -7,6 +9,7 @@ class BookedInResources {
 
     private $db;
     private $charset_collate;
+    private $pricingClass;
     public $resources_table = 'bookedin_resources';
     public $table_name;
 
@@ -14,6 +17,7 @@ class BookedInResources {
         global $wpdb;
         $this->db = $wpdb;
         $this->charset_collate = $this->db->get_charset_collate();
+        $this->pricingClass = new BookedInPricings();
         $this->table_name = $this->db->prefix . $this->resources_table;
     }
 
@@ -48,16 +52,37 @@ class BookedInResources {
 
     public function get_resources($resource_id = null, $activeFlag = 'A') {      
 
+        $pricingTable = $this->pricingClass->table_name;
+
         if ($resource_id === null) {
 
             if ($activeFlag != 'A') {
                 
-                $resources = $this->db->get_results("SELECT * FROM $this->table_name WHERE activeFlag = '$activeFlag'", ARRAY_A);
+                $resources = $this->db->get_results(
+                    "SELECT
+                    rtn.id as 'id',
+                    rtn.resource_name as 'resource_name',
+                    rtn.resource_price as 'resource_price',
+                    rtn.resource_description as 'resource_description',
+                    rtn.activeFlag as 'activeFlag',
+                    ptn.pricing_name as 'pricing_name'
+                    FROM $this->table_name rtn
+                    LEFT JOIN $pricingTable ptn ON ptn.id = rtn.resource_price 
+                    WHERE activeFlag = '$activeFlag'", ARRAY_A);
                 echo $this->db->last_error;
                 return $resources;
             }
 
-            $resources = $this->db->get_results("SELECT * FROM $this->table_name", ARRAY_A);
+            $resources = $this->db->get_results(
+                "SELECT
+                rtn.id as 'id',
+                rtn.resource_name as 'resource_name',
+                rtn.resource_price as 'resource_price',
+                rtn.resource_description as 'resource_description',
+                rtn.activeFlag as 'activeFlag',
+                ptn.pricing_name as 'pricing_name'
+                FROM $this->table_name rtn
+                LEFT JOIN $pricingTable ptn ON ptn.id = rtn.resource_price", ARRAY_A);
             
             return $resources;
         }

@@ -84,9 +84,12 @@ function addPricingForm() {
             <br><br>
             
             <h4>Price Chart</h4>
+
+            <button id="priceMode" class="btn">Multi Price</button>
+
             <div class="container">
                 <div class="row">
-                    <div class="col-2"></div>
+                    <div class="col-1"></div>
                     <div class="col-10 button-container">
                         <button id="reduceColumn">-</button>
                         <label>Children</label>
@@ -94,7 +97,7 @@ function addPricingForm() {
                     </div>
                 </div>
                 <div class="row">
-                    <div class="col-2" style="min-height: 130px;">
+                    <div class="col-1" style="min-height: 130px;">
                         <div class="button-container rotate-label">
                             <button id="addRow">+</button>
                             <label>Adults</label>
@@ -116,6 +119,7 @@ function addPricingForm() {
         <script>
             const matrixContainer = document.getElementById("matrixContainer");
             let matrix = [["","",""],["","",""],["","",""]];
+            let multiPlaceholder = true; 
             
             function createInput(row, col, value) {
                 const input = document.createElement("input");
@@ -125,7 +129,11 @@ function addPricingForm() {
                 input.dataset.col = col;
                 input.value = value;
                 input.onchange = saveMatrix;
-                input.placeholder = `${row} Adult, ${col} Children`;
+                if (multiPlaceholder) {
+                    input.placeholder = `${row} Adult, ${col} Children`;
+                } else {
+                    input.placeholder = "Price";
+                }
                 return input;
             }
             
@@ -211,17 +219,6 @@ function addPricingForm() {
                     dataIndex++;
                 }
             }
-
-            function populateMatrix() {
-                // Example 2D array, you can replace this with your own data
-                const data = [
-                    ["1", "2"],
-                    ["3", "4"],
-                    ["5", "6"]
-                ];
-
-                populateMatrixWithData(data);
-            }
             
             function saveMatrix(e) {
                 const inputs = document.getElementsByClassName("matrix-input");
@@ -235,7 +232,25 @@ function addPricingForm() {
                 document.getElementById("pricing_structure").value = JSON.stringify(matrix);
                 console.log("Matrix saved:", matrix);
             }
+
+            function changeMode(e) {
+                e.preventDefault();
+                if (document.getElementById("priceMode").innerHTML == "Multi Price") {
+                    document.getElementById("priceMode").innerHTML = "Single Price";
+                    multiPlaceholder = false;
+                    document.getElementsByClassName("button-container")[0].style.display = "none";
+                    document.getElementsByClassName("button-container")[1].style.display = "none";
+                    populateMatrixWithData([[""]]);
+                } else {
+                    document.getElementById("priceMode").innerHTML = "Multi Price";
+                    multiPlaceholder = true;
+                    document.getElementsByClassName("button-container")[0].style.display = "flex";
+                    document.getElementsByClassName("button-container")[1].style.display = "flex";
+                    populateMatrixWithData([["","",""],["","",""],["","",""]]);
+                }
+            }
             
+            document.getElementById("priceMode").addEventListener("click", changeMode);
             document.getElementById("addRow").addEventListener("click", addRow);
             document.getElementById("addColumn").addEventListener("click", addColumn);
             document.getElementById("reduceRow").addEventListener("click", reduceRow);

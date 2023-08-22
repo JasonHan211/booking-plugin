@@ -6,6 +6,7 @@ if (!defined('ABSPATH')) exit;
 function addons_edit_page() {
 
     $addonsClass = new BookedInAddons();
+    $pricingClass = new BookedInPricings();
 
     if (isset($_GET['action']) && $_GET['action'] === 'edit' && isset($_GET['addon_id'])) {
         $addon_id = intval($_GET['addon_id']);
@@ -26,16 +27,22 @@ function addons_edit_page() {
         exit;
     }
 
+    $pricings = $pricingClass->get_pricings();
+
     bookedInNavigation('Addons');
     ?>
     <div class="wrap">
         <h1>Edit addon</h1>
         <form method="post" action="">
-            <label for="addon_name">addon Name:</label>
+            <label for="addon_name">Name:</label>
             <input type="text" name="addon_name" value="<?php echo esc_attr($addon['addon_name']); ?>" required>
-            <label for="addon_price">addon Price:</label>
-            <input type="text" name="addon_price" value="<?php echo esc_attr($addon['addon_price']); ?>" required>
-            <label for="addon_description">addon_description:</label>
+            <label for="addon_price">Price:</label>
+            <select name="addon_price">
+                <?php foreach ($pricings as $pricing) { ?>
+                    <option value="<?php echo $pricing['id']; ?>" <?php selected($addon['addon_price'], $pricing['id']); ?>><?php echo $pricing['pricing_name']; ?></option>
+                <?php } ?>
+            </select>
+            <label for="addon_description">Description:</label>
             <textarea name="addon_description"><?php echo esc_textarea($addon['addon_description']); ?></textarea>
             <label for="addon_perday">Per Day:</label>
             <select name="addon_perday">

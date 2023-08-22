@@ -3,10 +3,13 @@
 // Exit if accessed directly
 if (!defined('ABSPATH')) exit;
 
+require_once (BI_PLUGIN_PATH . '/includes/pricings/pricing.php');
+
 class BookedInAddons {
 
     private $db;
     private $charset_collate;
+    private $pricingClass;
     public $addons_table = 'bookedin_addons';
     public $table_name;
 
@@ -14,6 +17,7 @@ class BookedInAddons {
         global $wpdb;
         $this->db = $wpdb;
         $this->charset_collate = $this->db->get_charset_collate();
+        $this->pricingClass = new BookedInPricings();
         $this->table_name = $this->db->prefix . $this->addons_table;
     }
 
@@ -50,17 +54,40 @@ class BookedInAddons {
 
     public function get_addons($addon_id = null, $activeFlag = 'A') {
 
+        $pricingTable = $this->pricingClass->table_name;
+
         if ($addon_id === null) {
 
             if ($activeFlag != 'A') {
                 
-                $addon = $this->db->get_results("SELECT * FROM $this->table_name WHERE activeFlag = '$activeFlag'", ARRAY_A);
-                echo $this->db->last_error;
+                $addon = $this->db->get_results(
+                    "SELECT 
+                    atn.id as 'id', 
+                    atn.addon_name as 'addon_name', 
+                    atn.addon_price as 'addon_price', 
+                    atn.addon_description as 'addon_description', 
+                    atn.addon_perday as 'addon_perday', 
+                    atn.activeFlag as 'activeFlag', 
+                    ptn.pricing_name as 'pricing_name'
+                    FROM $this->table_name atn 
+                    LEFT JOIN $pricingTable ptn ON ptn.id = atn.addon_price 
+                    WHERE activeFlag = '$activeFlag'"
+                    , ARRAY_A);
                 return $addon;
             }
 
-            $addon = $this->db->get_results("SELECT * FROM $this->table_name", ARRAY_A);
-            
+            $addon = $this->db->get_results(
+                "SELECT 
+                atn.id as 'id', 
+                atn.addon_name as 'addon_name', 
+                atn.addon_price as 'addon_price', 
+                atn.addon_description as 'addon_description', 
+                atn.addon_perday as 'addon_perday', 
+                atn.activeFlag as 'activeFlag', 
+                ptn.pricing_name as 'pricing_name'
+                FROM $this->table_name atn 
+                LEFT JOIN $pricingTable ptn ON ptn.id = atn.addon_price"
+                , ARRAY_A);
             return $addon;
         }
         

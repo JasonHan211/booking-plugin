@@ -17,6 +17,17 @@ class BookedInpricings {
         $this->table_name = $this->db->prefix . $this->addons_table;
     }
 
+    public function calculatePrice($pricing_id, $adult=0, $children=0) {
+
+        $pricing = $this->get_pricings($pricing_id);
+
+        $pricing_structure = json_decode($pricing['pricing_structure'], true);
+
+        $total_price = $pricing_structure[(int)$adult][(int)$children];
+
+        return $total_price;
+    }
+
     public function add_pricing($pricing_name, $pricing_description, $pricing_structure, $pricing_active = 'Y') {
 
         $this->db->insert($this->table_name, array(

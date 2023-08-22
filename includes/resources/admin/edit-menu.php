@@ -6,6 +6,7 @@ if (!defined('ABSPATH')) exit;
 function resources_edit_page() {
     
     $resourcesClass = new BookedInResources();
+    $pricingClass = new BookedInPricings();
 
     if (isset($_GET['action']) && $_GET['action'] === 'edit' && isset($_GET['resource_id'])) {
         $resource_id = intval($_GET['resource_id']);
@@ -24,6 +25,8 @@ function resources_edit_page() {
         exit;
     }
 
+    $pricings = $pricingClass->get_pricings();
+
     bookedInNavigation('Resources');
     ?>
     <div class="wrap">
@@ -32,7 +35,11 @@ function resources_edit_page() {
             <label for="resource_name">resource Name:</label>
             <input type="text" name="resource_name" value="<?php echo esc_attr($resource['resource_name']); ?>" required>
             <label for="resource_price">resource Price:</label>
-            <input type="text" name="resource_price" value="<?php echo esc_attr($resource['resource_price']); ?>" required>
+            <select name="resource_price">
+                <?php foreach ($pricings as $pricing) { ?>
+                    <option value="<?php echo $pricing['id']; ?>" <?php selected($resource['resource_price'], $pricing['id']); ?>><?php echo $pricing['pricing_name']; ?></option>
+                <?php } ?>
+            </select>
             <label for="resource_description">resource_description:</label>
             <textarea name="resource_description"><?php echo esc_textarea($resource['resource_description']); ?></textarea>
             <label for="resource_activeFlag">Active:</label>

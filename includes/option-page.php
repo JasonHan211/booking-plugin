@@ -23,6 +23,19 @@ class BookedInMenuPage {
 
 
         // Submenu
+            // Pricing
+            require_once (BI_PLUGIN_PATH . '/includes/pricings/pricing.php');
+
+            if (class_exists('BookedInPricings')) {
+                $pricing = new BookedInPricings();
+                register_activation_hook(BI_FILE, array($pricing,'pricings_activate'));
+                // register_deactivation_hook(BI_FILE, array($pricing,'pricings_deactivate'));    
+            
+                add_action( 'admin_menu', array($this,'bookedin_pricings_submenu'));
+                add_action( 'admin_menu', array($this,'bookedin_pricings_edit_submenu'));
+    
+            }
+
             // Resources
             require_once (BI_PLUGIN_PATH . '/includes/resources/resources.php');
 
@@ -49,18 +62,7 @@ class BookedInMenuPage {
     
             }
       
-            // Pricing
-            require_once (BI_PLUGIN_PATH . '/includes/pricings/pricing.php');
 
-            if (class_exists('BookedInPricings')) {
-                $pricing = new BookedInPricings();
-                register_activation_hook(BI_FILE, array($pricing,'pricings_activate'));
-                // register_deactivation_hook(BI_FILE, array($pricing,'pricings_deactivate'));    
-            
-                add_action( 'admin_menu', array($this,'bookedin_pricings_submenu'));
-                add_action( 'admin_menu', array($this,'bookedin_pricings_edit_submenu'));
-    
-            }
         
         // Optional
             // Contact Form

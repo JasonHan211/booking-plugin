@@ -7,6 +7,7 @@ if (!defined('ABSPATH')) exit;
 function bookedin_addons_submenu_page() {
 
     $addonsClass = new BookedInAddons();
+    $pricingClass = new BookedInPricings();
     
     // Check user capabilities
     if (!current_user_can('manage_options')) {
@@ -35,6 +36,7 @@ function bookedin_addons_submenu_page() {
 
     // Fetch all addons from the database
     $addons = $addonsClass->get_addons();
+    $pricings = $pricingClass->get_pricings();
     
     bookedInNavigation('Addons');
     ?>
@@ -46,7 +48,11 @@ function bookedin_addons_submenu_page() {
             <label for="addon_name">Name:</label>
             <input type="text" name="addon_name" required>
             <label for="addon_price">Price:</label>
-            <input type="text" name="addon_price" required>
+            <select name="addon_price">
+                <?php foreach ($pricings as $pricing) { ?>
+                    <option value="<?php echo $pricing['id']; ?>"><?php echo $pricing['pricing_name']; ?></option>
+                <?php } ?>
+            </select>
             <label for="addon_description">Description:</label>
             <textarea name="addon_description"></textarea>
             <label for="addon_perday">Per Day:</label>
@@ -79,7 +85,7 @@ function bookedin_addons_submenu_page() {
                 <?php foreach ($addons as $addon) { ?>
                     <tr>
                         <td><?php echo $addon['addon_name']; ?></td>
-                        <td><?php echo $addon['addon_price']; ?></td>
+                        <td><?php echo $addon['pricing_name']; ?></td>
                         <td><?php echo $addon['addon_description']; ?></td>
                         <td><?php echo $addon['addon_perday']; ?></td>
                         <td><?php echo $addon['activeFlag']; ?></td>
