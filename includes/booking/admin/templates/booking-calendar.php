@@ -298,17 +298,30 @@ function bookingCalendar($display=true) {
                             // Highlight only the cell that is being hovered on
                             cell.classList.add('selected-middle');
 
+                        } else if (selectedStartDate == null && selectedEndDate == null) {
+                            
+                            if (selectedDate >= new Date()) {
+                                cell.classList.add('selected-middle');
+                            }
                         }
 
                     });
 
                     cell.addEventListener('mouseout', function(elem) {
                         
+                        // Get the date of the cell
+                        var selectedDate = new Date(cell.getAttribute('data-date'));
+
                         if (selectedStartDate !== null && selectedEndDate === null) {
                             var allCells = document.querySelectorAll('#availability-table div[data-slots].selected-middle');
                             allCells.forEach(function(cell) {
                                 cell.classList.remove('selected-middle');
                             });
+                        } else if (selectedStartDate == null && selectedEndDate == null) {
+
+                            if (selectedDate >= new Date()) {
+                                cell.classList.remove('selected-middle');
+                            }
                         }
                     });
                 });
