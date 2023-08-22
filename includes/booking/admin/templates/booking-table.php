@@ -20,7 +20,7 @@ function bookingTable() {
     
     ?>
 
-        <div class="filter-form">
+        <!-- <div class="filter-form">
             <label for="filterDate">Filter by Date:</label>
             <input type="date" id="filterDate" name="filterDate">
             
@@ -29,9 +29,7 @@ function bookingTable() {
                 <option value="">All Resources</option>
                 <option value="resource1">Resource 1</option>
                 <option value="resource2">Resource 2</option>
-                <!-- Add more resource options as needed -->
             </select>
-            <!-- Birthday Setup -->
             <label for="filterBirthday">Filter by Birthday:</label>
             <select id="filterBirthday" name="filterBirthday">
                 <option value="">All</option>
@@ -56,7 +54,7 @@ function bookingTable() {
             <input type="tel" id="filterPhone" name="filterPhone">
             
             <button id="applyFilterButton" class="filter-button">Apply Filter</button>
-        </div>
+        </div> -->
 
         <table class="wp-list-table widefat striped">
             <thead>
