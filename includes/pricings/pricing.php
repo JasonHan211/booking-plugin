@@ -11,13 +11,16 @@ class BookedInpricings {
     private $db;
     private $charset_collate;
     public $addons_table = 'bookedin_pricings';
+    public $discount_table = 'bookedin_discounts';
     public $table_name;
+    public $discount_table_name;
 
     public function __construct() {
         global $wpdb;
         $this->db = $wpdb;
         $this->charset_collate = $this->db->get_charset_collate();
         $this->table_name = $this->db->prefix . $this->addons_table;
+        $this->discount_table_name = $this->db->prefix . $this->discount_table;
     }
 
     public function calculatePrice($pricing_id, $adult=0, $children=0) {
@@ -84,6 +87,48 @@ class BookedInpricings {
 
     }
 
+    public function add_discount($discount_name, $discount_description, $discount_code, $discount_type, $discount_amount, $discount_start_date, $discount_end_date, $discount_on, $discount_condition, $discount_auto_apply, $discount_active) {
+
+        $this->db->insert($this->discount_table_name, array(
+            'discount_name' => $discount_name,
+            'discount_description' => $discount_description,
+            'discount_code' => $discount_code,
+            'discount_type' => $discount_type,
+            'discount_amount' => $discount_amount,
+            'discount_start_date' => $discount_start_date,
+            'discount_end_date' => $discount_end_date,
+            'discount_on' => $discount_on,
+            'discount_condition' => $discount_condition,
+            'discount_auto_apply' => $discount_auto_apply,
+            'discount_active' => $discount_active
+        ));
+
+        return $this->db->insert_id;
+
+    }
+
+    public function get_discounts($discount_id = null) {
+
+        if ($discount_id === null) {
+
+            $discount = $this->db->get_results("SELECT * FROM $this->discount_table_name", ARRAY_A);
+            echo $this->db->last_error;
+            return $discount;
+
+        }
+
+        $discount = $this->db->get_row("SELECT * FROM $this->discount_table_name WHERE id = $discount_id", ARRAY_A);
+        echo $this->db->last_error;
+        return $discount;
+
+    }
+
+    public function delete_discount($discount_id) {
+
+        $this->db->delete($this->discount_table_name, array('id' => $discount_id));
+
+    }
+
     public function createPricingDB() {
         $sql = "CREATE TABLE IF NOT EXISTS $this->table_name (
             id INT NOT NULL AUTO_INCREMENT,
@@ -99,15 +144,18 @@ class BookedInpricings {
 
     // Seperate DB for discounts
     public function createDiscoundDB() {
-        $sql = "CREATE TABLE IF NOT EXISTS $this->table_name (
+        $sql = "CREATE TABLE IF NOT EXISTS $this->discount_table_name (
             id INT NOT NULL AUTO_INCREMENT,
             discount_name VARCHAR(255) NOT NULL,
             discount_description TEXT,
-            discount_type VARCHAR(255),  -- percentage or fixed
-            discount_amount VARCHAR(255),
             discount_code VARCHAR(255),
+            discount_type CHAR(1),     -- percentage or amount
+            discount_on VARCHAR(255),       -- which pricing
+            discount_amount VARCHAR(255),
             discount_start_date VARCHAR(255),
             discount_end_date VARCHAR(255),
+            discount_condition VARCHAR(255),
+            discount_auto_apply CHAR(1) NOT NULL DEFAULT 'N',
             discount_active CHAR(1) NOT NULL DEFAULT 'N',
             PRIMARY KEY (id)
         ) $this->charset_collate;";
@@ -115,21 +163,23 @@ class BookedInpricings {
         dbDelta($sql);
     }
 
-    public function deleteDB() {
+    public function deleteDB($table_name) {
 
-        $this->db->query("DROP TABLE IF EXISTS $this->table_name");
+        $this->db->query("DROP TABLE IF EXISTS $table_name");
 
     }
 
     public function pricings_activate(){
         
         $this->createPricingDB();
+        $this->createDiscoundDB();
 
     }
 
     public function pricings_deactivate(){
         
-        $this->deleteDB();
+        // $this->deleteDB($this->table_name);
+        $this->deleteDB($this->discount_table_name);
 
     }
 }
