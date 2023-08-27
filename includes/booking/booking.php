@@ -5,6 +5,7 @@ if (!defined('ABSPATH')) exit;
 
 require_once (BI_PLUGIN_PATH . '/includes/resources/resources.php');
 require_once (BI_PLUGIN_PATH . '/includes/addons/addons.php');
+require_once (BI_PLUGIN_PATH . '/includes/pricings/pricing.php');
 
 class BookedInBookings {
 
@@ -12,6 +13,7 @@ class BookedInBookings {
     private $charset_collate;
     private $resoucesClass;
     private $addonsClass;
+    private $pricingClass;
     public $booking_header_table = 'bookedin_booking_header';
     public $booking_table = 'bookedin_bookings';
     public $booking_addons_table = 'bookedin_booking_addons';
@@ -26,6 +28,7 @@ class BookedInBookings {
         $this->db = $wpdb;
         $this->resoucesClass = new BookedInResources();
         $this->addonsClass = new BookedInAddons();
+        $this->pricingClass = new BookedInPricings();
         $this->addon_table_name = $this->addonsClass->table_name;
         $this->charset_collate = $this->db->get_charset_collate();
         $this->booking_header_table_name = $this->db->prefix . $this->booking_header_table;
@@ -73,6 +76,37 @@ class BookedInBookings {
         }
 
         return $availableResources;
+
+    }
+
+    public function calculate_price($booking_date_from, $booking_date_to, $booking_resource, $booking_addon, $booking_adult, $booking_children) {
+
+        $total_price = 0;
+        
+        $nights = $this->get_nights($booking_date_from, $booking_date_to);
+
+        // Get resource price
+        $resource = $this->resoucesClass->get_resources($booking_resource);
+        $resource_price_id = $resource['resource_price'];
+        $resource_price = $this->pricingClass->calculatePrice($resource_price_id, $booking_adult, $booking_children);
+        $total_price += $total_price + ($resource_price * $nights);
+        
+        // Get addon price
+        if ($booking_addon != null) {
+            foreach ($booking_addon as $addonid) {
+                $addon = $this->addonsClass->get_addons($addonid);
+                $addon_price_id = $addon['addon_price'];
+                if ($addon['addon_perday'] == 'Y') {
+                    $addon_price = $this->pricingClass->calculatePrice($addon_price_id, $booking_adult, $booking_children);
+                    $total_price += $addon_price * $nights;
+                } else {
+                    $addon_price = $this->pricingClass->calculatePrice($addon_price_id, $booking_adult, $booking_children);
+                    $total_price += $addon_price;
+                }
+            }
+        }
+
+        return $total_price;
 
     }
 
@@ -329,3 +363,27 @@ function get_available_callback($request) {
     return new WP_REST_Response(array('availables'=>$available,'message'=>'Success'), 200);
 }
 
+// REST API ENDPOINTS
+add_action('rest_api_init', 'register_calculate_price');
+
+function register_calculate_price() {
+    register_rest_route('v1/booking', 'calculate_price', array(
+          'methods' => 'POST',
+          'callback' => 'calculate_price_callback'
+    ));
+} 
+
+function calculate_price_callback($request) {
+
+    $start = $request->get_param('booking_date_from');
+    $end = $request->get_param('booking_date_to');
+    $resource = $request->get_param('booking_resource');
+    $addon = $request->get_param('booking_addon');
+    $adults = $request->get_param('booking_adults');
+    $children = $request->get_param('booking_children');
+
+    $booking = new BookedInBookings();
+    $price = $booking->calculate_price($start, $end, $resource, $addon, $adults, $children);
+
+    return new WP_REST_Response(array('price'=>$price,'message'=>'Success'), 200);
+}

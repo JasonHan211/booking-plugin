@@ -3,6 +3,9 @@
 // Exit if accessed directly
 if (!defined('ABSPATH')) exit;
 
+require_once (BI_PLUGIN_PATH . '/includes/addons/addons.php');
+require_once (BI_PLUGIN_PATH . '/includes/booking/booking.php');
+
 class BookedInpricings {
 
     private $db;
@@ -19,11 +22,19 @@ class BookedInpricings {
 
     public function calculatePrice($pricing_id, $adult=0, $children=0) {
 
+        $total_price = 0;
         $pricing = $this->get_pricings($pricing_id);
 
         $pricing_structure = json_decode($pricing['pricing_structure'], true);
 
-        $total_price = $pricing_structure[(int)$adult][(int)$children];
+        if (sizeof($pricing_structure[0]) == 1 || sizeof($pricing_structure) == 1) {
+            $total_price = $pricing_structure[0][0];
+        } else {
+            $adult = (int)$adult;
+            $children = (int)$children;
+    
+            $total_price = $pricing_structure[$adult][$children];
+        }
 
         return $total_price;
     }
@@ -169,5 +180,7 @@ function update_pricing_callback($request) {
 
     return new WP_REST_Response(array('availables'=>$last_id,'message'=>'Success'), 200);
 }
+
+
 
 

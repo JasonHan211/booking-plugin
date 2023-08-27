@@ -19,8 +19,20 @@ function newBookingForm() {
 
                         </div>
                         <div class="mb-3">
+                            <div class="row">
+                                <div class="col">
+                                    <label for="booking_adults" class="form-label">Adults:</label>
+                                    <input type="number" class="form-control" name="booking_adults" value="1" min="1" onchange="updatePrice()" required>
+                                </div>
+                                <div class="col">
+                                    <label for="booking_children" class="form-label">Children:</label>
+                                    <input type="number" class="form-control" name="booking_children" value="0" min="0" onchange="updatePrice()" required>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mb-3">
                             <label for="booking_resource" class="form-label">Resource:</label>
-                            <select class="form-select" name="booking_resource" onclick="updatePriceField(this)" disabled>
+                            <select class="form-select" name="booking_resource" onchange="updatePrice()" disabled>
                                     <option value="">Please select dates</option>
                             </select>
                         </div>
@@ -30,7 +42,7 @@ function newBookingForm() {
                             <?php foreach($addons as $addon) { ?>
 
                                 <label class="form-label"><?php echo $addon['addon_name']; ?></label>
-                                <input type="checkbox" class="form-control" name="booking_addon[]" value="<?php echo $addon['id']; ?>" data-price="<?php echo $addon['addon_price']; ?>" onclick="updatePriceField(this)">
+                                <input type="checkbox" class="form-control" name="booking_addon[]" value="<?php echo $addon['id']; ?>" data-price='<?php echo $addon['addon_price']; ?>' onclick="updatePrice()">
 
                              <?php } ?>
 
@@ -49,14 +61,6 @@ function newBookingForm() {
                                 <option value="N">No</option>
                                 <option value="Y">Yes</option>
                             </select>
-                        </div>
-                        <div class="mb-3">
-                            <label for="booking_adults" class="form-label">Adults:</label>
-                            <input type="number" class="form-control" name="booking_adults" value="0" min="0" required>
-                        </div>
-                        <div class="mb-3">
-                            <label for="booking_children" class="form-label">Children:</label>
-                            <input type="number" class="form-control" name="booking_children" value="0" min="0" required>
                         </div>
                         <div class="mb-3">
                             <label for="booking_price" class="form-label">Price:</label>
@@ -90,6 +94,51 @@ function newBookingForm() {
         </div>
 
         <script>
+
+            let totalPrice = 0;
+
+            function updatePrice() {
+                
+                let startDate = document.getElementById('booking_date_from').value;
+                let endDate = document.getElementById('booking_date_to').value;
+                let resource = document.getElementsByName('booking_resource')[0].value;
+                let adult = document.getElementsByName('booking_adults')[0].value;
+                let children = document.getElementsByName('booking_children')[0].value;    
+                let addons = [];
+                const checkboxes = document.querySelectorAll('[name="booking_addon[]"]');
+            
+                checkboxes.forEach(checkbox => {
+                    if (checkbox.checked) {
+                        addons.push(checkbox.value);
+                    }
+                });
+    
+                if (startDate == '' || endDate == '' || resource == '') {
+                    return;
+                }
+
+                $.ajax({
+                    url: '<?php echo get_rest_url(null, 'v1/booking/calculate_price');?>',
+                    type: 'POST',
+                    data: {
+                        action: 'calculate_price',
+                        booking_date_from: startDate,
+                        booking_date_to: endDate,
+                        booking_resource: resource,
+                        booking_addon: addons,
+                        booking_adults: adult,
+                        booking_children: children
+                    },
+                    success: function (data) {
+                        
+                        totalPrice = data.price;
+                        document.getElementsByName('booking_price')[0].value = totalPrice;
+                    }
+                });
+
+            }
+            
+            // Function to update the price field
             function updatePriceField(selectElement) {
                 // Get the selected option element
                 if (selectElement.selectedIndex == -1) {
@@ -174,6 +223,7 @@ function newBookingForm() {
                             option.text = resource.name;
                             option.setAttribute('data-price', resource.price);
                             selectElement.appendChild(option);
+                            updatePrice();
                         });
                     }
                 });
