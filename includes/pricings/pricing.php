@@ -150,7 +150,8 @@ class BookedInpricings {
             discount_description TEXT,
             discount_code VARCHAR(255),
             discount_type CHAR(1),     -- percentage or amount
-            discount_on VARCHAR(255),       -- which pricing
+            discount_on_type VARCHAR(255),
+            discount_on_id INT,      
             discount_amount VARCHAR(255),
             discount_start_date VARCHAR(255),
             discount_end_date VARCHAR(255),
