@@ -72,7 +72,12 @@ class BookedInMenuPage {
             }
                 
         // Settings
-            // add_action( 'admin_menu', array($this,'bookedin_setting_submenu'));
+            require_once (BI_PLUGIN_PATH . '/includes/settings/settings.php');
+            $settings = new BookedInSettings();
+            register_activation_hook(BI_FILE, array($settings,'settings_activate'));
+            // register_deactivation_hook(BI_FILE, array($settings,'settings_deactivate'));
+            add_action( 'admin_menu', array($this,'bookedin_setting_submenu'));
+            add_action( 'admin_menu', array($this,'bookedin_setting_edit_submenu'));
     
     }
 
@@ -209,7 +214,7 @@ class BookedInMenuPage {
     // Submenu (Settings)
     public function bookedin_setting_submenu() {
 
-        require_once (BI_PLUGIN_PATH . '/includes/settings/menu.php');
+        require_once (BI_PLUGIN_PATH . '/includes/settings/admin/menu.php');
         add_submenu_page(
             'bookedin_main_menu',       
             'Settings',         
@@ -218,6 +223,20 @@ class BookedInMenuPage {
             'bookedin_setting_submenu',       
             'bookedin_setting_submenu_page',   
             4
+        );
+    }
+
+    // Submenu (Settings Edit Page)
+    public function bookedin_setting_edit_submenu() {
+
+        require_once (BI_PLUGIN_PATH . '/includes/settings/admin/edit-menu.php');
+        add_submenu_page(
+            null,                         
+            'Edit Setting',         
+            'Edit Setting',               
+            'manage_options',              
+            'bookedin_setting_edit',        
+            'setting_edit_page'    
         );
     }
 

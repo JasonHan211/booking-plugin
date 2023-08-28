@@ -52,7 +52,7 @@ function bookedin_pricings_submenu_page() {
                 <div class="col m-1 table-responsive">
                     <!-- Display existing pricings -->
                     <h2>Existing Pricings</h2>
-                    <table class="wp-list-table table widefat fixed striped">
+                    <table class="wp-list-table half-page-table widefat fixed striped">
                         <thead>
                             <tr>
                                 <th>Name</th>
@@ -81,7 +81,7 @@ function bookedin_pricings_submenu_page() {
                 <div class="col m-1 table-responsive">
                     <!-- Display existing pricings -->
                     <h2>Existing Discounts</h2>
-                    <table class="wp-list-table table widefat fixed striped">
+                    <table class="wp-list-table half-page-table widefat fixed striped">
                         <thead>
                             <tr>
                                 <th>Name</th>
