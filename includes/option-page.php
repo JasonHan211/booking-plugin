@@ -62,8 +62,6 @@ class BookedInMenuPage {
     
             }
       
-
-        
         // Optional
             // Contact Form
             if (file_exists(BI_PLUGIN_PATH . '/includes/contact-form/contact-form.php')) { 

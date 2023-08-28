@@ -86,7 +86,7 @@ class BookedInAddons {
                 atn.addon_perday as 'addon_perday', 
                 atn.activeFlag as 'activeFlag', 
                 ptn.pricing_name as 'pricing_name',
-                ptn.price_structure as 'price_structure'
+                ptn.pricing_structure as 'price_structure'
                 FROM $this->table_name atn 
                 LEFT JOIN $pricingTable ptn ON ptn.id = atn.addon_price"
                 , ARRAY_A);
