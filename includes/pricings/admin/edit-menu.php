@@ -7,6 +7,7 @@ function pricings_edit_page() {
     
     $pricingClass = new BookedInpricings();
 
+    // Get pricing to edit
     if (isset($_GET['action']) && $_GET['action'] === 'edit' && isset($_GET['pricing_id'])) {
         $pricing_id = intval($_GET['pricing_id']);
         
@@ -14,9 +15,19 @@ function pricings_edit_page() {
 
     }
 
+    // Get discount to edit
+    if (isset($_GET['action']) && $_GET['action'] === 'edit' && isset($_GET['discount_id'])) {
+        $discount_id = intval($_GET['discount_id']);
+        
+        $discount = $pricingClass->get_discounts($discount_id);
+
+    }
+
     bookedInNavigation('Pricing');
+    
+    if ($pricing) {
     ?>
-    <!-- Form to add new pricings -->
+
         <style>
             
             #matrixRowLabels {
@@ -79,7 +90,7 @@ function pricings_edit_page() {
             }
         </style>
 
-        <h2>Add New pricing</h2>
+        <h2>Edit Pricing</h2>
         <form id="addPricing" method="post" action="">
             <label for="pricing_name">Name:</label>
             <input type="text" name="pricing_name" value="<?php echo esc_attr($pricing['pricing_name']); ?>" required>
@@ -262,5 +273,56 @@ function pricings_edit_page() {
 
 
     <?php
+    } else if ($discount) {
+    ?>
+
+        <h2>Edit Discount</h2>
+        <form id="addDiscount" method="post" action="">
+            <label for="discount_name">Name:</label>
+            <input type="text" name="discount_name" value="<?php echo esc_attr($discount['discount_name']); ?>" required>
+            <label for="discount_description">Description:</label>
+            <textarea name="discount_description"><?php echo esc_textarea($discount['discount_description']); ?></textarea>
+            <label for="discount_code">Code:</label>
+            <input type="text" name="discount_code" value="<?php echo esc_attr($discount['discount_code']); ?>" required>
+            <label for="discount_type">Type:</label>
+            <select name="discount_type">
+                <option value="percentage" <?php if ($discount['discount_type'] === 'percentage') echo 'selected'; ?>>Percentage</option>
+                <option value="fixed" <?php if ($discount['discount_type'] === 'fixed') echo 'selected'; ?>>Fixed</option>
+            </select>
+            <label for="discount_amount">Amount:</label>
+            <input type="number" name="discount_amount" value="<?php echo esc_attr($discount['discount_amount']); ?>" required>
+            <label for="discount_start_date">Start Date:</label>
+            <input type="date" name="discount_start_date" value="<?php echo esc_attr($discount['discount_start_date']); ?>" required>
+            <label for="discount_end_date">End Date:</label>
+            <input type="date" name="discount_end_date" value="<?php echo esc_attr($discount['discount_end_date']); ?>" required>
+            <label for="discount_on">On:</label>
+            <select name="discount_on">
+                <option value="total" <?php if ($discount['discount_on'] === 'total') echo 'selected'; ?>>Total</option>
+                <option value="service" <?php if ($discount['discount_on'] === 'service') echo 'selected'; ?>>Service</option>
+            </select>
+            <label for="discount_condition">Condition:</label>
+            <select name="discount_condition">
+                <option value="greater_than" <?php if ($discount['discount_condition'] === 'greater_than') echo 'selected'; ?>>Greater than</option>
+                <option value="less_than" <?php if ($discount['discount_condition'] === 'less_than') echo 'selected'; ?>>Less than</option>
+            </select>
+            <label for="discount_auto_apply">Auto Apply:</label>
+            <select name="discount_auto_apply">
+                <option value="Y" <?php if ($discount['discount_auto_apply'] === 'Y') echo 'selected'; ?>>Yes</option>
+                <option value="N" <?php if ($discount['discount_auto_apply'] === 'N') echo 'selected'; ?>>No</option>
+            </select>
+            <label for="discount_active">Active:</label>
+            <select name="discount_active">
+                <option value="Y" <?php if ($discount['discount_active'] === 'Y') echo 'selected'; ?>>Yes</option>
+                <option value="N" <?php if ($discount['discount_active'] === 'N') echo 'selected'; ?>>No</option>
+            </select>
+            <input type="submit" name="add_discount" value="Update discount">
+        </form>
+
+    <?php
+    } else {
+    ?>
+        <h2>Invalid pricing or discount</h2>
+    <?php
+    }
     bookInFooter();
 }

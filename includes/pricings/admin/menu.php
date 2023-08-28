@@ -15,8 +15,6 @@ function bookedin_pricings_submenu_page() {
         return;
     }
 
-
-
     // Handle pricing deletion
     if (isset($_GET['action']) && $_GET['action'] === 'delete' && isset($_GET['pricing_id'])) {
         $pricing_id = intval($_GET['pricing_id']);
@@ -91,7 +89,8 @@ function bookedin_pricings_submenu_page() {
                                 <th>Amount</th>
                                 <th>Start Date</th>
                                 <th>End Date</th>
-                                <th>On</th>
+                                <th>On Type</th>
+                                <th>On ID</th>
                                 <th>Condition</th>
                                 <th>Auto Apply</th>
                                 <th>Active</th>
@@ -108,7 +107,8 @@ function bookedin_pricings_submenu_page() {
                                     <td><?php echo $discount['discount_amount']; ?></td>
                                     <td><?php echo $discount['discount_start_date']; ?></td>
                                     <td><?php echo $discount['discount_end_date']; ?></td>
-                                    <td><?php echo $discount['discount_on']; ?></td>
+                                    <td><?php echo $discount['discount_on_type']; ?></td>
+                                    <td><?php echo $discount['discount_on_id']; ?></td>
                                     <td><?php echo $discount['discount_condition']; ?></td>
                                     <td><?php echo $discount['discount_auto_apply']; ?></td>
                                     <td><?php echo $discount['discount_active']; ?></td>

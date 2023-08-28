@@ -87,7 +87,7 @@ class BookedInpricings {
 
     }
 
-    public function add_discount($discount_name, $discount_description, $discount_code, $discount_type, $discount_amount, $discount_start_date, $discount_end_date, $discount_on, $discount_condition, $discount_auto_apply, $discount_active) {
+    public function add_discount($discount_name, $discount_description, $discount_code, $discount_type, $discount_amount, $discount_start_date, $discount_end_date, $discount_on_type, $discount_on_id, $discount_condition, $discount_auto_apply, $discount_active) {
 
         $this->db->insert($this->discount_table_name, array(
             'discount_name' => $discount_name,
@@ -97,7 +97,8 @@ class BookedInpricings {
             'discount_amount' => $discount_amount,
             'discount_start_date' => $discount_start_date,
             'discount_end_date' => $discount_end_date,
-            'discount_on' => $discount_on,
+            'discount_on_type' => $discount_on_type,
+            'discount_on_id' => $discount_on_id,
             'discount_condition' => $discount_condition,
             'discount_auto_apply' => $discount_auto_apply,
             'discount_active' => $discount_active
@@ -151,7 +152,7 @@ class BookedInpricings {
             discount_code VARCHAR(255),
             discount_type CHAR(1),     -- percentage or amount
             discount_on_type VARCHAR(255),
-            discount_on_id INT,      
+            discount_on_id VARCHAR(255),      
             discount_amount VARCHAR(255),
             discount_start_date VARCHAR(255),
             discount_end_date VARCHAR(255),

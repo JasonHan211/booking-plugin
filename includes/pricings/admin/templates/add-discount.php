@@ -13,13 +13,14 @@ function addDiscountForm() {
         $discount_amount = sanitize_text_field($_POST['discount_amount']);
         $discount_start_date = sanitize_text_field($_POST['discount_start_date']);
         $discount_end_date = sanitize_text_field($_POST['discount_end_date']);
-        $discount_on = sanitize_text_field($_POST['discount_on']);
+        $discount_on_type = sanitize_text_field($_POST['discount_on_type']);
+        $discount_on_id = sanitize_text_field($_POST['discount_on_id']);
         $discount_condition = sanitize_text_field($_POST['discount_condition']);
         $discount_auto_apply = sanitize_text_field($_POST['discount_auto_apply']);
         $discount_active = sanitize_text_field($_POST['discount_active']);
 
-        $pricingClass->add_discount($discount_name, $discount_description, $discount_code, $discount_type, $discount_amount, $discount_start_date, $discount_end_date, $discount_on, $discount_condition, $discount_auto_apply, $discount_active);
-
+        $pricingClass->add_discount($discount_name, $discount_description, $discount_code, $discount_type, $discount_amount, $discount_start_date, $discount_end_date, $discount_on_type, $discount_on_id, $discount_condition, $discount_auto_apply, $discount_active);
+        
     }
 
     ?>
@@ -46,8 +47,14 @@ function addDiscountForm() {
             <label for="discount_end_date">End Date:</label>
             <input type="date" name="discount_end_date">
             <br>
-            <label for="discount_on">On:</label>
-            <select name="discount_on">
+            <label for="discount_on_type">On Type:</label>
+            <select name="discount_on_type">
+                <option value="ALL">All</option>
+                <option value="Resources">Resources</option>
+                <option value="Addon">Addon</option>
+            </select>
+            <label for="discount_on_id">On ID:</label>
+            <select name="discount_on_id">
                 <option value="ALL">All</option>
                 <option value="Resources">Resources</option>
                 <option value="Addon">Addon</option>
