@@ -135,5 +135,21 @@ class BookedInAddons {
     }
 }
 
+// REST API ENDPOINTS
+add_action('rest_api_init', 'register_get_addons');
 
+function register_get_addons() {
+    register_rest_route('v1/addons', 'get_addons', array(
+          'methods' => 'POST',
+          'callback' => 'get_addons_callback'
+    ));
+} 
+
+function get_addons_callback($request) {
+
+    $addonsClass = new BookedInAddons();
+    $addons = $addonsClass->get_addons();
+
+    return new WP_REST_Response(array('addons'=>$addons,'message'=>'Success'), 200);
+}
 

@@ -130,3 +130,7 @@
 .half-page-table {
     min-width: 1200px;
 }
+
+.all-cap {
+    text-transform: uppercase;
+}

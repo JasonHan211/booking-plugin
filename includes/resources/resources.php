@@ -137,4 +137,20 @@ class BookedInResources {
 }
 
 
+// REST API ENDPOINTS
+add_action('rest_api_init', 'register_get_resources');
 
+function register_get_resources() {
+    register_rest_route('v1/resources', 'get_resources', array(
+          'methods' => 'POST',
+          'callback' => 'get_resources_callback'
+    ));
+} 
+
+function get_resources_callback($request) {
+
+    $resource = new BookedInResources();
+    $resources = $resource->get_resources();
+
+    return new WP_REST_Response(array('resources'=>$resources,'message'=>'Success'), 200);
+}

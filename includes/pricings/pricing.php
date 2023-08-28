@@ -124,6 +124,25 @@ class BookedInpricings {
 
     }
 
+    public function update_discount($discount_id, $discount_name, $discount_description, $discount_code, $discount_type, $discount_amount, $discount_start_date, $discount_end_date, $discount_on_type, $discount_on_id, $discount_condition, $discount_auto_apply, $discount_active) {
+
+        $this->db->update($this->discount_table_name, array(
+            'discount_name' => $discount_name,
+            'discount_description' => $discount_description,
+            'discount_code' => $discount_code,
+            'discount_type' => $discount_type,
+            'discount_amount' => $discount_amount,
+            'discount_start_date' => $discount_start_date,
+            'discount_end_date' => $discount_end_date,
+            'discount_on_type' => $discount_on_type,
+            'discount_on_id' => $discount_on_id,
+            'discount_condition' => $discount_condition,
+            'discount_auto_apply' => $discount_auto_apply,
+            'discount_active' => $discount_active
+        ), array('id' => $discount_id));
+
+    }
+
     public function delete_discount($discount_id) {
 
         $this->db->delete($this->discount_table_name, array('id' => $discount_id));

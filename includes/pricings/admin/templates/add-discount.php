@@ -36,7 +36,7 @@ function addDiscountForm() {
             <label for="discount_description">Description:</label>
             <textarea name="discount_description"></textarea>
             <label for="discount_code">Code:</label>
-            <input type="text" name="discount_code" required>
+            <input type="text" name="discount_code" class="all-cap" required>
             <br>
             <label for="discount_type">Type:</label>
             <select name="discount_type">
@@ -44,7 +44,7 @@ function addDiscountForm() {
                 <option value="Fixed">Fixed</option>
             </select>
             <label for="discount_amount">Amount:</label>
-            <input type="text" name="discount_amount" required>
+            <input type="number" name="discount_amount" min=0 step="1" required>
             <br>
             <label for="discount_start_date">Start Date:</label>
             <input type="date" name="discount_start_date">
@@ -85,22 +85,60 @@ function addDiscountForm() {
                     var discount_on_type = $(this).val();
                     var discount_on_id = $('select[name="discount_on_id"]');
                     if (discount_on_type == 'Resources') {
-                        discount_on_id.prop('disabled', false);
-                        discount_on_id.empty();
-                        discount_on_id.append('<option value="1">Resource 1</option>');
-                        discount_on_id.append('<option value="2">Resource 2</option>');
-                        discount_on_id.append('<option value="3">Resource 3</option>');
+
+                        $.ajax({
+                            url: '<?php echo get_rest_url(null, 'v1/resources/get_resources');?>',
+                            type: 'POST',
+                            data: {
+                                action: 'get_resources',
+                            },
+                            success: function (data) {
+                                
+                                discount_on_id.prop('disabled', false);
+                                discount_on_id.empty();
+
+                                resources = data.resources;
+
+                                discount_on_id.append('<option value="All"> All </option>');
+                                resources.forEach(function(resource) {
+                                    discount_on_id.append('<option value="' + resource.id + '">' + resource.resource_name + '</option>');
+                                });
+
+                            }
+                        });
+                        
                     } else if (discount_on_type == 'Addon') {
-                        discount_on_id.prop('disabled', false);
-                        discount_on_id.empty();
-                        discount_on_id.append('<option value="1">Addon 1</option>');
-                        discount_on_id.append('<option value="2">Addon 2</option>');
-                        discount_on_id.append('<option value="3">Addon 3</option>');
+
+                        $.ajax({
+                            url: '<?php echo get_rest_url(null, 'v1/addons/get_addons');?>',
+                            type: 'POST',
+                            data: {
+                                action: 'get_addons',
+                            },
+                            success: function (data) {
+                                
+                                discount_on_id.prop('disabled', false);
+                                discount_on_id.empty();
+
+                                addons = data.addons;
+                                
+                                discount_on_id.append('<option value="All"> All </option>');
+                                addons.forEach(function(addon) {
+                                    discount_on_id.append('<option value="' + addon.id + '">' + addon.addon_name + '</option>');
+                                });
+
+                            }
+                        });
+
                     } else {
                         discount_on_id.prop('disabled', true);
                         discount_on_id.empty();
                         discount_on_id.append('<option value="null">N/A</option>');
                     }
+                });
+
+                $('input[name="discount_code"]').keyup(function() {
+                    $(this).val($(this).val().toUpperCase());
                 });
             });
         </script>
