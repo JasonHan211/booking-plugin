@@ -103,7 +103,7 @@ class BookedInpricings {
             'discount_auto_apply' => $discount_auto_apply,
             'discount_active' => $discount_active
         ));
-
+        echo $this->db->last_error;
         return $this->db->insert_id;
 
     }
@@ -150,7 +150,7 @@ class BookedInpricings {
             discount_name VARCHAR(255) NOT NULL,
             discount_description TEXT,
             discount_code VARCHAR(255),
-            discount_type CHAR(1),     -- percentage or amount
+            discount_type VARCHAR(255),     -- percentage or amount
             discount_on_type VARCHAR(255),
             discount_on_id VARCHAR(255),      
             discount_amount VARCHAR(255),

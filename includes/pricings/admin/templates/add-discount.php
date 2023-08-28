@@ -14,7 +14,11 @@ function addDiscountForm() {
         $discount_start_date = sanitize_text_field($_POST['discount_start_date']);
         $discount_end_date = sanitize_text_field($_POST['discount_end_date']);
         $discount_on_type = sanitize_text_field($_POST['discount_on_type']);
-        $discount_on_id = sanitize_text_field($_POST['discount_on_id']);
+        if ($discount_on_type == 'ALL') {
+            $discount_on_id = null;
+        } else {
+            $discount_on_id = sanitize_text_field($_POST['discount_on_id']);
+        }
         $discount_condition = sanitize_text_field($_POST['discount_condition']);
         $discount_auto_apply = sanitize_text_field($_POST['discount_auto_apply']);
         $discount_active = sanitize_text_field($_POST['discount_active']);
@@ -36,8 +40,8 @@ function addDiscountForm() {
             <br>
             <label for="discount_type">Type:</label>
             <select name="discount_type">
-                <option value="P">Percentage</option>
-                <option value="F">Fixed</option>
+                <option value="Percentage">Percentage</option>
+                <option value="Fixed">Fixed</option>
             </select>
             <label for="discount_amount">Amount:</label>
             <input type="text" name="discount_amount" required>
@@ -54,10 +58,8 @@ function addDiscountForm() {
                 <option value="Addon">Addon</option>
             </select>
             <label for="discount_on_id">On ID:</label>
-            <select name="discount_on_id">
-                <option value="ALL">All</option>
-                <option value="Resources">Resources</option>
-                <option value="Addon">Addon</option>
+            <select name="discount_on_id" disabled>
+                <option value="null">N/A</option>
             </select>
             <label for="discount_condition">Condition:</label>
             <select name="discount_condition">
@@ -76,5 +78,32 @@ function addDiscountForm() {
             </select>
             <input type="submit" name="add_discount" value="Add discount">
         </form>
+
+        <script>
+            jQuery(document).ready(function($) {
+                $('select[name="discount_on_type"]').change(function() {
+                    var discount_on_type = $(this).val();
+                    var discount_on_id = $('select[name="discount_on_id"]');
+                    if (discount_on_type == 'Resources') {
+                        discount_on_id.prop('disabled', false);
+                        discount_on_id.empty();
+                        discount_on_id.append('<option value="1">Resource 1</option>');
+                        discount_on_id.append('<option value="2">Resource 2</option>');
+                        discount_on_id.append('<option value="3">Resource 3</option>');
+                    } else if (discount_on_type == 'Addon') {
+                        discount_on_id.prop('disabled', false);
+                        discount_on_id.empty();
+                        discount_on_id.append('<option value="1">Addon 1</option>');
+                        discount_on_id.append('<option value="2">Addon 2</option>');
+                        discount_on_id.append('<option value="3">Addon 3</option>');
+                    } else {
+                        discount_on_id.prop('disabled', true);
+                        discount_on_id.empty();
+                        discount_on_id.append('<option value="null">N/A</option>');
+                    }
+                });
+            });
+        </script>
+
     <?php
 }

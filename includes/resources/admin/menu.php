@@ -30,10 +30,6 @@ function bookedin_resources_submenu_page() {
         $resourcesClass->delete_resource($resource_id);
     }
 
-    // Fetch all resources from the database
-    $resources = $resourcesClass->get_resources();
-    $pricings = $pricingClass->get_pricings();
-    
     bookedInNavigation('Resources');
     ?>
     <div class="wrap">
@@ -47,7 +43,9 @@ function bookedin_resources_submenu_page() {
             <textarea name="resource_description"></textarea>
             <label for="resource_price">Price:</label>
             <select name="resource_price">
-                <?php foreach ($pricings as $pricing) { ?>
+                <?php
+                    $pricings = $pricingClass->get_pricings();
+                    foreach ($pricings as $pricing) { ?>
                     <option value="<?php echo $pricing['id']; ?>"><?php echo $pricing['pricing_name']; ?></option>
                 <?php } ?>
             </select>
@@ -72,7 +70,9 @@ function bookedin_resources_submenu_page() {
                 </tr>
             </thead>
             <tbody>
-                <?php foreach ($resources as $resource) { ?>
+                <?php
+                    $resources = $resourcesClass->get_resources();
+                    foreach ($resources as $resource) { ?>
                     <tr>
                         <td><?php echo $resource['resource_name']; ?></td>
                         <td><?php echo $resource['resource_description']; ?></td>

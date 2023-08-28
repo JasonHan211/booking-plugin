@@ -34,10 +34,6 @@ function bookedin_addons_submenu_page() {
         $addonsClass->delete_addon($addon_id);
     }
 
-    // Fetch all addons from the database
-    $addons = $addonsClass->get_addons();
-    $pricings = $pricingClass->get_pricings();
-    
     bookedInNavigation('Addons');
     ?>
     <div class="wrap">
@@ -51,7 +47,9 @@ function bookedin_addons_submenu_page() {
             <textarea name="addon_description"></textarea>
             <label for="addon_price">Price:</label>
             <select name="addon_price">
-                <?php foreach ($pricings as $pricing) { ?>
+                <?php
+                    $pricings = $pricingClass->get_pricings();
+                    foreach ($pricings as $pricing) { ?>
                     <option value="<?php echo $pricing['id']; ?>"><?php echo $pricing['pricing_name']; ?></option>
                 <?php } ?>
             </select>
@@ -82,7 +80,9 @@ function bookedin_addons_submenu_page() {
                 </tr>
             </thead>
             <tbody>
-                <?php foreach ($addons as $addon) { ?>
+                <?php
+                $addons = $addonsClass->get_addons();
+                foreach ($addons as $addon) { ?>
                     <tr>
                         <td><?php echo $addon['addon_name']; ?></td>
                         <td><?php echo $addon['addon_description']; ?></td>

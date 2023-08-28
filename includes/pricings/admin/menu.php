@@ -31,10 +31,6 @@ function bookedin_pricings_submenu_page() {
 
     }
 
-    // Fetch all pricings from the database
-    $pricings = $pricingClass->get_pricings();
-    $discounts = $pricingClass->get_discounts();
-    
     bookedInNavigation('Pricing');
     ?>
     <div class="wrap">
@@ -61,7 +57,9 @@ function bookedin_pricings_submenu_page() {
                             </tr>
                         </thead>
                         <tbody>
-                            <?php foreach ($pricings as $pricing) { ?>
+                            <?php
+                                $pricings = $pricingClass->get_pricings();
+                                foreach ($pricings as $pricing) { ?>
                                 <tr>
                                     <td><?php echo $pricing['pricing_name']; ?></td>
                                     <td><?php echo $pricing['pricing_description']; ?></td>
@@ -98,7 +96,9 @@ function bookedin_pricings_submenu_page() {
                             </tr>
                         </thead>
                         <tbody>
-                            <?php foreach ($discounts as $discount) { ?>
+                            <?php 
+                            $discounts = $pricingClass->get_discounts();
+                            foreach ($discounts as $discount) { ?>
                                 <tr>
                                     <td><?php echo $discount['discount_name']; ?></td>
                                     <td><?php echo $discount['discount_description']; ?></td>

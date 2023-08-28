@@ -24,8 +24,6 @@ function bookedin_setting_submenu_page() {
         $settingsClass->delete_settings($setting_id);
     }
 
-    $settings = $settingsClass->get_settings();
-
     bookedInNavigation('Settings');
     ?>
     <div class="wrap">
@@ -54,6 +52,7 @@ function bookedin_setting_submenu_page() {
             </thead>
             <tbody>
                 <?php
+                $settings = $settingsClass->get_settings();
                 foreach ($settings as $setting) {
                     ?>
                     <tr>
