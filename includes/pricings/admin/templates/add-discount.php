@@ -61,6 +61,7 @@ function addDiscountForm() {
             <select name="discount_on_id" disabled>
                 <option value="null">N/A</option>
             </select>
+            <!-- Todo set conditions -->
             <label for="discount_condition">Condition:</label>
             <select name="discount_condition">
                 <option value="all">All</option>
@@ -121,7 +122,7 @@ function addDiscountForm() {
                                 discount_on_id.empty();
 
                                 addons = data.addons;
-                                
+
                                 discount_on_id.append('<option value="All"> All </option>');
                                 addons.forEach(function(addon) {
                                     discount_on_id.append('<option value="' + addon.id + '">' + addon.addon_name + '</option>');
