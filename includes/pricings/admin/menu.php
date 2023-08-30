@@ -90,6 +90,8 @@ function bookedin_pricings_submenu_page() {
                                 <th>On Type</th>
                                 <th>On ID</th>
                                 <th>Condition</th>
+                                <th>Condition Start</th>
+                                <th>Condition End</th>
                                 <th>Auto Apply</th>
                                 <th>Active</th>
                                 <th>Actions</th>
@@ -110,6 +112,8 @@ function bookedin_pricings_submenu_page() {
                                     <td><?php echo $discount['discount_on_type']; ?></td>
                                     <td><?php echo $discount['discount_on_id']; ?></td>
                                     <td><?php echo $discount['discount_condition']; ?></td>
+                                    <td><?php echo $discount['discount_condition_start']; ?></td>
+                                    <td><?php echo $discount['discount_condition_end']; ?></td>
                                     <td><?php echo $discount['discount_auto_apply']; ?></td>
                                     <td><?php echo $discount['discount_active']; ?></td>
                                     <td>

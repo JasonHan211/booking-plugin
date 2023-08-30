@@ -168,14 +168,16 @@ class BookedInpricings {
             id INT NOT NULL AUTO_INCREMENT,
             discount_name VARCHAR(255) NOT NULL,
             discount_description TEXT,
-            discount_code VARCHAR(255),
-            discount_type VARCHAR(255),     -- percentage or amount
-            discount_on_type VARCHAR(255),
-            discount_on_id VARCHAR(255),      
-            discount_amount VARCHAR(255),
+            discount_code VARCHAR(255) NOT NULL,
+            discount_type VARCHAR(255) NOT NULL,  -- percentage or amount,     -- percentage or amount
+            discount_on_type VARCHAR(255) NOT NULL,
+            discount_on_id VARCHAR(255) NOT NULL,      
+            discount_amount VARCHAR(255) NOT NULL,
             discount_start_date VARCHAR(255),
             discount_end_date VARCHAR(255),
-            discount_condition VARCHAR(255),
+            discount_condition VARCHAR(255) NOT NULL,
+            discount_condition_start DATE,
+            discount_condition_end DATE,
             discount_auto_apply CHAR(1) NOT NULL DEFAULT 'N',
             discount_active CHAR(1) NOT NULL DEFAULT 'N',
             PRIMARY KEY (id)

@@ -64,9 +64,19 @@ function addDiscountForm() {
             <!-- Todo set conditions -->
             <label for="discount_condition">Condition:</label>
             <select name="discount_condition">
-                <option value="all">All</option>
-                <option value="specific">Specific</option>
+                <option value="None">None</option>
+                <option value="Date-Range">Date Range</option>
+                <option value="Weekdays">Weekdays</option>
+                <option value="Weekends">Weekends</option>
+                <option value="Off-Peak">Off Peak (Weekdays & Not Holiday)</option>
             </select>
+            <br>
+            <div class="discount-condition-date-range" hidden>
+                <label for="discount_condition_date_fom">Date From:</label>
+                <input type="date" name="discount_condition_date_fom">
+                <label for="discount_condition_date_to">Date To:</label>
+                <input type="date" name="discount_condition_date_to">
+            </div>
             <label for="discount_auto_apply">Auto Apply:</label>
             <select name="discount_auto_apply">
                 <option value="Y">Yes</option>
@@ -140,6 +150,16 @@ function addDiscountForm() {
 
                 $('input[name="discount_code"]').keyup(function() {
                     $(this).val($(this).val().toUpperCase());
+                });
+
+                $('select[name="discount_condition"]').change(function() {
+                    var discount_condition = $(this).val();
+                    var discount_condition_date_range = $('.discount-condition-date-range');
+                    if (discount_condition == 'Date-Range') {
+                        discount_condition_date_range.prop('hidden', false);
+                    } else {
+                        discount_condition_date_range.prop('hidden', true);
+                    }
                 });
             });
         </script>
