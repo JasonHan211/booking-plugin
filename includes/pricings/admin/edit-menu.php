@@ -27,6 +27,7 @@ function pricings_edit_page() {
         $discount_name = sanitize_text_field($_POST['discount_name']);
         $discount_description = sanitize_text_field($_POST['discount_description']);
         $discount_code = sanitize_text_field($_POST['discount_code']);
+        $discount_quantity = sanitize_text_field($_POST['discount_quantity']);
         $discount_type = sanitize_text_field($_POST['discount_type']);
         $discount_amount = sanitize_text_field($_POST['discount_amount']);
         $discount_start_date = sanitize_text_field($_POST['discount_start_date']);
@@ -38,10 +39,12 @@ function pricings_edit_page() {
             $discount_on_id = sanitize_text_field($_POST['discount_on_id']);
         }
         $discount_condition = sanitize_text_field($_POST['discount_condition']);
+        $discount_condition_start = sanitize_text_field($_POST['discount_condition_date_from']);
+        $discount_condition_end = sanitize_text_field($_POST['discount_condition_date_to']);
         $discount_auto_apply = sanitize_text_field($_POST['discount_auto_apply']);
         $discount_active = sanitize_text_field($_POST['discount_active']);
 
-        $pricingClass->update_discount($discount_id, $discount_name, $discount_description, $discount_code, $discount_type, $discount_amount, $discount_start_date, $discount_end_date, $discount_on_type, $discount_on_id, $discount_condition, $discount_auto_apply, $discount_active);
+        $pricingClass->update_discount($discount_id, $discount_name, $discount_description, $discount_code, $discount_quantity, $discount_type, $discount_amount, $discount_start_date, $discount_end_date, $discount_on_type, $discount_on_id, $discount_condition, $discount_condition_start, $discount_condition_end, $discount_auto_apply, $discount_active);
     
         wp_redirect(admin_url('admin.php?page=bookedin_pricings_submenu'));
         exit;
@@ -322,6 +325,8 @@ function pricings_edit_page() {
                 <textarea name="discount_description"><?php echo esc_textarea($discount['discount_description']); ?></textarea>
                 <label for="discount_code">Code:</label>
                 <input type="text" name="discount_code" value="<?php echo esc_attr($discount['discount_code']); ?>" required>
+                <label for="discount_quantity">Quantity:</label>
+                <input type="number" name="discount_quantity" value="<?php echo esc_attr($discount['discount_quantity']); ?>" required>
                 <label for="discount_type">Type:</label>
                 <select name="discount_type">
                     <option value="percentage" <?php if ($discount['discount_type'] === 'percentage') echo 'selected'; ?>>Percentage</option>
@@ -345,9 +350,15 @@ function pricings_edit_page() {
                 </select>
                 <label for="discount_condition">Condition:</label>
                 <select name="discount_condition">
-                    <option value="greater_than" <?php if ($discount['discount_condition'] === 'greater_than') echo 'selected'; ?>>Greater than</option>
-                    <option value="less_than" <?php if ($discount['discount_condition'] === 'less_than') echo 'selected'; ?>>Less than</option>
+                    <option value="None" <?php if ($discount['discount_condition'] === 'None') echo 'selected'; ?>>None</option>
+                    <option value="Weekdays" <?php if ($discount['discount_condition'] === 'Weekdays') echo 'selected'; ?>>Weekdays</option>
+                    <option value="Weekends" <?php if ($discount['discount_condition'] === 'Weekends') echo 'selected'; ?>>Weekends</option>
+                    <option value="Off-Peak" <?php if ($discount['discount_condition'] === 'Off-Peak') echo 'selected'; ?>>Off Peak (Weekdays & Not Holiday)</option>
                 </select>
+                <label for="discount_condition_date_from">Condition Date From:</label>
+                <input type="date" name="discount_condition_date_from" value="<?php echo esc_attr($discount['discount_condition_start']); ?>">
+                <label for="discount_condition_date_to">Condition Date To:</label>
+                <input type="date" name="discount_condition_date_to" value="<?php echo esc_attr($discount['discount_condition_end']); ?>">
                 <label for="discount_auto_apply">Auto Apply:</label>
                 <select name="discount_auto_apply">
                     <option value="Y" <?php if ($discount['discount_auto_apply'] === 'Y') echo 'selected'; ?>>Yes</option>

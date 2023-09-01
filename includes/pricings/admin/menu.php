@@ -83,6 +83,7 @@ function bookedin_pricings_submenu_page() {
                                 <th>Name</th>
                                 <th>Description</th>
                                 <th>Code</th>
+                                <th>Quantity</th>
                                 <th>Type</th>
                                 <th>Amount</th>
                                 <th>Start Date</th>
@@ -105,6 +106,7 @@ function bookedin_pricings_submenu_page() {
                                     <td><?php echo $discount['discount_name']; ?></td>
                                     <td><?php echo $discount['discount_description']; ?></td>
                                     <td><?php echo $discount['discount_code']; ?></td>
+                                    <td><?php echo $discount['discount_quantity']; ?></td>
                                     <td><?php echo $discount['discount_type']; ?></td>
                                     <td><?php echo $discount['discount_amount']; ?></td>
                                     <td><?php echo $discount['discount_start_date']; ?></td>

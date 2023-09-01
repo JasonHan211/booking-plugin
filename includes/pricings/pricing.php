@@ -87,12 +87,13 @@ class BookedInpricings {
 
     }
 
-    public function add_discount($discount_name, $discount_description, $discount_code, $discount_type, $discount_amount, $discount_start_date, $discount_end_date, $discount_on_type, $discount_on_id, $discount_condition, $discount_auto_apply, $discount_active) {
+    public function add_discount($discount_name, $discount_description, $discount_code, $discount_quantity, $discount_type, $discount_amount, $discount_start_date, $discount_end_date, $discount_on_type, $discount_on_id, $discount_condition, $discount_condition_start, $discount_condition_end, $discount_auto_apply, $discount_active) {
 
         $this->db->insert($this->discount_table_name, array(
             'discount_name' => $discount_name,
             'discount_description' => $discount_description,
             'discount_code' => $discount_code,
+            'discount_quantity' => $discount_quantity,
             'discount_type' => $discount_type,
             'discount_amount' => $discount_amount,
             'discount_start_date' => $discount_start_date,
@@ -100,6 +101,8 @@ class BookedInpricings {
             'discount_on_type' => $discount_on_type,
             'discount_on_id' => $discount_on_id,
             'discount_condition' => $discount_condition,
+            'discount_condition_start' => $discount_condition_start,
+            'discount_condition_end' => $discount_condition_end,
             'discount_auto_apply' => $discount_auto_apply,
             'discount_active' => $discount_active
         ));
@@ -124,12 +127,13 @@ class BookedInpricings {
 
     }
 
-    public function update_discount($discount_id, $discount_name, $discount_description, $discount_code, $discount_type, $discount_amount, $discount_start_date, $discount_end_date, $discount_on_type, $discount_on_id, $discount_condition, $discount_auto_apply, $discount_active) {
+    public function update_discount($discount_id, $discount_name, $discount_description, $discount_code, $discount_quantity, $discount_type, $discount_amount, $discount_start_date, $discount_end_date, $discount_on_type, $discount_on_id, $discount_condition, $discount_auto_apply, $discount_active) {
 
         $this->db->update($this->discount_table_name, array(
             'discount_name' => $discount_name,
             'discount_description' => $discount_description,
             'discount_code' => $discount_code,
+            'discount_quantity' => $discount_quantity,
             'discount_type' => $discount_type,
             'discount_amount' => $discount_amount,
             'discount_start_date' => $discount_start_date,
@@ -162,13 +166,13 @@ class BookedInpricings {
         dbDelta($sql);
     }
 
-    // Seperate DB for discounts
     public function createDiscoundDB() {
         $sql = "CREATE TABLE IF NOT EXISTS $this->discount_table_name (
             id INT NOT NULL AUTO_INCREMENT,
             discount_name VARCHAR(255) NOT NULL,
             discount_description TEXT,
             discount_code VARCHAR(255) NOT NULL,
+            discount_quantity INT,
             discount_type VARCHAR(255) NOT NULL,  -- percentage or amount,     -- percentage or amount
             discount_on_type VARCHAR(255) NOT NULL,
             discount_on_id VARCHAR(255) NOT NULL,      

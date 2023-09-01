@@ -9,6 +9,7 @@ function addDiscountForm() {
         $discount_name = sanitize_text_field($_POST['discount_name']);
         $discount_description = sanitize_text_field($_POST['discount_description']);
         $discount_code = sanitize_text_field($_POST['discount_code']);
+        $discount_quantity = sanitize_text_field($_POST['discount_quantity']);
         $discount_type = sanitize_text_field($_POST['discount_type']);
         $discount_amount = sanitize_text_field($_POST['discount_amount']);
         $discount_start_date = sanitize_text_field($_POST['discount_start_date']);
@@ -20,10 +21,12 @@ function addDiscountForm() {
             $discount_on_id = sanitize_text_field($_POST['discount_on_id']);
         }
         $discount_condition = sanitize_text_field($_POST['discount_condition']);
+        $discount_condition_start = sanitize_text_field($_POST['discount_condition_date_from']);
+        $discount_condition_end = sanitize_text_field($_POST['discount_condition_date_to']);
         $discount_auto_apply = sanitize_text_field($_POST['discount_auto_apply']);
         $discount_active = sanitize_text_field($_POST['discount_active']);
 
-        $pricingClass->add_discount($discount_name, $discount_description, $discount_code, $discount_type, $discount_amount, $discount_start_date, $discount_end_date, $discount_on_type, $discount_on_id, $discount_condition, $discount_auto_apply, $discount_active);
+        $pricingClass->add_discount($discount_name, $discount_description, $discount_code, $discount_quantity, $discount_type, $discount_amount, $discount_start_date, $discount_end_date, $discount_on_type, $discount_on_id, $discount_condition, $discount_condition_start, $discount_condition_end, $discount_auto_apply, $discount_active);
         
     }
 
@@ -38,6 +41,8 @@ function addDiscountForm() {
             <label for="discount_code">Code:</label>
             <input type="text" name="discount_code" class="all-cap" required>
             <br>
+            <label for="discount_quantity">Quantity:</label>
+            <input type="number" name="discount_quantity" min=0 step="1" required>
             <label for="discount_type">Type:</label>
             <select name="discount_type">
                 <option value="Percentage">Percentage</option>
@@ -64,15 +69,14 @@ function addDiscountForm() {
             <label for="discount_condition">Condition:</label>
             <select name="discount_condition">
                 <option value="None">None</option>
-                <option value="Date-Range">Date Range</option>
                 <option value="Weekdays">Weekdays</option>
                 <option value="Weekends">Weekends</option>
                 <option value="Off-Peak">Off Peak (Weekdays & Not Holiday)</option>
             </select>
             <br>
-            <div class="discount-condition-date-range" hidden>
+            <div class="discount-condition-date-range">
                 <label for="discount_condition_date_fom">Date From:</label>
-                <input type="date" name="discount_condition_date_fom">
+                <input type="date" name="discount_condition_date_from">
                 <label for="discount_condition_date_to">Date To:</label>
                 <input type="date" name="discount_condition_date_to">
             </div>
@@ -151,15 +155,6 @@ function addDiscountForm() {
                     $(this).val($(this).val().toUpperCase());
                 });
 
-                $('select[name="discount_condition"]').change(function() {
-                    var discount_condition = $(this).val();
-                    var discount_condition_date_range = $('.discount-condition-date-range');
-                    if (discount_condition == 'Date-Range') {
-                        discount_condition_date_range.prop('hidden', false);
-                    } else {
-                        discount_condition_date_range.prop('hidden', true);
-                    }
-                });
             });
         </script>
 
