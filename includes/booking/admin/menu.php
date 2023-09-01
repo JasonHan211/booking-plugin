@@ -28,6 +28,7 @@ function my_booking_plugin_option_page() {
         $booking_description = sanitize_textarea_field($_POST['booking_description']);
         $booking_paid = sanitize_text_field($_POST['booking_paid']);
         $booking_price = sanitize_text_field($_POST['booking_price']);
+        $booking_discount = sanitize_text_field($_POST['booking_discount']);
         $booking_adults = sanitize_text_field($_POST['booking_adults']);
         $booking_children = sanitize_text_field($_POST['booking_children']);    
         $booking_user = sanitize_text_field($_POST['booking_user']);
@@ -36,7 +37,7 @@ function my_booking_plugin_option_page() {
 
         
         $selectedAddons = array();
-        
+        $booking_addon = array();
         if (isset($_POST['booking_addon']) && !empty($_POST['booking_addon'])) {
             $booking_addon = array_map('sanitize_text_field', $_POST['booking_addon']);
             $allAddon = $addonClass->get_addons(null,'Y');
@@ -56,12 +57,16 @@ function my_booking_plugin_option_page() {
             return;
         }
 
-        $booking_header_id = $bookingClass->add_booking_header($booking_date_from, $booking_date_to, $booking_resource, $booking_notes, $booking_description, $booking_paid, $booking_price, $booking_adults, $booking_children, $booking_user, $booking_email, $booking_phone);
+        [$price, $_, $_] = $bookingClass->calculate_price($booking_date_from, $booking_date_to, $booking_resource, $booking_addon, $booking_adults, $booking_children, $booking_discount);
+        
+        echo "<script>alert('Calculated price: $price');</script>";
+
+        $booking_header_id = $bookingClass->add_booking_header($booking_date_from, $booking_date_to, $booking_resource, $booking_notes, $booking_description, $booking_paid, $booking_discount, $booking_price, $booking_adults, $booking_children, $booking_user, $booking_email, $booking_phone);
 
         // Add booking for selected addon with charge once
         foreach ($selectedAddons as $addon) {
             if ($addon['addon_perday'] == 'N') {
-                $bookingClass->add_booking_addon($booking_header_id, $booking_date_from, $addon['id'], $booking_paid);
+                $bookingClass->add_booking_addon($booking_header_id, $booking_date_from, $addon['id'], $booking_paid, $booking_discount);
             }
         }
 
@@ -74,7 +79,7 @@ function my_booking_plugin_option_page() {
             // Add booking for selected addon with charge per day
             foreach ($selectedAddons as $addon) {
                 if ($addon['addon_perday'] == 'Y') {
-                    $bookingClass->add_booking_addon($booking_header_id, $booking_date, $addon['id'], $booking_paid);
+                    $bookingClass->add_booking_addon($booking_header_id, $booking_date, $addon['id'], $booking_paid, $booking_discount);
                 }
             }
         }

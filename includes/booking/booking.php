@@ -79,38 +79,120 @@ class BookedInBookings {
 
     }
 
-    public function calculate_price($booking_date_from, $booking_date_to, $booking_resource, $booking_addon, $booking_adult, $booking_children) {
-
+    public function calculate_resource_price($nights, $booking_resource, $booking_adult, $booking_children, $booking_discount) {
+       
         $total_price = 0;
-        
-        $nights = $this->get_nights($booking_date_from, $booking_date_to);
+        $applied_discount = array();
 
         // Get resource price
         $resource = $this->resoucesClass->get_resources($booking_resource);
         $resource_price_id = $resource['resource_price'];
         $resource_price = $this->pricingClass->calculatePrice($resource_price_id, $booking_adult, $booking_children);
-        $total_price += $total_price + ($resource_price * $nights);
+
+        // Get discount 
+        $discounts = $this->pricingClass->get_auto_apply_discount('Resources', $resource['id']);
         
+        if ($discounts != null) {
+            
+            foreach ($discounts as $discount) {
+                $discount_type = $discount['discount_type'];
+                $discount_amount = $discount['discount_amount'];
+
+                if ($discount_type == 'Fixed') {
+
+                    $total_price = $resource_price - $discount_amount;
+
+                } else if ($discount_type == 'Percentage') {
+
+                    $total_price = $resource_price - ($resource_price * ($discount_amount / 100));
+
+                }
+
+                $applied_discount[] = $discount['discount_name'];
+
+            }
+
+        }
+
+        $total_price = $total_price * $nights;
+        $ori_price = $resource_price * $nights;
+        
+        return [$total_price, $ori_price, $applied_discount];
+    }
+
+    public function calculate_addon_price($nights, $booking_addon, $booking_adult, $booking_children, $booking_discount) {
+
+        $total_price = 0;
+        $ori_price = 0;
+        $applied_discount = array();
+
         // Get addon price
         if ($booking_addon != null) {
             foreach ($booking_addon as $addonid) {
+                
                 $addon = $this->addonsClass->get_addons($addonid);
                 $addon_price_id = $addon['addon_price'];
+                $addon_price = $this->pricingClass->calculatePrice($addon_price_id, $booking_adult, $booking_children);
+                
+                // Get discount 
+                $discounts = $this->pricingClass->get_auto_apply_discount('Addon', $addon['id']);
+                   
+                if ($discounts != null) {
+                    
+                    foreach ($discounts as $discount) {
+
+                        $discount_type = $discount['discount_type'];
+                        $discount_amount = $discount['discount_amount'];
+
+                        if ($discount_type == 'Fixed') {
+
+                            $total_price = $addon_price - $discount_amount;
+
+                        } else if ($discount_type == 'Percentage') {
+
+                            $total_price = $addon_price - ($addon_price * ($discount_amount / 100));
+
+                        }
+
+                    }
+
+                    $applied_discount[] = $discount['discount_name'];
+
+                }
+                
                 if ($addon['addon_perday'] == 'Y') {
-                    $addon_price = $this->pricingClass->calculatePrice($addon_price_id, $booking_adult, $booking_children);
-                    $total_price += $addon_price * $nights;
+                    $total_price += $total_price * $nights;
+                    $ori_price += $addon_price * $nights;
                 } else {
-                    $addon_price = $this->pricingClass->calculatePrice($addon_price_id, $booking_adult, $booking_children);
-                    $total_price += $addon_price;
+                    $total_price += $total_price;
+                    $ori_price += $addon_price;
                 }
             }
         }
+        return [$total_price, $ori_price, $applied_discount];
+    }
 
-        return $total_price;
+    public function calculate_price($booking_date_from, $booking_date_to, $booking_resource, $booking_addon, $booking_adult, $booking_children, $booking_discount) {
+
+        $total_price = 0;
+        
+        $nights = $this->get_nights($booking_date_from, $booking_date_to);
+
+        [$resource_price, $r_ori_price, $r_discount] = $this->calculate_resource_price($nights, $booking_resource, $booking_adult, $booking_children, $booking_discount);
+        $total_price += $resource_price;
+        
+        [$addon_price, $a_ori_price, $a_discount] = $this->calculate_addon_price($nights, $booking_addon, $booking_adult, $booking_children, $booking_discount);
+        $total_price += $addon_price;
+
+        //Merge array
+        $total_discount = array_merge($r_discount, $a_discount);
+        $ori_price = $r_ori_price + $a_ori_price;
+
+        return [$total_price, $ori_price, $total_discount];
 
     }
 
-    public function add_booking_header($booking_date_from, $booking_date_to,$booking_resource, $booking_notes, $booking_description, $booking_paid, $booking_price, $booking_adults, $booking_children, $booking_user, $booking_email, $booking_phone ) {
+    public function add_booking_header($booking_date_from, $booking_date_to,$booking_resource, $booking_notes, $booking_description, $booking_paid, $booking_discount, $booking_price, $booking_adults, $booking_children, $booking_user, $booking_email, $booking_phone ) {
 
         $this->db->insert($this->booking_header_table_name, array(
             'booking_date_from' => $booking_date_from,
@@ -119,6 +201,7 @@ class BookedInBookings {
             'booking_notes' => $booking_notes,
             'booking_description' => $booking_description,
             'booking_paid' => $booking_paid,
+            'booking_discount' => $booking_discount,
             'booking_price' => $booking_price,
             'booking_adults' => $booking_adults,
             'booking_children' => $booking_children,
@@ -147,13 +230,14 @@ class BookedInBookings {
 
     }
 
-    public function add_booking_addon($booking_header_id, $booking_date, $booking_addon, $booking_paid) {
+    public function add_booking_addon($booking_header_id, $booking_date, $booking_addon, $booking_paid, $booking_discount) {
 
         $this->db->insert($this->booking_addons_table_name, array(
             'booking_header_id' => $booking_header_id,
             'booking_date' => $booking_date,
             'booking_addon' => $booking_addon,
-            'booking_paid' => $booking_paid
+            'booking_paid' => $booking_paid,
+            'booking_discount' => $booking_discount,
         ));
 
         $id = $this->db->insert_id;
@@ -270,6 +354,7 @@ class BookedInBookings {
             booking_notes TEXT,
             booking_description TEXT,
             booking_paid CHAR(1) NOT NULL DEFAULT 'N',
+            booking_discount VARCHAR(255),
             booking_price VARCHAR(255) NOT NULL DEFAULT 0,
             booking_adults INT NOT NULL DEFAULT 0,
             booking_children INT NOT NULL DEFAULT 0,
@@ -309,6 +394,7 @@ class BookedInBookings {
             booking_date DATE NOT NULL,
             booking_addon VARCHAR(255),
             booking_paid CHAR(1) NOT NULL DEFAULT 'N',
+            booking_discount VARCHAR(255),
             created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
             edited_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
             PRIMARY KEY (id)
@@ -381,9 +467,10 @@ function calculate_price_callback($request) {
     $addon = $request->get_param('booking_addon');
     $adults = $request->get_param('booking_adults');
     $children = $request->get_param('booking_children');
+    $discount = $request->get_param('booking_discount');
 
     $booking = new BookedInBookings();
-    $price = $booking->calculate_price($start, $end, $resource, $addon, $adults, $children);
+    [$price, $ori_price, $discount] = $booking->calculate_price($start, $end, $resource, $addon, $adults, $children, $discount);
 
-    return new WP_REST_Response(array('price'=>$price,'message'=>'Success'), 200);
+    return new WP_REST_Response(array('price'=>$price, 'discount'=>$discount, 'original_price'=>$ori_price, 'message'=>'Success'), 200);
 }

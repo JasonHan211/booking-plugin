@@ -87,6 +87,67 @@ class BookedInpricings {
 
     }
 
+    public function check_availability($discount){
+        
+        // Check if discount date is within apply discount date
+        $today = date('Y-m-d');
+        if ($discount['discount_start_date'] < $today) {   
+            return null;
+        } else if ($discount['discount_end_date'] <  $today) {
+            $this->update_discount($discount['id'],$discount['discount_name'],$discount['discount_description'],$discount['discount_code'],$discount['discount_quantity'],$discount['discount_type'],$discount['discount_amount'],$discount['discount_start_date'],$discount['discount_end_date'],$discount['discount_on_type'],$discount['discount_on_id'],$discount['discount_condition'],$discount['discount_condition_start'],$discount['discount_condition_end'],$discount['discount_auto_apply'],'N');
+            return null;
+        }
+
+        // Check discount quantity left
+        if ($discount['discount_quantity'] == 0) {
+            return null;
+        } else {
+            $new_quantity = $discount['discount_quantity'] - 1; 
+            $this->update_discount($discount['id'],$discount['discount_name'],$discount['discount_description'],$discount['discount_code'],$new_quantity,$discount['discount_type'],$discount['discount_amount'],$discount['discount_start_date'],$discount['discount_end_date'],$discount['discount_on_type'],$discount['discount_on_id'],$discount['discount_condition'],$discount['discount_condition_start'],$discount['discount_condition_end'],$discount['discount_auto_apply'],$discount['discount_active']);
+        }
+        
+        // Check discount condition
+
+
+        return $discount;
+    }
+
+    public function get_auto_apply_discount($type, $id) {
+        
+        $output = array();
+        
+        $discounts = $this->db->get_results(
+            "SELECT * 
+            FROM $this->discount_table_name 
+            WHERE (discount_on_type = '$type' OR discount_on_type = 'All') 
+            AND (discount_on_id = $id OR discount_on_id = 'All')
+            AND discount_auto_apply = 'Y'
+            AND discount_active = 'Y'", ARRAY_A);
+        echo $this->db->last_error;
+
+        foreach ($discounts as $discount) {
+
+            $discount = $this->check_availability($discount);
+            if ($discount === null) continue;
+
+            $output[] = $discount;
+            
+        }
+
+        return $output;
+    }
+
+    public function get_discount_by_code($discount_code) {
+
+        $discount = $this->db->get_row("SELECT * FROM $this->discount_table_name WHERE discount_code = '$discount_code' AND discount_active = 'Y'", ARRAY_A);
+        echo $this->db->last_error;
+
+        $discount = $this->check_availability($discount);
+
+        return $discount;
+
+    }
+
     public function add_discount($discount_name, $discount_description, $discount_code, $discount_quantity, $discount_type, $discount_amount, $discount_start_date, $discount_end_date, $discount_on_type, $discount_on_id, $discount_condition, $discount_condition_start, $discount_condition_end, $discount_auto_apply, $discount_active) {
 
         $this->db->insert($this->discount_table_name, array(

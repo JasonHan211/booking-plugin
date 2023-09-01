@@ -66,6 +66,10 @@ function newBookingForm() {
                             <label for="booking_price" class="form-label">Price:</label>
                             <input type="text" class="form-control" name="booking_price" required>
                         </div>
+                        <div class="mb-3">
+                            <label for="booking_discount" class="form-label">Discount Code:</label>
+                            <input type="text" class="form-control" name="booking_discount">
+                        </div>
                     </div>
 
                     <!-- Right Column -->
@@ -103,7 +107,8 @@ function newBookingForm() {
                 let endDate = document.getElementById('booking_date_to').value;
                 let resource = document.getElementsByName('booking_resource')[0].value;
                 let adult = document.getElementsByName('booking_adults')[0].value;
-                let children = document.getElementsByName('booking_children')[0].value;    
+                let children = document.getElementsByName('booking_children')[0].value;
+                let discount = document.getElementsByName('booking_discount')[0].value;    
                 let addons = [];
                 const checkboxes = document.querySelectorAll('[name="booking_addon[]"]');
             
@@ -116,7 +121,7 @@ function newBookingForm() {
                 if (startDate == '' || endDate == '' || resource == '') {
                     return;
                 }
-
+                console.log(addons);
                 $.ajax({
                     url: '<?php echo get_rest_url(null, 'v1/booking/calculate_price');?>',
                     type: 'POST',
@@ -127,7 +132,8 @@ function newBookingForm() {
                         booking_resource: resource,
                         booking_addon: addons,
                         booking_adults: adult,
-                        booking_children: children
+                        booking_children: children,
+                        booking_discount: discount
                     },
                     success: function (data) {
                         
