@@ -61,7 +61,6 @@ function addDiscountForm() {
             <select name="discount_on_id" disabled>
                 <option value="null">N/A</option>
             </select>
-            <!-- Todo set conditions -->
             <label for="discount_condition">Condition:</label>
             <select name="discount_condition">
                 <option value="None">None</option>
