@@ -65,6 +65,7 @@ function bookingTable() {
                     <th>Notes</th>
                     <th>Description</th>
                     <th>Paid</th>
+                    <th>Discount Code</th>
                     <th>Price</th>
                     <th>Adults</th>
                     <th>Children</th>
@@ -97,6 +98,7 @@ function bookingTable() {
                         <td><?php echo $booking['booking_notes']; ?></td>
                         <td><?php echo $booking['booking_description']; ?></td>
                         <td><?php echo $booking['booking_paid']; ?></td>
+                        <td><?php echo $booking['booking_discount']; ?></td>
                         <td><?php echo $booking['booking_price']; ?></td>
                         <td><?php echo $booking['booking_adults']; ?></td>
                         <td><?php echo $booking['booking_children']; ?></td>

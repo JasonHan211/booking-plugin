@@ -14,7 +14,7 @@ class BookedInMenuPage {
             if (class_exists('BookedInBookings')) {
                 $bookings = new BookedInBookings();
                 register_activation_hook(BI_FILE, array($bookings,'activate'));
-                // register_deactivation_hook(BI_FILE, array($bookings,'deactivate')); 
+                register_deactivation_hook(BI_FILE, array($bookings,'deactivate')); 
                 
                 add_action('admin_menu', array($this, 'bookedin_add_menu_page'));
                 add_action( 'admin_menu', array($this,'bookedin_booking_edit_submenu'));
@@ -29,7 +29,7 @@ class BookedInMenuPage {
             if (class_exists('BookedInPricings')) {
                 $pricing = new BookedInPricings();
                 register_activation_hook(BI_FILE, array($pricing,'pricings_activate'));
-                register_deactivation_hook(BI_FILE, array($pricing,'pricings_deactivate'));    
+                // register_deactivation_hook(BI_FILE, array($pricing,'pricings_deactivate'));    
             
                 add_action( 'admin_menu', array($this,'bookedin_pricings_submenu'));
                 add_action( 'admin_menu', array($this,'bookedin_pricings_edit_submenu'));

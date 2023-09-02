@@ -442,7 +442,7 @@ class BookedInpricings {
 
     public function pricings_deactivate(){
         
-        // $this->deleteDB($this->table_name);
+        $this->deleteDB($this->table_name);
         $this->deleteDB($this->discount_table_name);
 
     }

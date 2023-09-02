@@ -17,7 +17,7 @@ function bookingCalendar($display=true) {
             var display = <?php echo $display ? 'true' : 'false'; ?>;
             var totalResources = <?php echo $totalResources; ?>;
             var bookingSlots = <?php echo json_encode($bookingSlots); ?>;
-                   
+            
             // Get the current month and year
             var currentDate = new Date();
             var currentMonth = currentDate.getMonth() + 1; // Adding 1 to get 1-12 range
@@ -32,12 +32,17 @@ function bookingCalendar($display=true) {
             function formatDate(date) {
                 var d = new Date(date);
                 var month = (d.getMonth() + 1);
+                var day = d.getDate();
 
                 if (month < 10) {
                     month = '0' + month;
                 }
 
-                return d.getFullYear() + '-' + month + '-' + d.getDate();
+                if (day < 10) {
+                    day = '0' + day;
+                }
+
+                return d.getFullYear() + '-' + month + '-' + day;
             }
 
             // Previous month
@@ -111,11 +116,11 @@ function bookingCalendar($display=true) {
 
                             // Fill in the date and available slots
                             var formattedDate = formatDate(currentDate);
-
+                            
                             var slot = bookingSlots.find(function(slot) {
                                 return slot.date === formattedDate;
                             });
-
+                            
                             var availableSlots = slot ? slot.availableSlots : totalResources;
                             
                             calendarHTML += '<div data-slots="' + availableSlots + '" data-date="' + currentDate + '" onclick="selectDate(this)">';

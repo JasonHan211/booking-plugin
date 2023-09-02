@@ -59,8 +59,7 @@ function my_booking_plugin_option_page() {
 
         [$price, $_, $_] = $bookingClass->calculate_price($booking_date_from, $booking_date_to, $booking_resource, $booking_addon, $booking_adults, $booking_children, $booking_discount);
         
-        echo "<script>alert('Calculated price: $price');</script>";
-
+        
         $booking_header_id = $bookingClass->add_booking_header($booking_date_from, $booking_date_to, $booking_resource, $booking_notes, $booking_description, $booking_paid, $booking_discount, $booking_price, $booking_adults, $booking_children, $booking_user, $booking_email, $booking_phone);
 
         // Add booking for selected addon with charge once

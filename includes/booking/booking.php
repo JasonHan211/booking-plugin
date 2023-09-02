@@ -153,7 +153,7 @@ class BookedInBookings {
             'booking_email' => $booking_email,
             'booking_phone' => $booking_phone,
         ));
-
+        echo $this->db->last_error;
         $id = $this->db->insert_id;
 
         return $id;
@@ -202,6 +202,7 @@ class BookedInBookings {
             bh.booking_notes as 'booking_notes',
             bh.booking_description as 'booking_description',
             bh.booking_paid as 'booking_paid',
+            bh.booking_discount as 'booking_discount',
             bh.booking_price as 'booking_price',
             bh.booking_adults as 'booking_adults',
             bh.booking_children as 'booking_children',
