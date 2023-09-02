@@ -68,7 +68,7 @@ function newBookingForm() {
                         </div>
                         <div class="mb-3">
                             <label for="booking_discount" class="form-label">Discount Code:</label>
-                            <input type="text" class="form-control" name="booking_discount">
+                            <input type="text" class="form-control" name="booking_discount" onchange="updatePrice()">
                         </div>
                     </div>
 
@@ -229,8 +229,8 @@ function newBookingForm() {
                             option.text = resource.name;
                             option.setAttribute('data-price', resource.price);
                             selectElement.appendChild(option);
-                            updatePrice();
                         });
+                        updatePrice();
                     }
                 });
             }

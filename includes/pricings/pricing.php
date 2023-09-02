@@ -3,9 +3,6 @@
 // Exit if accessed directly
 if (!defined('ABSPATH')) exit;
 
-require_once (BI_PLUGIN_PATH . '/includes/addons/addons.php');
-require_once (BI_PLUGIN_PATH . '/includes/booking/booking.php');
-
 class BookedInpricings {
 
     private $db;
@@ -87,36 +84,96 @@ class BookedInpricings {
 
     }
 
-    public function check_availability($discount){
+    public function check_availability($discount, $date){
         
         // Check if discount date is within apply discount date
         $today = date('Y-m-d');
-        if ($discount['discount_start_date'] < $today) {   
+        if ($discount['discount_start_date'] > $today) {   
             return null;
-        } else if ($discount['discount_end_date'] <  $today) {
+        } else if ($discount['discount_end_date'] < $today) {
             $this->update_discount($discount['id'],$discount['discount_name'],$discount['discount_description'],$discount['discount_code'],$discount['discount_quantity'],$discount['discount_type'],$discount['discount_amount'],$discount['discount_start_date'],$discount['discount_end_date'],$discount['discount_on_type'],$discount['discount_on_id'],$discount['discount_condition'],$discount['discount_condition_start'],$discount['discount_condition_end'],$discount['discount_auto_apply'],'N');
             return null;
+        }
+
+        // Check discount condition
+        $discount_condition = $discount['discount_condition'];
+        $discount_condition_start = $discount['discount_condition_start'];
+        $discount_condition_end = $discount['discount_condition_end'];
+        
+        if ($discount_condition_start > $date || $discount_condition_end < $date) return null;
+
+        if ($discount_condition == 'None') {
+            return $discount;
+        } else if ($discount_condition == 'Off-Peak') {
+
+            // To be added after having holiday table
+            // Check if date is a weekday
+            $date_obj = new DateTime($date);
+            $day = $date_obj->format('l');
+            if ($day == 'Friday' || $day == 'Saturday' || $day == 'Sunday') {
+                return null;
+            }
+
+        } else if ($discount_condition == 'Weekdays') {
+
+            // Check if date is a weekday
+            $date_obj = new DateTime($date);
+            $day = $date_obj->format('l');
+            if ($day == 'Friday' || $day == 'Saturday' || $day == 'Sunday') {
+                return null;
+            }
+
+        } else if ($discount_condition == 'Weekends') {
+
+            // Check if date is a weekends
+            $date_obj = new DateTime($date);
+            $day = $date_obj->format('l');
+            if ($day == 'Monday' || $day == 'Tuesday' || $day == 'Wednesday' || $day == 'Thursday') {
+                return null;
+            }
+
         }
 
         // Check discount quantity left
         if ($discount['discount_quantity'] == 0) {
             return null;
         } else {
-            $new_quantity = $discount['discount_quantity'] - 1; 
-            $this->update_discount($discount['id'],$discount['discount_name'],$discount['discount_description'],$discount['discount_code'],$new_quantity,$discount['discount_type'],$discount['discount_amount'],$discount['discount_start_date'],$discount['discount_end_date'],$discount['discount_on_type'],$discount['discount_on_id'],$discount['discount_condition'],$discount['discount_condition_start'],$discount['discount_condition_end'],$discount['discount_auto_apply'],$discount['discount_active']);
+            // $new_quantity = $discount['discount_quantity'] - 1; 
+            // $this->update_discount($discount['id'],$discount['discount_name'],$discount['discount_description'],$discount['discount_code'],$new_quantity,$discount['discount_type'],$discount['discount_amount'],$discount['discount_start_date'],$discount['discount_end_date'],$discount['discount_on_type'],$discount['discount_on_id'],$discount['discount_condition'],$discount['discount_condition_start'],$discount['discount_condition_end'],$discount['discount_auto_apply'],$discount['discount_active']);
         }
-        
-        // Check discount condition
-
 
         return $discount;
     }
 
-    public function get_auto_apply_discount($type, $id) {
-        
-        $output = array();
-        
-        $discounts = $this->db->get_results(
+    public function apply_discount($discount, $price) {
+
+        $discount_type = $discount['discount_type'];
+        $discount_amount = $discount['discount_amount'];
+
+        if ($discount_type == 'Fixed') {
+
+            $price = $price - $discount_amount;
+
+        } else if ($discount_type == 'Percentage') {
+
+            $price = $price - ($price * ($discount_amount / 100));
+
+        }
+
+        return $price;
+
+    }
+
+    public function apply_auto_discount($type, $id, $price_id, $discount, $start, $end,  $booking_adult, $booking_children, $addon_perday='N') {
+
+        // Get price for the product
+        $original_price = $this->calculatePrice($price_id, $booking_adult, $booking_children);
+        $discounted_price = 0;
+        $undiscounted_price = 0;
+
+        // Get available discounts
+        $applied_discount = array();
+        $auto_discounts = $this->db->get_results(
             "SELECT * 
             FROM $this->discount_table_name 
             WHERE (discount_on_type = '$type' OR discount_on_type = 'All') 
@@ -124,25 +181,144 @@ class BookedInpricings {
             AND discount_auto_apply = 'Y'
             AND discount_active = 'Y'", ARRAY_A);
         echo $this->db->last_error;
+        
+        $code_discount = $this->db->get_results(
+            "SELECT *
+            FROM $this->discount_table_name
+            WHERE discount_code = '$discount'
+            AND discount_active = 'Y'", ARRAY_A);
+        echo $this->db->last_error;
 
-        foreach ($discounts as $discount) {
+        // Resources
+        if ($type == 'Resources' || $type == 'All') {
 
-            $discount = $this->check_availability($discount);
-            if ($discount === null) continue;
+            $booking_date = date('Y-m-d', strtotime($start));
 
-            $output[] = $discount;
+            // Apply discount to each day
+            while (strtotime($booking_date) < strtotime($end)) {
+
+                $day_price = $original_price;
+
+                // Check auto apply discount 
+                foreach ($auto_discounts as $discount) {
+
+                    $discount = $this->check_availability($discount, $booking_date);
+                    
+                    if ($discount !== null) {
+                        $day_price = $this->apply_discount($discount, $day_price);
+                        $applied_discount[] = $discount['discount_name'];
+                    } 
+        
+                }
+
+                // Check code apply discount
+                foreach ($code_discount as $discount) {
+                    $discount = $this->check_availability($discount, $booking_date);
+                    
+                    if ($discount !== null) {
+                        $day_price = $this->apply_discount($discount, $day_price);
+                        $applied_discount[] = $discount['discount_name'];
+                    } 
+                }
+
+                $discounted_price += $day_price;
+                $undiscounted_price += $original_price;
+
+                $booking_date = date('Y-m-d', strtotime($booking_date . ' +1 day'));
+
+            }
+
+            return array('discounted_price' => $discounted_price, 'applied_discount' => $applied_discount, 'original_price' => $undiscounted_price);
             
+
+        } else if ($type == 'Addon' || $type == 'All') {
+
+            $booking_date = date('Y-m-d', strtotime($start));
+
+            // Per day
+            if ($addon_perday == 'Y') {
+
+                // Apply discount to each day
+                while (strtotime($booking_date) < strtotime($end)) {
+
+                    $day_price = $original_price;
+
+                    foreach ($auto_discounts as $discount) {
+
+                        $discount = $this->check_availability($discount, $booking_date);
+                        
+                        if ($discount !== null) {
+                            $day_price = $this->apply_discount($discount, $day_price);
+                            $applied_discount[] = $discount['discount_name'];
+                        } 
+
+                    }
+
+                    foreach ($code_discount as $discount) {
+
+                        $discount = $this->check_availability($discount, $booking_date);
+                        
+                        if ($discount !== null) {
+                            $day_price = $this->apply_discount($discount, $day_price);
+                            $applied_discount[] = $discount['discount_name'];
+                        } 
+
+                    }
+
+                    $discounted_price += $day_price;
+                    $undiscounted_price += $original_price;
+
+                    $booking_date = date('Y-m-d', strtotime($booking_date . ' +1 day'));
+
+                }
+
+                return array('discounted_price' => $discounted_price, 'applied_discount' => $applied_discount, 'original_price' => $undiscounted_price);
+
+            }
+
+            // One time
+            $day_price = $original_price;
+
+            foreach ($auto_discounts as $discount) {
+
+                $discount = $this->check_availability($discount, $booking_date);
+                
+                if ($discount !== null) {
+                    $day_price += $this->apply_discount($discount, $original_price);
+                    $applied_discount[] = $discount['discount_name'];
+                }
+    
+            }
+
+            foreach ($code_discount as $discount) {
+
+                $discount = $this->check_availability($discount, $booking_date);
+                
+                if ($discount !== null) {
+                    $day_price += $this->apply_discount($discount, $original_price);
+                    $applied_discount[] = $discount['discount_name'];
+                }
+    
+            }
+
+            $discounted_price = $day_price;
+            $undiscounted_price = $original_price;
+
+            return array('discounted_price' => $discounted_price, 'applied_discount' => $applied_discount, 'original_price' => $undiscounted_price);
+
         }
 
-        return $output;
+
+        return array('discounted_price' => null, 'applied_discount' => null, 'original_price' => null);
+
     }
 
-    public function get_discount_by_code($discount_code) {
+    public function get_discount_by_code($discount_code,$start,$end) {
 
         $discount = $this->db->get_row("SELECT * FROM $this->discount_table_name WHERE discount_code = '$discount_code' AND discount_active = 'Y'", ARRAY_A);
         echo $this->db->last_error;
 
-        $discount = $this->check_availability($discount);
+        $discount = $this->check_availability($discount,$start,$end);
 
         return $discount;
 
@@ -236,7 +412,7 @@ class BookedInpricings {
             discount_quantity INT,
             discount_type VARCHAR(255) NOT NULL,  -- percentage or amount,     -- percentage or amount
             discount_on_type VARCHAR(255) NOT NULL,
-            discount_on_id VARCHAR(255) NOT NULL,      
+            discount_on_id VARCHAR(255),      
             discount_amount VARCHAR(255) NOT NULL,
             discount_start_date VARCHAR(255),
             discount_end_date VARCHAR(255),

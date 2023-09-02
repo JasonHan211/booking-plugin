@@ -64,7 +64,7 @@ function addDiscountForm() {
             </select>
             <label for="discount_on_id">On ID:</label>
             <select name="discount_on_id" disabled>
-                <option value="null">N/A</option>
+                <option value="All">N/A</option>
             </select>
             <label for="discount_condition">Condition:</label>
             <select name="discount_condition">
