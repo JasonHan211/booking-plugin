@@ -8,6 +8,7 @@ function my_booking_plugin_option_page() {
 
     $bookingClass = new BookedInBookings();
     $addonClass = new BookedInAddons();
+    $pricingClass = new BookedInPricings();
 
     // Check user capabilities
     if (!current_user_can('manage_options')) {
@@ -82,6 +83,12 @@ function my_booking_plugin_option_page() {
                 }
             }
         }
+
+        // Update discount quantity
+        $discount = $pricingClass->get_discount_by_code($booking_discount);
+        $new_quantity = $discount['discount_quantity'] - 1; 
+        $pricingClass->update_discount($discount['id'],$discount['discount_name'],$discount['discount_description'],$discount['discount_code'],$new_quantity,$discount['discount_type'],$discount['discount_amount'],$discount['discount_start_date'],$discount['discount_end_date'],$discount['discount_on_type'],$discount['discount_on_id'],$discount['discount_condition'],$discount['discount_condition_start'],$discount['discount_condition_end'],$discount['discount_auto_apply'],$discount['discount_active']);
+
             
     }
 
