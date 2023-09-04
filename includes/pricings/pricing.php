@@ -191,6 +191,48 @@ class BookedInpricings {
 
             $booking_date = date('Y-m-d', strtotime($start));
 
+            // Each discount
+            foreach ($auto_discounts as $discount) {
+
+                $amount_eligible = 0;
+                $amount_not_eligible = 0;
+                $days = 1;
+                
+                $booking_date = date('Y-m-d', strtotime($start));
+
+                while (strtotime($booking_date) < strtotime($end)) {
+
+                    $discount = $this->check_availability($discount, $booking_date);
+
+                    if ($discount !== null) {
+
+                        $amount_eligible += $original_price;
+
+                        // If discount code not in array
+                        if (!in_array($discount['discount_code'], $applied_discount)) {
+                            $applied_discount[] = $discount['discount_code'];
+                        }
+
+                    } else {
+
+                        $amount_not_eligible += $original_price;
+
+                    }
+
+                    $days++;
+                    $booking_date = date('Y-m-d', strtotime($booking_date . ' +1 day'));
+                
+                }
+
+                $price = $this->apply_discount($discount, $amount_eligible);
+                $price += $amount_not_eligible;
+
+            }
+
+
+
+
+
             // Apply discount to each day
             while (strtotime($booking_date) < strtotime($end)) {
 
