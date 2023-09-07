@@ -120,19 +120,21 @@ class BookedInBookings {
 
     public function calculate_price($booking_date_from, $booking_date_to, $booking_resource, $booking_addon, $booking_adult, $booking_children, $booking_discount) {
 
-        $total_price = 0;
+        // Get the resource
+        $resource = $this->resoucesClass->get_resources($booking_resource);
 
-        [$resource_price, $r_ori_price, $r_discount] = $this->calculate_resource_price($booking_date_from, $booking_date_to, $booking_resource, $booking_adult, $booking_children, $booking_discount);
-        $total_price += $resource_price;
-        
-        [$addon_price, $a_ori_price, $a_discount] = $this->calculate_addon_price($booking_date_from, $booking_date_to, $booking_addon, $booking_adult, $booking_children, $booking_discount);
-        $total_price += $addon_price;
+        // Get all the addons
+        $addons = array();
+        if ($booking_addon != null) {
+            foreach ($booking_addon as $addonid) {
+                $addon = $this->addonsClass->get_addons($addonid);
+                $addons[] = $addon;
+            }
+        }
 
-        //Merge array
-        $total_discount = array_merge($r_discount, $a_discount);
-        $ori_price = $r_ori_price + $a_ori_price;
+        [$original_price, $discounted_price, $discount_used] = $this->pricingClass->get_price_after_discount($booking_discount, $booking_date_from, $booking_date_to, $resource, $addons, $booking_adult, $booking_children);
 
-        return [$total_price, $ori_price, $total_discount];
+        return [$discounted_price, $original_price, $discount_used];
 
     }
 

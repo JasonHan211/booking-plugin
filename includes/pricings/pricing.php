@@ -142,6 +142,12 @@ class BookedInpricings {
         return $discount;
     }
 
+    public function get_price_after_discount($discount_code = null, $booking_date_from, $booking_date_to, $resource, $addons, $adults, $children) {
+
+        
+
+    }
+
     public function apply_discount($discount, $price) {
 
         $discount_type = $discount['discount_type'];
@@ -229,7 +235,7 @@ class BookedInpricings {
 
             }
 
-
+            
 
 
 
