@@ -144,7 +144,56 @@ class BookedInpricings {
 
     public function get_price_after_discount($discount_code = null, $booking_date_from, $booking_date_to, $resource, $addons, $adults, $children) {
 
+        // Condition string
+        $condition = "(discount_on_type = 'Resources' AND discount_on_id = ".$resource['id'].")";
+
+        // Resource Price
+        $resource_price = $this->calculatePrice($resource['resource_price'], $adults, $children);
+        $resource_discounted_price = $resource_price;
         
+        // Addons Price
+        $addonsObjs = array();
+        foreach ($addons as $addon) {
+
+            $addon_price = $this->calculatePrice($addon['addon_price'], $adults, $children);
+            $condition = $condition." OR (discount_on_type = 'Addon' AND discount_on_id = ".$addon['id'].")";
+            $addonsObjs[] = array('addon'=>$addon, 'addon_price'=>$addon_price, 'addon_discounted_price'=>$addon_price);
+
+        }
+
+        // Get all auto apply discount
+        $discounts = $this->db->get_results(
+            "SELECT * 
+            FROM $this->discount_table_name 
+            WHERE discount_auto_apply = 'Y'
+            OR $condition
+            AND discount_active = 'Y'", ARRAY_A);
+        echo $this->db->last_error;
+
+        $discount_with_code = $this->db->get_results(
+            "SELECT *
+            FROM $this->discount_table_name
+            WHERE discount_code = '$discount_code'
+            AND discount_active = 'Y'", ARRAY_A);
+        echo $this->db->last_error;
+
+        $discounts = array_merge($discounts, $discount_with_code);
+
+        foreach ($discounts as $discount) {
+
+            if ($discount['discount_on_type'] == 'Resources') {
+                
+            } else if ($discount['discount_on_type'] == 'Addon') {
+
+            }
+
+        }
+
+        $original_price = '';
+        $discounted_price = '';
+        $discount_used = $discounts;
+
+        return [$original_price, $discounted_price, $discount_used];
 
     }
 
