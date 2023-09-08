@@ -136,7 +136,6 @@ function addDiscountForm() {
 
                                 addons = data.addons;
 
-                                discount_on_id.append('<option value="All"> All </option>');
                                 addons.forEach(function(addon) {
                                     discount_on_id.append('<option value="' + addon.id + '">' + addon.addon_name + '</option>');
                                 });

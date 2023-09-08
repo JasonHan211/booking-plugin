@@ -142,10 +142,12 @@ class BookedInpricings {
         return $discount;
     }
 
-    public function get_price_after_discount($discount_code = null, $booking_date_from, $booking_date_to, $resource, $addons, $adults, $children) {
+    public function get_price_after_discount($discount_code = null, $start, $end, $resource, $addons, $adults, $children) {
 
         // Condition string
-        $condition = "(discount_on_type = 'Resources' AND discount_on_id = ".$resource['id'].")";
+        $condition = "((discount_on_type = 'Resources' AND (discount_on_id = 'All' OR discount_on_id = ".$resource['id']."))";
+        $condition = $condition." OR discount_on_type = 'All'";
+        $condition = $condition." OR (discount_on_type = 'Addon' AND discount_on_id = 'All')";
 
         // Resource Price
         $resource_price = $this->calculatePrice($resource['resource_price'], $adults, $children);
@@ -165,8 +167,8 @@ class BookedInpricings {
         $discounts = $this->db->get_results(
             "SELECT * 
             FROM $this->discount_table_name 
-            WHERE discount_auto_apply = 'Y'
-            OR $condition
+            WHERE $condition)
+            AND discount_auto_apply = 'Y'
             AND discount_active = 'Y'", ARRAY_A);
         echo $this->db->last_error;
 
@@ -179,21 +181,149 @@ class BookedInpricings {
 
         $discounts = array_merge($discounts, $discount_with_code);
 
+        $all_type_discount = array();
+        $applied_discount = array();
+
         foreach ($discounts as $discount) {
 
             if ($discount['discount_on_type'] == 'Resources') {
                 
+                $amount_eligible = 0;
+                $amount_not_eligible = 0;
+                
+                // Loop per day to check on each day
+                $booking_date = date('Y-m-d', strtotime($start));
+                
+                while (strtotime($booking_date) < strtotime($end)) {
+                    $discount = $this->check_availability($discount, $booking_date);
+
+                    if ($discount !== null) {
+
+                        $amount_eligible += $resource_discounted_price;
+
+                        // If discount code not in array
+                        if (!in_array($discount, $applied_discount)) {
+                            $applied_discount[] = $discount;
+                        }
+
+                    } else {
+
+                        $amount_not_eligible += $resource_discounted_price;
+
+                    }
+                    // To fix algorithm to calc discount
+                    $booking_date = date('Y-m-d', strtotime($booking_date . ' +1 day'));
+    
+                }
+
+                // Update discounted price
+                if ($discount !== null) {
+                    $resource_discounted_price = $this->apply_discount($discount, $amount_eligible);
+                }
+                // To fix bug
+                $resource_discounted_price += $amount_not_eligible;
+                
+            
             } else if ($discount['discount_on_type'] == 'Addon') {
 
+ 
+                foreach ($addonsObjs as $addon) {
+                    
+                    if ($addon['addon']['id'] != $discount['discount_on_id']) continue;
+
+                    if ($addon['addon_perday'] == 'Y') {
+
+                        $amount_eligible = 0;
+                        $amount_not_eligible = 0;
+                        
+                        // Loop per day to check on each day
+                        $booking_date = date('Y-m-d', strtotime($start));
+                        while (strtotime($booking_date) < strtotime($end)) {
+
+                            $discount = $this->check_availability($discount, $booking_date);
+
+                            if ($discount !== null) {
+
+                                $amount_eligible += $addon['addon_discounted_price'];
+        
+                                // If discount code not in array
+                                if (!in_array($discount, $applied_discount)) {
+                                    $applied_discount[] = $discount;
+                                }
+        
+                            } else {
+        
+                                $amount_not_eligible += $addon['addon_discounted_price'];
+        
+                            }
+
+                            $booking_date = date('Y-m-d', strtotime($booking_date . ' +1 day'));
+                        }
+
+                        // Update discounted price
+                        if ($discount !== null) {
+                            $addon['addon_discounted_price'] = $this->apply_discount($discount, $amount_eligible);
+                        }
+                        if ($amount_eligible !== 0) {
+                            $addon['addon_discounted_price'] += $amount_not_eligible;
+                        }
+
+                    } else {
+
+                        $discount = $this->check_availability($discount, $start);
+
+                        if ($discount !== null) {
+
+                            $addon['addon_discounted_price'] = $this->apply_discount($discount, $addon['addon_discounted_price']);
+    
+                            // If discount code not in array
+                            if (!in_array($discount, $applied_discount)) {
+                                $applied_discount[] = $discount;
+                            }
+    
+                        }
+
+                    }
+
+                }
+
+
+            } else if ($discount['discount_on_type'] == 'All') {
+                $all_type_discount[] = $discount;
             }
 
         }
 
-        $original_price = '';
-        $discounted_price = '';
-        $discount_used = $discounts;
+        // Handle All type discount
+        $overall_discount = 0;
+        if (!empty($all_type_discount)) {
 
-        return [$original_price, $discounted_price, $discount_used];
+            $discount = $this->check_availability($discount, $start);
+
+            if ($discount !== null) {
+
+                $temp = $resource_discounted_price;
+                $resource_discounted_price = $this->apply_discount($discount, $resource_discounted_price);
+                $overall_discount = $temp - $resource_discounted_price;
+
+                // If discount code not in array
+                if (!in_array($discount, $applied_discount)) {
+                    $applied_discount[] = $discount;
+                }
+
+            }
+        }
+
+        $date1 = new DateTime($start);
+        $date2 = new DateTime($end);
+        $interval = $date1->diff($date2);
+
+        $days = $interval->format('%a');
+        $resource_total_price = $resource_price * $days;
+        $resourceObj = array('resource'=>$resource, 'resource_price'=>$resource_total_price, 'resource_discounted_price'=>$resource_discounted_price, 'overall_discount'=>$overall_discount);
+        $discount_used = $applied_discount;
+
+        return [$resourceObj, $addonsObjs, $discount_used];
 
     }
 
@@ -212,7 +342,7 @@ class BookedInpricings {
 
         }
 
-        return $price;
+        return round($price,2);
 
     }
 
