@@ -15,6 +15,8 @@ class BookedInMenuPage {
                 $bookings = new BookedInBookings();
                 register_activation_hook(BI_FILE, array($bookings,'activate'));
                 register_deactivation_hook(BI_FILE, array($bookings,'deactivate')); 
+
+                require_once (BI_PLUGIN_PATH . '/includes/booking/public/add-booking-form.php');
                 
                 add_action('admin_menu', array($this, 'bookedin_add_menu_page'));
                 add_action( 'admin_menu', array($this,'bookedin_booking_edit_submenu'));

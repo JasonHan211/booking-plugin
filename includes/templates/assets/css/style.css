@@ -57,6 +57,10 @@
     background-color: #e2bd84 !important;
 }
 
+a {
+    text-decoration: none;
+}
+
 /* Pagination container */
 .pagination {
     margin-top: 20px;
@@ -71,7 +75,7 @@
     background-color: #f4f4f4;
     color: #333;
     border: 1px solid #ddd;
-    text-decoration: none;
+    text-decoration: none !important;
     border-radius: 4px;
     transition: background-color 0.3s ease;
 }
