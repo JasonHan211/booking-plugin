@@ -329,8 +329,8 @@ function pricings_edit_page() {
                 <input type="number" name="discount_quantity" value="<?php echo esc_attr($discount['discount_quantity']); ?>" required>
                 <label for="discount_type">Type:</label>
                 <select name="discount_type">
-                    <option value="percentage" <?php if ($discount['discount_type'] === 'percentage') echo 'selected'; ?>>Percentage</option>
-                    <option value="fixed" <?php if ($discount['discount_type'] === 'fixed') echo 'selected'; ?>>Fixed</option>
+                    <option value="Percentage" <?php if ($discount['discount_type'] === 'percentage') echo 'selected'; ?>>Percentage</option>
+                    <option value="Fixed" <?php if ($discount['discount_type'] === 'fixed') echo 'selected'; ?>>Fixed</option>
                 </select>
                 <label for="discount_amount">Amount:</label>
                 <input type="number" name="discount_amount" value="<?php echo esc_attr($discount['discount_amount']); ?>" required>
@@ -346,7 +346,7 @@ function pricings_edit_page() {
                 </select>
                 <label for="discount_on_id">ID On:</label>
                 <select name="discount_on_id" disabled>
-                    <option value="null">N/A</option>
+                    <option value="All">N/A</option>
                 </select>
                 <label for="discount_condition">Condition:</label>
                 <select name="discount_condition">

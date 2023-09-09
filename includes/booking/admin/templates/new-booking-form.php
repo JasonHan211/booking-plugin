@@ -137,7 +137,7 @@ function newBookingForm() {
                     },
                     success: function (data) {
                         
-                        totalPrice = data.price;
+                        totalPrice = data.total.total_after_final_discounted;
                         document.getElementsByName('booking_price')[0].value = totalPrice;
                     }
                 });

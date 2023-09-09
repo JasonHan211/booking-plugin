@@ -151,7 +151,16 @@ class BookedInpricings {
 
         // Resource Price
         $resource_price = $this->calculatePrice($resource['resource_price'], $adults, $children);
-        $resource_discounted_price = $resource_price;
+
+        // Loop per day to check on each day
+        $resourceObjs = array();
+        $booking_date = date('Y-m-d', strtotime($start));
+        while (strtotime($booking_date) < strtotime($end)) {
+
+            $resourceObjs[] = array('resource'=>$resource, 'resource_price'=>$resource_price, 'resource_discounted_price'=>$resource_price, 'booking_date'=>$booking_date);
+
+            $booking_date = date('Y-m-d', strtotime($booking_date . ' +1 day'));
+        }
         
         // Addons Price
         $addonsObjs = array();
@@ -187,42 +196,27 @@ class BookedInpricings {
         foreach ($discounts as $discount) {
 
             if ($discount['discount_on_type'] == 'Resources') {
-                
-                $amount_eligible = 0;
-                $amount_not_eligible = 0;
-                
-                // Loop per day to check on each day
-                $booking_date = date('Y-m-d', strtotime($start));
-                
-                while (strtotime($booking_date) < strtotime($end)) {
-                    $discount = $this->check_availability($discount, $booking_date);
 
-                    if ($discount !== null) {
+                foreach ($resourceObjs as $i => $resourceObj) {
+                    
+                    $eligible_discount = $this->check_availability($discount, $resourceObjs[$i]['booking_date']);
+                
+                    if ($eligible_discount !== null) {
 
-                        $amount_eligible += $resource_discounted_price;
-
+                        $resourceObjs[$i]['resource_discounted_price'] = $this->apply_discount($eligible_discount, $resourceObjs[$i]['resource_discounted_price']);
+                        
                         // If discount code not in array
-                        if (!in_array($discount, $applied_discount)) {
-                            $applied_discount[] = $discount;
+                        if (!in_array($eligible_discount, $applied_discount)) {
+                            $applied_discount[] = $eligible_discount;
                         }
 
                     } else {
 
-                        $amount_not_eligible += $resource_discounted_price;
+                        $resourceObjs[$i]['resource_discounted_price'] = $resourceObjs[$i]['resource_price'];
 
                     }
-                    // To fix algorithm to calc discount
-                    $booking_date = date('Y-m-d', strtotime($booking_date . ' +1 day'));
-    
-                }
 
-                // Update discounted price
-                if ($discount !== null) {
-                    $resource_discounted_price = $this->apply_discount($discount, $amount_eligible);
                 }
-                // To fix bug
-                $resource_discounted_price += $amount_not_eligible;
-                
             
             } else if ($discount['discount_on_type'] == 'Addon') {
 
@@ -294,17 +288,28 @@ class BookedInpricings {
 
         }
 
-        // Handle All type discount
-        $overall_discount = 0;
+        // Calculate total price
+        $raw_total = 0;
+        $total = 0;
+
+        foreach ($resourceObjs as $resourceObj) {
+            $raw_total += $resourceObj['resource_price'];
+            $total += $resourceObj['resource_discounted_price'];
+        }
+        foreach ($addonsObjs as $addon) {
+            $raw_total += $addon['addon_price'];
+            $total += $addon['addon_discounted_price'];
+        }
+
+        $total_discounted = $total;
+        // Handles total discount
         if (!empty($all_type_discount)) {
 
             $discount = $this->check_availability($discount, $start);
 
             if ($discount !== null) {
 
-                $temp = $resource_discounted_price;
-                $resource_discounted_price = $this->apply_discount($discount, $resource_discounted_price);
-                $overall_discount = $temp - $resource_discounted_price;
+                $total_discounted = $this->apply_discount($discount, $total);
 
                 // If discount code not in array
                 if (!in_array($discount, $applied_discount)) {
@@ -314,17 +319,19 @@ class BookedInpricings {
             }
         }
 
-        $date1 = new DateTime($start);
-        $date2 = new DateTime($end);
-        $interval = $date1->diff($date2);
+        $resourceObj = array('resource'=>$resourceObjs);
+        
+        $totalObj = array('raw_total'=>$raw_total, 'total_after_discount'=>$total, 'total_after_final_discounted'=>$total_discounted);
+        
+        $discount_used = $discounts;
 
-        $days = $interval->format('%a');
-        $resource_total_price = $resource_price * $days;
-        $resourceObj = array('resource'=>$resource, 'resource_price'=>$resource_total_price, 'resource_discounted_price'=>$resource_discounted_price, 'overall_discount'=>$overall_discount);
-        $discount_used = $applied_discount;
+        return [$resourceObj, $addonsObjs, $totalObj, $discount_used];
 
-        return [$resourceObj, $addonsObjs, $discount_used];
+    }
 
+    public function use_discount($discount) {
+        $new_quantity = $discount['discount_quantity'] - 1; 
+        $this->update_discount($discount['id'],$discount['discount_name'],$discount['discount_description'],$discount['discount_code'],$new_quantity,$discount['discount_type'],$discount['discount_amount'],$discount['discount_start_date'],$discount['discount_end_date'],$discount['discount_on_type'],$discount['discount_on_id'],$discount['discount_condition'],$discount['discount_condition_start'],$discount['discount_condition_end'],$discount['discount_auto_apply'],$discount['discount_active']);
     }
 
     public function apply_discount($discount, $price) {
@@ -343,197 +350,6 @@ class BookedInpricings {
         }
 
         return round($price,2);
-
-    }
-
-    public function apply_auto_discount($type, $id, $price_id, $discount, $start, $end,  $booking_adult, $booking_children, $addon_perday='N') {
-
-        // Get price for the product
-        $original_price = $this->calculatePrice($price_id, $booking_adult, $booking_children);
-        $discounted_price = 0;
-        $undiscounted_price = 0;
-
-        // Get available discounts
-        $applied_discount = array();
-        $auto_discounts = $this->db->get_results(
-            "SELECT * 
-            FROM $this->discount_table_name 
-            WHERE (discount_on_type = '$type' OR discount_on_type = 'All') 
-            AND (discount_on_id = $id OR discount_on_id = 'All')
-            AND discount_auto_apply = 'Y'
-            AND discount_active = 'Y'", ARRAY_A);
-        echo $this->db->last_error;
-        
-        $code_discount = $this->db->get_results(
-            "SELECT *
-            FROM $this->discount_table_name
-            WHERE discount_code = '$discount'
-            AND discount_active = 'Y'", ARRAY_A);
-        echo $this->db->last_error;
-
-        // Resources
-        if ($type == 'Resources') {
-
-            $booking_date = date('Y-m-d', strtotime($start));
-
-            // Each discount
-            foreach ($auto_discounts as $discount) {
-
-                $amount_eligible = 0;
-                $amount_not_eligible = 0;
-                $days = 1;
-                
-                $booking_date = date('Y-m-d', strtotime($start));
-
-                while (strtotime($booking_date) < strtotime($end)) {
-
-                    $discount = $this->check_availability($discount, $booking_date);
-
-                    if ($discount !== null) {
-
-                        $amount_eligible += $original_price;
-
-                        // If discount code not in array
-                        if (!in_array($discount['discount_code'], $applied_discount)) {
-                            $applied_discount[] = $discount['discount_code'];
-                        }
-
-                    } else {
-
-                        $amount_not_eligible += $original_price;
-
-                    }
-
-                    $days++;
-                    $booking_date = date('Y-m-d', strtotime($booking_date . ' +1 day'));
-                
-                }
-
-                $price = $this->apply_discount($discount, $amount_eligible);
-                $price += $amount_not_eligible;
-
-            }
-
-            
-
-
-
-            // Apply discount to each day
-            while (strtotime($booking_date) < strtotime($end)) {
-
-                $day_price = $original_price;
-
-                // Check auto apply discount 
-                foreach ($auto_discounts as $discount) {
-
-                    $discount = $this->check_availability($discount, $booking_date);
-                    
-                    if ($discount !== null) {
-                        $day_price = $this->apply_discount($discount, $day_price);
-                        $applied_discount[] = $discount['discount_code'];
-                    } 
-        
-                }
-
-                // Check code apply discount
-                foreach ($code_discount as $discount) {
-                    $discount = $this->check_availability($discount, $booking_date);
-                    
-                    if ($discount !== null) {
-                        $day_price = $this->apply_discount($discount, $day_price);
-                        $applied_discount[] = $discount['discount_code'];
-                    } 
-                }
-
-                $discounted_price += $day_price;
-                $undiscounted_price += $original_price;
-
-                $booking_date = date('Y-m-d', strtotime($booking_date . ' +1 day'));
-
-            }
-
-            return array('discounted_price' => $discounted_price, 'applied_discount' => $applied_discount, 'original_price' => $undiscounted_price);
-            
-
-        } else if ($type == 'Addon') {
-
-            $booking_date = date('Y-m-d', strtotime($start));
-
-            // Per day
-            if ($addon_perday == 'Y') {
-
-                // Apply discount to each day
-                while (strtotime($booking_date) < strtotime($end)) {
-
-                    $day_price = $original_price;
-
-                    foreach ($auto_discounts as $discount) {
-
-                        $discount = $this->check_availability($discount, $booking_date);
-                        
-                        if ($discount !== null) {
-                            $day_price = $this->apply_discount($discount, $day_price);
-                            $applied_discount[] = $discount['discount_code'];
-                        } 
-
-                    }
-
-                    foreach ($code_discount as $discount) {
-
-                        $discount = $this->check_availability($discount, $booking_date);
-                        
-                        if ($discount !== null) {
-                            $day_price = $this->apply_discount($discount, $day_price);
-                            $applied_discount[] = $discount['discount_code'];
-                        } 
-
-                    }
-
-                    $discounted_price += $day_price;
-                    $undiscounted_price += $original_price;
-
-                    $booking_date = date('Y-m-d', strtotime($booking_date . ' +1 day'));
-
-                }
-
-                return array('discounted_price' => $discounted_price, 'applied_discount' => $applied_discount, 'original_price' => $undiscounted_price);
-
-            }
-
-            // One time
-            $day_price = $original_price;
-
-            foreach ($auto_discounts as $discount) {
-
-                $discount = $this->check_availability($discount, $booking_date);
-                
-                if ($discount !== null) {
-                    $day_price += $this->apply_discount($discount, $original_price);
-                    $applied_discount[] = $discount['discount_name'];
-                }
-    
-            }
-
-            foreach ($code_discount as $discount) {
-
-                $discount = $this->check_availability($discount, $booking_date);
-                
-                if ($discount !== null) {
-                    $day_price += $this->apply_discount($discount, $original_price);
-                    $applied_discount[] = $discount['discount_name'];
-                }
-    
-            }
-
-            $discounted_price = $day_price;
-            $undiscounted_price = $original_price;
-
-            return array('discounted_price' => $discounted_price, 'applied_discount' => $applied_discount, 'original_price' => $undiscounted_price);
-
-        }
-
-
-        return array('discounted_price' => null, 'applied_discount' => null, 'original_price' => null);
 
     }
 

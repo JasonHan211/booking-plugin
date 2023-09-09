@@ -78,14 +78,14 @@
 
 /* Hover effect */
 .pagination a:hover {
-    background-color: #ddd;
+    background-color: #cca264;
 }
 
 /* Active page */
 .pagination a.active {
-    background-color: #007bff;
+    background-color: #e2bd84;
     color: #fff;
-    border-color: #007bff;
+    border-color: #e2bd84;
 }
 
 /* Styling for the page search form */
@@ -111,7 +111,7 @@
 
 .page-search button {
     padding: 6px 10px;
-    background-color: #007bff;
+    background-color: #e2bd84;
     color: #fff;
     border: none;
     border-radius: 4px;
@@ -120,7 +120,7 @@
 }
 
 .page-search button:hover {
-    background-color: #0056b3;
+    background-color: #cca264;
 }
 
 .table-responsive {

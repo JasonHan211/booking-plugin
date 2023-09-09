@@ -121,7 +121,7 @@ function bookingTable() {
                                 <td><?php echo $addon['addon_name']; ?></td>
                                 <td colspan="2"></td>
                                 <td><?php echo $addon['booking_paid']; ?></td>
-                                <td colspan="7"></td>
+                                <td colspan="8"></td>
                             </tr>
                     <?php } ?>
 

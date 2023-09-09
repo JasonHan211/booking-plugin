@@ -25,7 +25,7 @@ function addDiscountForm() {
         $discount_condition_end = sanitize_text_field($_POST['discount_condition_date_to']);
         $discount_auto_apply = sanitize_text_field($_POST['discount_auto_apply']);
         $discount_active = sanitize_text_field($_POST['discount_active']);
-
+        
         $pricingClass->add_discount($discount_name, $discount_description, $discount_code, $discount_quantity, $discount_type, $discount_amount, $discount_start_date, $discount_end_date, $discount_on_type, $discount_on_id, $discount_condition, $discount_condition_start, $discount_condition_end, $discount_auto_apply, $discount_active);
         
     }
