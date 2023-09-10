@@ -9,6 +9,7 @@ function my_booking_plugin_option_page() {
     $bookingClass = new BookedInBookings();
     $addonClass = new BookedInAddons();
     $pricingClass = new BookedInPricings();
+    $recourcesClass = new BookedInResources();
 
     // Check user capabilities
     if (!current_user_can('manage_options')) {
@@ -58,7 +59,9 @@ function my_booking_plugin_option_page() {
             return;
         }
 
-        [$resource_output, $addon_output, $total, $discount_used] = $pricingClass->get_price_after_discount($booking_discount, $booking_date_from, $booking_date_to, $resource, $addons, $booking_adult, $booking_children);
+        $resource = $resourcesClass->get_resources($booking_resource);
+
+        [$resource_output, $addon_output, $total, $discount_used] = $pricingClass->get_price_after_discount($booking_discount, $booking_date_from, $booking_date_to, $resource, $selectedAddons, $booking_adults, $booking_children);
         
         $booking_discount_used = array();
         foreach ($discount_used as $discount) {
@@ -66,9 +69,9 @@ function my_booking_plugin_option_page() {
             $pricingClass->use_discount($discount);
         }
 
-        $booking_price_total = $total['total_after_final_discount'];
+        $booking_price_total = $total['total_after_final_discounted'];
         
-        $booking_header_id = $bookingClass->add_booking_header($booking_date_from, $booking_date_to, $booking_resource, $booking_notes, $booking_description, $booking_paid, $booking_discount_used, $booking_price_total, $booking_adults, $booking_children, $booking_user, $booking_email, $booking_phone);
+        $booking_header_id = $bookingClass->add_booking_header($booking_date_from, $booking_date_to, $booking_resource, $booking_notes, $booking_description, $booking_paid, $booking_discount_used, $booking_price, $booking_adults, $booking_children, $booking_user, $booking_email, $booking_phone);
 
         // Add booking for selected addon with charge once
         foreach ($selectedAddons as $addon) {

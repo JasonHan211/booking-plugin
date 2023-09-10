@@ -11,6 +11,7 @@ function newBookingForm() {
         <br>
         <div class="container">
             <form method="post" action="" id="add_booking">
+                <?php wp_nonce_field('wp_rest');?>
                 <div class="row">
                     <!-- Left Column -->
                     <div class="col-md-6">
@@ -52,25 +53,6 @@ function newBookingForm() {
                             <label for="booking_notes" class="form-label">Customer Notes:</label>
                             <textarea class="form-control" name="booking_notes"></textarea>
                         </div>
-                        <!-- <div class="mb-3">
-                            <label for="booking_description" class="form-label">Hidden Description:</label>
-                            <textarea class="form-control" name="booking_description"></textarea>
-                        </div> -->
-                        <!-- <div class="mb-3">
-                            <label for="booking_paid" class="form-label">Paid:</label>
-                            <select class="form-select" name="booking_paid">
-                                <option value="N">No</option>
-                                <option value="Y">Yes</option>
-                            </select>
-                        </div> -->
-                        <div class="mb-3">
-                            <label for="booking_price" class="form-label">Price:</label>
-                            <input type="text" class="form-control" name="booking_price" disabled>
-                        </div>
-                        <div class="mb-3">
-                            <label for="booking_discount" class="form-label">Discount Code:</label>
-                            <input type="text" class="form-control" name="booking_discount" onchange="updatePrice()">
-                        </div>
                     </div>
 
                     <!-- Right Column -->
@@ -90,6 +72,20 @@ function newBookingForm() {
                             <label for="booking_phone" class="form-label">Phone:</label>
                             <input type="text" class="form-control" name="booking_phone" required>
                         </div>
+                        <br>
+                        <div>
+                            <h3>Pricing Details</h3>
+                            <div class="mb-3">
+                                <label for="booking_price" class="form-label">Price:</label>
+                                <input type="text" class="form-control" name="booking_price" disabled>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="booking_discount" class="form-label">Discount Code:</label>
+                                <input type="text" class="form-control" name="booking_discount" onchange="updatePrice()">
+                            </div>
+                        </div>
+                        
                     </div>
                 </div>
 
@@ -238,13 +234,37 @@ function newBookingForm() {
 
             // Set the selected date range into the hidden input fields before form submission
             $('form').submit(function (e) {
-
+                e.preventDefault();
                 startDate = document.getElementById('booking_date_from').value;
                 endDate = document.getElementById('booking_date_to').value;
 
                 if (startDate === '' || endDate === '') {
                     alert('Please select a date range.');
                     e.preventDefault();
+                } else {
+                    var form = $(this);
+
+                    var formdata = new FormData(form[0]);
+
+                    formdata.append('action', 'new_booking');
+
+                    $.ajax({
+                            url: '<?php echo get_rest_url(null, 'v1/new_booking/submit');?>',
+                            type: 'POST',
+                            data: formdata,
+                            processData: false,
+                            contentType: false,
+                            success: function (data) {
+
+                                console.log(data);
+
+                            },
+                            error: function (data) {
+
+                                
+
+                            }
+                    });
                 }
                 
             });

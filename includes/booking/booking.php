@@ -11,7 +11,7 @@ class BookedInBookings {
 
     private $db;
     private $charset_collate;
-    private $resoucesClass;
+    private $resourcesClass;
     private $addonsClass;
     private $pricingClass;
     public $booking_header_table = 'bookedin_booking_header';
@@ -26,7 +26,7 @@ class BookedInBookings {
     public function __construct() {
         global $wpdb;
         $this->db = $wpdb;
-        $this->resoucesClass = new BookedInResources();
+        $this->resourcesClass = new BookedInResources();
         $this->addonsClass = new BookedInAddons();
         $this->pricingClass = new BookedInPricings();
         $this->addon_table_name = $this->addonsClass->table_name;
@@ -47,7 +47,7 @@ class BookedInBookings {
             , ARRAY_A);    
 
         // SQL get all resources
-        $resources = $this->resoucesClass->get_resources(null,'Y');
+        $resources = $this->resourcesClass->get_resources(null,'Y');
 
         // Get available resources thats not in bookings
         $availableResources = array();
@@ -82,7 +82,7 @@ class BookedInBookings {
     public function calculate_resource_price($booking_date_start, $booking_date_end, $booking_resource, $booking_adult, $booking_children, $booking_discount) {
        
         // Get resource price
-        $resource = $this->resoucesClass->get_resources($booking_resource);
+        $resource = $this->resourcesClass->get_resources($booking_resource);
 
         // Get discount
         $response = $this->pricingClass->apply_auto_discount('Resources', $resource['id'], $resource['resource_price'], $booking_discount, $booking_date_start, $booking_date_end,  $booking_adult, $booking_children);
@@ -121,7 +121,7 @@ class BookedInBookings {
     public function calculate_price($booking_date_from, $booking_date_to, $booking_resource, $booking_addon, $booking_adult, $booking_children, $booking_discount) {
 
         // Get the resource
-        $resource = $this->resoucesClass->get_resources($booking_resource);
+        $resource = $this->resourcesClass->get_resources($booking_resource);
 
         // Get all the addons
         $addons = array();
@@ -196,7 +196,7 @@ class BookedInBookings {
 
         if ($booking_id === null) {
             $offset = intval($offset);
-            $resourceTable = $this->resoucesClass->table_name;
+            $resourceTable = $this->resourcesClass->table_name;
             $booking_header = $this->db->get_results("SELECT 
             bh.id as 'id',
             bh.booking_date_from as 'booking_date_from',
@@ -269,7 +269,7 @@ class BookedInBookings {
 
     public function get_booking_slots() {
             
-            $totalResources = $this->resoucesClass->get_total_resources();
+            $totalResources = $this->resourcesClass->get_total_resources();
     
             $bookingSlots = $this->db->get_results(
                 "SELECT DATE(booking_date) as 'date', 
