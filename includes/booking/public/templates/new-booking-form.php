@@ -256,12 +256,18 @@ function newBookingForm() {
                             contentType: false,
                             success: function (data) {
 
-                                console.log(data);
+                                if (data.success === true) {
+                                    
+                                    window.location.href = data.redirect_url;
+
+                                } else {
+
+                                }
 
                             },
                             error: function (data) {
 
-                                
+                                console.log(data);
 
                             }
                     });

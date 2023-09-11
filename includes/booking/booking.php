@@ -141,7 +141,7 @@ class BookedInBookings {
     public function add_booking_header($booking_date_from, $booking_date_to,$booking_resource, $booking_notes, $booking_description, $booking_paid, $booking_discount, $booking_price, $booking_adults, $booking_children, $booking_user, $booking_email, $booking_phone ) {
 
         // Generate unique booking number
-        $booking_number = uniqid('#BNB-');
+        $booking_number = uniqid('BNB-');
         $booking_number = strtoupper($booking_number);
 
         $this->db->insert($this->booking_header_table_name, array(
