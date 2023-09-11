@@ -4,12 +4,12 @@
 if (!defined('ABSPATH')) exit;
 
 function booking_edit_page() {
-    global $wpdb;
-    $table_name = $wpdb->prefix . 'bookedin_bookings';
+
+    $bookingClass = new BookedInBookings();
 
     if (isset($_GET['action']) && $_GET['action'] === 'edit' && isset($_GET['booking_id'])) {
         $booking_id = intval($_GET['booking_id']);
-        $booking = $wpdb->get_row("SELECT * FROM $table_name WHERE id = $booking_id", ARRAY_A);
+        
     }
 
     if (isset($_POST['update_booking'])) {
@@ -27,21 +27,7 @@ function booking_edit_page() {
         $booking_email = sanitize_text_field($_POST['booking_email']);
         $booking_phone = sanitize_text_field($_POST['booking_phone']);
 
-        $wpdb->update($table_name, array(
-            'booking_date_from' => $booking_date_from,
-            'booking_date_to' => $booking_date_to,
-            'booking_resource' => $booking_resource,
-            'booking_notes' => $booking_notes,
-            'booking_description' => $booking_description,
-            'booking_paid' => $booking_paid,
-            'booking_adults' => $booking_adults,
-            'booking_children' => $booking_children,
-
-            'booking_user' => $booking_user,
-            'booking_email' => $booking_email,
-            'booking_phone' => $booking_phone,
-
-        ), array('id' => $booking_id));
+        
 
         wp_redirect(admin_url('admin.php?page=bookedin_main_menu'));
         exit;

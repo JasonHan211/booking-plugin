@@ -262,6 +262,23 @@ class BookedInBookings {
 
     }
 
+    public function get_booking($booking_id = null) {
+
+        if ($booking_id === null) {
+            $booking = $this->db->get_results(
+                "SELECT * 
+                FROM $this->booking_table_name", ARRAY_A);
+            return $booking;
+        }
+
+        $booking = $this->db->get_results(
+            "SELECT *
+            FROM $this->booking_table_name
+            WHERE booking_header_id = $booking_id", ARRAY_A);
+        return $booking;
+
+    }
+
     public function get_nights($booking_date_from, $booking_date_to) {
 
         $date1 = new DateTime($booking_date_from);
