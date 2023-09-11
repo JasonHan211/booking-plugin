@@ -59,6 +59,7 @@ function bookingTable() {
         <table class="wp-list-table widefat striped">
             <thead>
                 <tr>
+                    <th>Booking Number</th>
                     <th>Date From</th>
                     <th>Date To</th>
                     <th>Resource</th>
@@ -92,6 +93,7 @@ function bookingTable() {
 
 
                     ?>
+                        <td><?php echo $booking['booking_number']; ?></td>
                         <td><?php echo $booking['booking_date_from']; ?></td>
                         <td><?php echo $booking['booking_date_to']; ?></td>
                         <td><?php echo $booking['resource_name']; ?></td>
@@ -116,6 +118,7 @@ function bookingTable() {
                     $bookedAddons = $bookingClass->get_booking_addons($booking['id']);
                     foreach ($bookedAddons as $addon) { ?>
                             <tr>
+                                <td colspan="1"></td>
                                 <td><?php echo $addon['booking_date']; ?></td>
                                 <td colspan="1"></td>
                                 <td><?php echo $addon['addon_name']; ?></td>

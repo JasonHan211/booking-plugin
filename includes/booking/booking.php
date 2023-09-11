@@ -141,8 +141,8 @@ class BookedInBookings {
     public function add_booking_header($booking_date_from, $booking_date_to,$booking_resource, $booking_notes, $booking_description, $booking_paid, $booking_discount, $booking_price, $booking_adults, $booking_children, $booking_user, $booking_email, $booking_phone ) {
 
         // Generate unique booking number
-        $booking_number = '';
-        
+        $booking_number = uniqid('#BNB-');
+        $booking_number = strtoupper($booking_number);
 
         $this->db->insert($this->booking_header_table_name, array(
             'booking_number' => $booking_number,
@@ -163,7 +163,7 @@ class BookedInBookings {
         echo $this->db->last_error;
         $id = $this->db->insert_id;
 
-        return $id;
+        return [$id, $booking_number];
 
     }
 
@@ -204,6 +204,7 @@ class BookedInBookings {
             $resourceTable = $this->resourcesClass->table_name;
             $booking_header = $this->db->get_results("SELECT 
             bh.id as 'id',
+            bh.booking_number as 'booking_number',
             bh.booking_date_from as 'booking_date_from',
             bh.booking_date_to as 'booking_date_to',
             bh.booking_notes as 'booking_notes',
