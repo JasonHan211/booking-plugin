@@ -279,6 +279,29 @@ class BookedInBookings {
 
     }
 
+    public function update_booking_header($booking_id, $booking_number, $booking_date_from, $booking_date_to,$booking_resource, $booking_notes, $booking_description, $booking_paid, $booking_discount, $booking_price, $booking_adults, $booking_children, $booking_user, $booking_email, $booking_phone ) {
+
+        $this->db->update($this->booking_header_table_name, array(
+            'booking_number' => $booking_number,
+            'booking_date_from' => $booking_date_from,
+            'booking_date_to' => $booking_date_to,
+            'booking_resource' => $booking_resource,
+            'booking_notes' => $booking_notes,
+            'booking_description' => $booking_description,
+            'booking_paid' => $booking_paid,
+            'booking_discount' => $booking_discount,
+            'booking_price' => $booking_price,
+            'booking_adults' => $booking_adults,
+            'booking_children' => $booking_children,
+            'booking_user' => $booking_user,
+            'booking_email' => $booking_email,
+            'booking_phone' => $booking_phone,
+        ), array('id' => $booking_id));
+
+        return [$booking_id, $booking_number];
+
+    }
+
     public function get_nights($booking_date_from, $booking_date_to) {
 
         $date1 = new DateTime($booking_date_from);
@@ -303,6 +326,11 @@ class BookedInBookings {
     
             return $bookingSlots;
     
+    }
+
+    public function delete_booking_and_addons($booking_id) {
+        $this->db->delete($this->booking_table_name, array('booking_header_id' => $booking_id));
+        $this->db->delete($this->booking_addons_table_name, array('booking_header_id' => $booking_id));
     }
 
     public function delete_booking($booking_id) {

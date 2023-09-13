@@ -118,7 +118,7 @@ function newBookingForm() {
                 if (startDate == '' || endDate == '' || resource == '') {
                     return;
                 }
-                console.log(addons);
+                
                 $.ajax({
                     url: '<?php echo get_rest_url(null, 'v1/booking/calculate_price');?>',
                     type: 'POST',
@@ -139,21 +139,6 @@ function newBookingForm() {
                     }
                 });
 
-            }
-            
-            // Function to update the price field
-            function updatePriceField(selectElement) {
-                // Get the selected option element
-                if (selectElement.selectedIndex == -1) {
-                    return;
-                }
-                var selectedOption = selectElement.options[selectElement.selectedIndex];
-
-                // Get the price from the data-price attribute of the selected option
-                var price = selectedOption.getAttribute('data-price');
-
-                // Update the price_input value
-                document.getElementsByName('booking_price')[0].value = price;
             }
 
             // Function to format the date range as a string
