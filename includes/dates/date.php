@@ -17,23 +17,27 @@ class BookedInDates {
         $this->table_name = $this->db->prefix . $this->dates_table;
     }
 
-    public function add_dates($date_name, $date_description, $date_value) {
-
+    public function add_dates($date_name, $date_description, $date_time, $date_type, $activeFlag) {
+        
         $this->db->insert($this->table_name, array(
             'date_name' => $date_name,
             'date_description' => $date_description,
-            'date_value' => $date_value
+            'date_time' => $date_time,
+            'date_type' => $date_type,
+            'activeFlag' => $activeFlag
         ));
 
         return $this->db->insert_id;
     }
 
-    public function update_dates($date_id, $date_name, $date_description, $date_value) {
+    public function update_dates($date_id, $date_name, $date_description, $date_time, $date_type, $activeFlag) {
 
         $this->db->update($this->table_name, array(
             'date_name' => $date_name,
             'date_description' => $date_description,
-            'date_value' => $date_value
+            'date_time' => $date_time,
+            'date_type' => $date_type,
+            'activeFlag' => $activeFlag
         ), array('id' => $date_id));
 
         return $this->db->insert_id;
@@ -63,7 +67,11 @@ class BookedInDates {
             id INT NOT NULL AUTO_INCREMENT,
             date_name VARCHAR(255) NOT NULL,
             date_description VARCHAR(255) NOT NULL,
-            date_value VARCHAR(255) NOT NULL,
+            date_time DATE NOT NULL,
+            date_type VARCHAR(255) NOT NULL,
+            activeFlag CHAR(1) NOT NULL DEFAULT 'Y',
+            created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+            edited_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
             PRIMARY KEY (id)
         ) $this->charset_collate;";
 

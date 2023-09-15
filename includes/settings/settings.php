@@ -17,23 +17,27 @@ class BookedInSettings {
         $this->table_name = $this->db->prefix . $this->settings_table;
     }
 
-    public function add_settings($setting_name, $setting_description, $setting_value) {
+    public function add_settings($setting_code, $setting_name, $setting_description, $setting_value, $activeFlag) {
 
         $this->db->insert($this->table_name, array(
+            'setting_code' => $setting_code,
             'setting_name' => $setting_name,
             'setting_description' => $setting_description,
-            'setting_value' => $setting_value
+            'setting_value' => $setting_value,
+            'activeFlag' => $activeFlag
         ));
 
         return $this->db->insert_id;
     }
 
-    public function update_settings($setting_id, $setting_name, $setting_description, $setting_value) {
+    public function update_settings($setting_id, $setting_code,  $setting_name, $setting_description, $setting_value, $activeFlag) {
 
         $this->db->update($this->table_name, array(
+            'setting_code' => $setting_code,
             'setting_name' => $setting_name,
             'setting_description' => $setting_description,
-            'setting_value' => $setting_value
+            'setting_value' => $setting_value,
+            'activeFlag' => $activeFlag
         ), array('id' => $setting_id));
 
         return $this->db->insert_id;
@@ -61,9 +65,13 @@ class BookedInSettings {
     public function createSettingsDB() {
         $sql = "CREATE TABLE IF NOT EXISTS $this->table_name (
             id INT NOT NULL AUTO_INCREMENT,
+            setting_code VARCHAR(255) NOT NULL,
             setting_name VARCHAR(255) NOT NULL,
             setting_description VARCHAR(255) NOT NULL,
             setting_value VARCHAR(255) NOT NULL,
+            activeFlag CHAR(1) NOT NULL DEFAULT 'Y',
+            created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+            edited_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
             PRIMARY KEY (id)
         ) $this->charset_collate;";
 

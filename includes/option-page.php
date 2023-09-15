@@ -14,7 +14,7 @@ class BookedInMenuPage {
             if (class_exists('BookedInBookings')) {
                 $bookings = new BookedInBookings();
                 register_activation_hook(BI_FILE, array($bookings,'activate'));
-                register_deactivation_hook(BI_FILE, array($bookings,'deactivate')); 
+                // register_deactivation_hook(BI_FILE, array($bookings,'deactivate')); 
 
                 require_once (BI_PLUGIN_PATH . '/includes/booking/public/add-booking-form.php');
                 
@@ -68,7 +68,7 @@ class BookedInMenuPage {
             require_once (BI_PLUGIN_PATH . '/includes/dates/date.php');
             $dates = new BookedInDates();
             register_activation_hook(BI_FILE, array($dates,'dates_activate'));
-            // register_deactivation_hook(BI_FILE, array($dates,'dates_deactivate'));
+            register_deactivation_hook(BI_FILE, array($dates,'dates_deactivate'));
             add_action( 'admin_menu', array($this,'bookedin_date_submenu'));
             add_action( 'admin_menu', array($this,'bookedin_date_edit_submenu'));
       
@@ -83,7 +83,7 @@ class BookedInMenuPage {
             require_once (BI_PLUGIN_PATH . '/includes/settings/settings.php');
             $settings = new BookedInSettings();
             register_activation_hook(BI_FILE, array($settings,'settings_activate'));
-            // register_deactivation_hook(BI_FILE, array($settings,'settings_deactivate'));
+            register_deactivation_hook(BI_FILE, array($settings,'settings_deactivate'));
             add_action( 'admin_menu', array($this,'bookedin_setting_submenu'));
             add_action( 'admin_menu', array($this,'bookedin_setting_edit_submenu'));
     
