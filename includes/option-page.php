@@ -63,6 +63,14 @@ class BookedInMenuPage {
                 add_action( 'admin_menu', array($this,'bookedin_addons_edit_submenu'));
     
             }
+
+            // Dates
+            require_once (BI_PLUGIN_PATH . '/includes/dates/date.php');
+            $dates = new BookedInDates();
+            register_activation_hook(BI_FILE, array($dates,'dates_activate'));
+            // register_deactivation_hook(BI_FILE, array($dates,'dates_deactivate'));
+            add_action( 'admin_menu', array($this,'bookedin_date_submenu'));
+            add_action( 'admin_menu', array($this,'bookedin_date_edit_submenu'));
       
         // Optional
             // Contact Form
@@ -193,6 +201,35 @@ class BookedInMenuPage {
             'manage_options',              
             'bookedin_pricings_edit',        
             'pricings_edit_page'    
+        );
+    }
+
+    // Submenu (Dates)
+    public function bookedin_date_submenu() {
+
+        require_once (BI_PLUGIN_PATH . '/includes/dates/admin/menu.php');
+        add_submenu_page(
+            'bookedin_main_menu',       
+            'Dates',         
+            'Dates',            
+            'manage_options',          
+            'bookedin_date_submenu',       
+            'bookedin_date_submenu_page',   
+            4
+        );
+    }
+
+    // Submenu (Dates Edit Page)
+    public function bookedin_date_edit_submenu() {
+
+        require_once (BI_PLUGIN_PATH . '/includes/dates/admin/edit-menu.php');
+        add_submenu_page(
+            null,                         
+            'Edit Date',         
+            'Edit Date',               
+            'manage_options',              
+            'bookedin_date_edit',        
+            'date_edit_page'    
         );
     }
 
