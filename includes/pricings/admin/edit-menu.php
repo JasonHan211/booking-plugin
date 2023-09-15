@@ -122,52 +122,64 @@ function pricings_edit_page() {
                 background-color: #cca264;
                 }
             </style>
-
-            <h2>Edit Pricing</h2>
-            <form id="addPricing" method="post" action="">
-                <label for="pricing_name">Name:</label>
-                <input type="text" name="pricing_name" value="<?php echo esc_attr($pricing['pricing_name']); ?>" required>
-                <label for="pricing_description">Description:</label>
-                <textarea name="pricing_description"><?php echo esc_textarea($pricing['pricing_description']); ?></textarea>
-                
-                <label for="pricing_active">Active:</label>
-                <select name="pricing_active">
-                    <option value="Y" <?php if ($pricing['pricing_active'] === 'Y') echo 'selected'; ?>>Yes</option>
-                    <option value="N" <?php if ($pricing['pricing_active'] === 'N') echo 'selected'; ?>>No</option>
-                </select>
-                <input type="submit" name="update_pricing" value="Update pricing">
-
-                <br><br>
-                
-                <h4>Price Chart</h4>
-                <div class="container">
+            
+            <div class="container">
+                <h2>Edit Pricing</h2>
+                <form id="addPricing" method="post" action="">
+                    
                     <div class="row">
-                        <div class="col-2"></div>
-                        <div class="col-10 button-container">
-                            <button id="reduceColumn">-</button>
-                            <label>Children</label>
-                            <button id="addColumn">+</button>
+                        <div class="col">
+                            <label class="form-label" for="pricing_name">Name:</label>
+                            <input class="form-control" type="text" name="pricing_name" value="<?php echo esc_attr($pricing['pricing_name']); ?>" required>
+                        </div>
+                        <div class="col">
+                            <label class="form-label" for="pricing_description">Description:</label>
+                            <input class="form-control" type="text" name="pricing_description" value="<?php echo esc_textarea($pricing['pricing_description']); ?>">
+                        </div>
+                        <div class="col">
+                            <label class="form-label" for="pricing_active">Active:</label>
+                            <select class="form-control" name="pricing_active">
+                                <option value="Y" <?php if ($pricing['pricing_active'] === 'Y') echo 'selected'; ?>>Yes</option>
+                                <option value="N" <?php if ($pricing['pricing_active'] === 'N') echo 'selected'; ?>>No</option>
+                            </select>
                         </div>
                     </div>
-                    <div class="row">
-                        <div class="col-2" style="min-height: 130px;">
-                            <div class="button-container rotate-label">
-                                <button id="addRow">+</button>
-                                <label>Adults</label>
-                                <button id="reduceRow">-</button>
+                    
+                    <br>
+                    
+                    <h4>Price Chart</h4>
+                    <div class="container">
+                        <div class="row">
+                            <div class="col-2"></div>
+                            <div class="col-10 button-container">
+                                <button id="reduceColumn">-</button>
+                                <label>Children</label>
+                                <button id="addColumn">+</button>
                             </div>
-                            
                         </div>
-                        <div class="col-10">
-                            <div id="matrixContainer"></div>
+                        <div class="row">
+                            <div class="col-2" style="min-height: 130px;">
+                                <div class="button-container rotate-label">
+                                    <button id="addRow">+</button>
+                                    <label>Adults</label>
+                                    <button id="reduceRow">-</button>
+                                </div>
+                                
+                            </div>
+                            <div class="col-10">
+                                <div id="matrixContainer"></div>
+                            </div>
                         </div>
                     </div>
-                </div>
-                <input type="hidden" name="pricing_structure" id="pricing_structure" value="">
+                    <input type="hidden" name="pricing_structure" id="pricing_structure" value="">
 
-                <br><br>
+                    <br><br>
 
-            </form>
+                    <input class="btn btn-primary" type="submit" name="update_pricing" value="Update pricing">
+
+                </form>
+            </div>
+            
 
             <script>
                 const matrixContainer = document.getElementById("matrixContainer");
@@ -316,61 +328,109 @@ function pricings_edit_page() {
         $discount = $pricingClass->get_discounts($discount_id);
 
         ?>
+            <br>
+            <div class="container">
+                <h2>Edit Discount</h2>
+                <form id="addDiscount" method="post" action="">
 
-            <h2>Edit Discount</h2>
-            <form id="addDiscount" method="post" action="">
-                <label for="discount_name">Name:</label>
-                <input type="text" name="discount_name" value="<?php echo esc_attr($discount['discount_name']); ?>" required>
-                <label for="discount_description">Description:</label>
-                <textarea name="discount_description"><?php echo esc_textarea($discount['discount_description']); ?></textarea>
-                <label for="discount_code">Code:</label>
-                <input type="text" name="discount_code" value="<?php echo esc_attr($discount['discount_code']); ?>" required>
-                <label for="discount_quantity">Quantity:</label>
-                <input type="number" name="discount_quantity" value="<?php echo esc_attr($discount['discount_quantity']); ?>" required>
-                <label for="discount_type">Type:</label>
-                <select name="discount_type">
-                    <option value="Percentage" <?php if ($discount['discount_type'] === 'percentage') echo 'selected'; ?>>Percentage</option>
-                    <option value="Fixed" <?php if ($discount['discount_type'] === 'fixed') echo 'selected'; ?>>Fixed</option>
-                </select>
-                <label for="discount_amount">Amount:</label>
-                <input type="number" name="discount_amount" value="<?php echo esc_attr($discount['discount_amount']); ?>" required>
-                <label for="discount_start_date">Start Date:</label>
-                <input type="date" name="discount_start_date" value="<?php echo esc_attr($discount['discount_start_date']); ?>">
-                <label for="discount_end_date">End Date:</label>
-                <input type="date" name="discount_end_date" value="<?php echo esc_attr($discount['discount_end_date']); ?>">
-                <label for="discount_on_type">Type On:</label>
-                <select name="discount_on_type">
-                    <option value="All" <?php if ($discount['discount_on_type'] === 'all') echo 'selected'; ?>>All</option>
-                    <option value="Resources" <?php if ($discount['discount_on_type'] === 'resources') echo 'selected'; ?>>Resources</option>
-                    <option value="Addon" <?php if ($discount['discount_on_type'] === 'addon') echo 'selected'; ?>>Addon</option>
-                </select>
-                <label for="discount_on_id">ID On:</label>
-                <select name="discount_on_id" disabled>
-                    <option value="All">N/A</option>
-                </select>
-                <label for="discount_condition">Condition:</label>
-                <select name="discount_condition">
-                    <option value="None" <?php if ($discount['discount_condition'] === 'None') echo 'selected'; ?>>None</option>
-                    <option value="Weekdays" <?php if ($discount['discount_condition'] === 'Weekdays') echo 'selected'; ?>>Weekdays</option>
-                    <option value="Weekends" <?php if ($discount['discount_condition'] === 'Weekends') echo 'selected'; ?>>Weekends</option>
-                    <option value="Off-Peak" <?php if ($discount['discount_condition'] === 'Off-Peak') echo 'selected'; ?>>Off Peak (Weekdays & Not Holiday)</option>
-                </select>
-                <label for="discount_condition_date_from">Condition Date From:</label>
-                <input type="date" name="discount_condition_date_from" value="<?php echo esc_attr($discount['discount_condition_start']); ?>">
-                <label for="discount_condition_date_to">Condition Date To:</label>
-                <input type="date" name="discount_condition_date_to" value="<?php echo esc_attr($discount['discount_condition_end']); ?>">
-                <label for="discount_auto_apply">Auto Apply:</label>
-                <select name="discount_auto_apply">
-                    <option value="Y" <?php if ($discount['discount_auto_apply'] === 'Y') echo 'selected'; ?>>Yes</option>
-                    <option value="N" <?php if ($discount['discount_auto_apply'] === 'N') echo 'selected'; ?>>No</option>
-                </select>
-                <label for="discount_active">Active:</label>
-                <select name="discount_active">
-                    <option value="Y" <?php if ($discount['discount_active'] === 'Y') echo 'selected'; ?>>Yes</option>
-                    <option value="N" <?php if ($discount['discount_active'] === 'N') echo 'selected'; ?>>No</option>
-                </select>
-                <input type="submit" name="update_discount" value="Update discount">
-            </form>
+                <div class="row">
+                    <div class="col">
+                        <label class="form-label" for="discount_name">Name:</label>
+                        <input class="form-control" type="text" name="discount_name" value="<?php echo esc_attr($discount['discount_name']); ?>" required>
+                    </div>
+                    <div class="col">
+                        <label class="form-label" for="discount_description">Description:</label>
+                        <input class="form-control" type="text" name="discount_description" value="<?php echo esc_textarea($discount['discount_description']); ?>">
+                    </div>
+                    <div class="col">
+                        <label class="form-label" for="discount_code">Code:</label>
+                        <input class="form-control" type="text" name="discount_code" class="all-cap" value="<?php echo esc_attr($discount['discount_code']); ?>" required>
+                    </div>
+                </div>
+                <div class="row mt-2">
+                    <div class="col">
+                        <label class="form-label" for="discount_quantity">Discount Quantity:</label>
+                        <input class="form-control" type="number" name="discount_quantity" min=0 step="1" value="<?php echo esc_attr($discount['discount_quantity']); ?>" required>
+                    </div>
+                    <div class="col">
+                        <label class="form-label" for="discount_type">Type:</label>
+                        <select class="form-control" name="discount_type">
+                        <option value="Percentage" <?php if ($discount['discount_type'] === 'Percentage') echo 'selected'; ?>>Percentage</option>
+                        <option value="Fixed" <?php if ($discount['discount_type'] === 'Fixed') echo 'selected'; ?>>Fixed</option>
+                        </select>
+                    </div>
+                    <div class="col">
+                        <label class="form-label" for="discount_amount">Discount Amount:</label>
+                        <input class="form-control" type="number" name="discount_amount" min=0 step="1" value="<?php echo esc_attr($discount['discount_amount']); ?>" required>
+                    </div>
+                </div>
+                <div class="row mt-2">
+                    <div class="col">
+                        <label class="form-label" for="discount_start_date">Apply Discount Start Date:</label>
+                        <input class="form-control" type="date" name="discount_start_date" value="<?php echo esc_attr($discount['discount_start_date']); ?>">
+                    </div>
+                    <div class="col">
+                        <label class="form-label" for="discount_end_date">Apply Discount End Date:</label>
+                        <input class="form-control" type="date" name="discount_end_date" value="<?php echo esc_attr($discount['discount_end_date']); ?>">
+                    </div>
+                </div>
+                <div class="row mt-2">
+                    <div class="col">
+                        <label class="form-label" for="discount_on_type">Discount On Type:</label>
+                        <select class="form-control" name="discount_on_type">
+                            <option value="All" <?php if ($discount['discount_on_type'] === 'All') echo 'selected'; ?>>All</option>
+                            <option value="Resources" <?php if ($discount['discount_on_type'] === 'Resources') echo 'selected'; ?>>Resources</option>
+                            <option value="Addon" <?php if ($discount['discount_on_type'] === 'Addon') echo 'selected'; ?>>Addon</option>
+                        </select>
+                    </div>
+                    <div class="col">
+                        <label class="form-label" for="discount_on_id">ID on Type:</label>
+                        <select class="form-control" name="discount_on_id" disabled>
+                            <option value="All">N/A</option>
+                        </select>
+                    </div>
+                    <div class="col">
+                        <label class="form-label" for="discount_condition">Day Condition:</label>
+                        <select class="form-control" name="discount_condition">
+                            <option value="None" <?php if ($discount['discount_condition'] === 'None') echo 'selected'; ?>>None</option>
+                            <option value="Weekdays" <?php if ($discount['discount_condition'] === 'Weekdays') echo 'selected'; ?>>Weekdays</option>
+                            <option value="Weekends" <?php if ($discount['discount_condition'] === 'Weekends') echo 'selected'; ?>>Weekends</option>
+                            <option value="Off-Peak" <?php if ($discount['discount_condition'] === 'Off-Peak') echo 'selected'; ?>>Off Peak (Weekdays & Not Holiday)</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="row mt-2">
+                    <div class="col">
+                        <label class="form-label" for="discount_condition_date_fom">Booking Date From:</label>
+                        <input class="form-control" type="date" name="discount_condition_date_from" value="<?php echo esc_attr($discount['discount_condition_start']); ?>">
+                    </div>
+                    <div class="col">
+                        <label class="form-label" for="discount_condition_date_to">Booking Date To:</label>
+                        <input class="form-control" type="date" name="discount_condition_date_to" value="<?php echo esc_attr($discount['discount_condition_end']); ?>">
+                    </div>
+                </div>
+                <div class="row mt-2">
+                    <div class="col">
+                        <label class="form-label" for="discount_auto_apply">Auto Apply:</label>
+                        <select class="form-control" name="discount_auto_apply">
+                        <option value="Y" <?php if ($discount['discount_auto_apply'] === 'Y') echo 'selected'; ?>>Yes</option>
+                        <option value="N" <?php if ($discount['discount_auto_apply'] === 'N') echo 'selected'; ?>>No</option>
+                        </select>
+                    </div>
+                    <div class="col">
+                        <label class="form-label" for="discount_active">Active:</label>
+                        <select class="form-control" name="discount_active">
+                        <option value="Y" <?php if ($discount['discount_active'] === 'Y') echo 'selected'; ?>>Yes</option>
+                        <option value="N" <?php if ($discount['discount_active'] === 'N') echo 'selected'; ?>>No</option>
+                        </select>
+                    </div>
+                </div>
+
+                <br>
+                    
+                <input class="btn btn-primary" type="submit" name="update_discount" value="Update discount">
+                </form>
+            </div>
 
             <script>
                 jQuery(document).ready(function($) {

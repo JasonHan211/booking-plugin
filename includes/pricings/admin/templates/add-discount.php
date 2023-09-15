@@ -32,130 +32,173 @@ function addDiscountForm() {
 
     ?>
     <!-- Form to add new discounts -->
-        <h2>Add New discount</h2>
+    <div class="container">
+    <h2>Add New discount</h2>
         <form method="post" action="">
-            <label for="discount_name">Name:</label>
-            <input type="text" name="discount_name" required>
-            <label for="discount_description">Description:</label>
-            <textarea name="discount_description"></textarea>
-            <label for="discount_code">Code:</label>
-            <input type="text" name="discount_code" class="all-cap" required>
-            <br>
-            <label for="discount_quantity">Quantity:</label>
-            <input type="number" name="discount_quantity" min=0 step="1" required>
-            <label for="discount_type">Type:</label>
-            <select name="discount_type">
-                <option value="Percentage">Percentage</option>
-                <option value="Fixed">Fixed</option>
-            </select>
-            <label for="discount_amount">Amount:</label>
-            <input type="number" name="discount_amount" min=0 step="1" required>
-            <br>
-            <label for="discount_start_date">Start Date:</label>
-            <input type="date" name="discount_start_date">
-            <label for="discount_end_date">End Date:</label>
-            <input type="date" name="discount_end_date">
-            <br>
-            <label for="discount_on_type">On Type:</label>
-            <select name="discount_on_type">
-                <option value="ALL">All</option>
-                <option value="Resources">Resources</option>
-                <option value="Addon">Addon</option>
-            </select>
-            <label for="discount_on_id">On ID:</label>
-            <select name="discount_on_id" disabled>
-                <option value="All">N/A</option>
-            </select>
-            <label for="discount_condition">Condition:</label>
-            <select name="discount_condition">
-                <option value="None">None</option>
-                <option value="Weekdays">Weekdays</option>
-                <option value="Weekends">Weekends</option>
-                <option value="Off-Peak">Off Peak (Weekdays & Not Holiday)</option>
-            </select>
-            <br>
-            <div class="discount-condition-date-range">
-                <label for="discount_condition_date_fom">Date From:</label>
-                <input type="date" name="discount_condition_date_from">
-                <label for="discount_condition_date_to">Date To:</label>
-                <input type="date" name="discount_condition_date_to">
+
+            <div class="row">
+                <div class="col">
+                    <label class="form-label" for="discount_name">Name:</label>
+                    <input class="form-control" type="text" name="discount_name" required>
+                </div>
+                <div class="col">
+                    <label class="form-label" for="discount_description">Description:</label>
+                    <input class="form-control" type="text" name="discount_description">
+                </div>
+                <div class="col">
+                    <label class="form-label" for="discount_code">Code:</label>
+                    <input class="form-control" type="text" name="discount_code" class="all-cap" required>
+                </div>
             </div>
-            <label for="discount_auto_apply">Auto Apply:</label>
-            <select name="discount_auto_apply">
-                <option value="Y">Yes</option>
-                <option value="N">No</option>
-            </select>
-            <label for="discount_active">Active:</label>
-            <select name="discount_active">
-                <option value="Y">Yes</option>
-                <option value="N">No</option>
-            </select>
-            <input type="submit" name="add_discount" value="Add discount">
+            <div class="row mt-2">
+                <div class="col">
+                    <label class="form-label" for="discount_quantity">Discount Quantity:</label>
+                    <input class="form-control" type="number" name="discount_quantity" min=0 step="1" required>
+                </div>
+                <div class="col">
+                    <label class="form-label" for="discount_type">Type:</label>
+                    <select class="form-control" name="discount_type">
+                        <option value="Percentage">Percentage</option>
+                        <option value="Fixed">Fixed</option>
+                    </select>
+                </div>
+                <div class="col">
+                    <label class="form-label" for="discount_amount">Discount Amount:</label>
+                    <input class="form-control" type="number" name="discount_amount" min=0 step="1" required>
+                </div>
+            </div>
+            <div class="row mt-2">
+                <div class="col">
+                    <label class="form-label" for="discount_start_date">Apply Discount Start Date:</label>
+                    <input class="form-control" type="date" name="discount_start_date">
+                </div>
+                <div class="col">
+                    <label class="form-label" for="discount_end_date">Apply Discount End Date:</label>
+                    <input class="form-control" type="date" name="discount_end_date">
+                </div>
+            </div>
+            <div class="row mt-2">
+                <div class="col">
+                    <label class="form-label" for="discount_on_type">Discount On Type:</label>
+                    <select class="form-control" name="discount_on_type">
+                        <option value="ALL">All</option>
+                        <option value="Resources">Resources</option>
+                        <option value="Addon">Addon</option>
+                    </select>
+                </div>
+                <div class="col">
+                    <label class="form-label" for="discount_on_id">ID on Type:</label>
+                    <select class="form-control" name="discount_on_id" disabled>
+                        <option value="All">N/A</option>
+                    </select>
+                </div>
+                <div class="col">
+                    <label class="form-label" for="discount_condition">Day Condition:</label>
+                    <select class="form-control" name="discount_condition">
+                        <option value="None">None</option>
+                        <option value="Weekdays">Weekdays</option>
+                        <option value="Weekends">Weekends</option>
+                        <option value="Off-Peak">Off Peak (Weekdays & Not Holiday)</option>
+                    </select>
+                </div>
+            </div>
+            <div class="row mt-2">
+                <div class="col">
+                    <label class="form-label" for="discount_condition_date_fom">Booking Date From:</label>
+                    <input class="form-control" type="date" name="discount_condition_date_from">
+                </div>
+                <div class="col">
+                    <label class="form-label" for="discount_condition_date_to">Booking Date To:</label>
+                    <input class="form-control" type="date" name="discount_condition_date_to">
+                </div>
+            </div>
+            <div class="row mt-2">
+                <div class="col">
+                    <label class="form-label" for="discount_auto_apply">Auto Apply:</label>
+                    <select class="form-control" name="discount_auto_apply">
+                        <option value="Y">Yes</option>
+                        <option value="N">No</option>
+                    </select>
+                </div>
+                <div class="col">
+                    <label class="form-label" for="discount_active">Active:</label>
+                    <select class="form-control" name="discount_active">
+                        <option value="Y">Yes</option>
+                        <option value="N">No</option>
+                    </select>
+                </div>
+            </div>
+
+            <br>
+
+            <input class="btn btn-primary" type="submit" name="add_discount" value="Add discount">
         </form>
+    </div>
+        
 
-        <script>
-            jQuery(document).ready(function($) {
-                $('select[name="discount_on_type"]').change(function() {
-                    var discount_on_type = $(this).val();
-                    var discount_on_id = $('select[name="discount_on_id"]');
-                    if (discount_on_type == 'Resources') {
+    <script>
+        jQuery(document).ready(function($) {
+            $('select[name="discount_on_type"]').change(function() {
+                var discount_on_type = $(this).val();
+                var discount_on_id = $('select[name="discount_on_id"]');
+                if (discount_on_type == 'Resources') {
 
-                        $.ajax({
-                            url: '<?php echo get_rest_url(null, 'v1/resources/get_resources');?>',
-                            type: 'POST',
-                            data: {
-                                action: 'get_resources',
-                            },
-                            success: function (data) {
-                                
-                                discount_on_id.prop('disabled', false);
-                                discount_on_id.empty();
+                    $.ajax({
+                        url: '<?php echo get_rest_url(null, 'v1/resources/get_resources');?>',
+                        type: 'POST',
+                        data: {
+                            action: 'get_resources',
+                        },
+                        success: function (data) {
+                            
+                            discount_on_id.prop('disabled', false);
+                            discount_on_id.empty();
 
-                                resources = data.resources;
+                            resources = data.resources;
 
-                                discount_on_id.append('<option value="All"> All </option>');
-                                resources.forEach(function(resource) {
-                                    discount_on_id.append('<option value="' + resource.id + '">' + resource.resource_name + '</option>');
-                                });
+                            discount_on_id.append('<option value="All"> All </option>');
+                            resources.forEach(function(resource) {
+                                discount_on_id.append('<option value="' + resource.id + '">' + resource.resource_name + '</option>');
+                            });
 
-                            }
-                        });
-                        
-                    } else if (discount_on_type == 'Addon') {
+                        }
+                    });
+                    
+                } else if (discount_on_type == 'Addon') {
 
-                        $.ajax({
-                            url: '<?php echo get_rest_url(null, 'v1/addons/get_addons');?>',
-                            type: 'POST',
-                            data: {
-                                action: 'get_addons',
-                            },
-                            success: function (data) {
-                                
-                                discount_on_id.prop('disabled', false);
-                                discount_on_id.empty();
+                    $.ajax({
+                        url: '<?php echo get_rest_url(null, 'v1/addons/get_addons');?>',
+                        type: 'POST',
+                        data: {
+                            action: 'get_addons',
+                        },
+                        success: function (data) {
+                            
+                            discount_on_id.prop('disabled', false);
+                            discount_on_id.empty();
 
-                                addons = data.addons;
+                            addons = data.addons;
 
-                                addons.forEach(function(addon) {
-                                    discount_on_id.append('<option value="' + addon.id + '">' + addon.addon_name + '</option>');
-                                });
+                            addons.forEach(function(addon) {
+                                discount_on_id.append('<option value="' + addon.id + '">' + addon.addon_name + '</option>');
+                            });
 
-                            }
-                        });
+                        }
+                    });
 
-                    } else {
-                        discount_on_id.prop('disabled', true);
-                        discount_on_id.empty();
-                        discount_on_id.append('<option value="null">N/A</option>');
-                    }
-                });
-
-                $('input[name="discount_code"]').keyup(function() {
-                    $(this).val($(this).val().toUpperCase());
-                });
-
+                } else {
+                    discount_on_id.prop('disabled', true);
+                    discount_on_id.empty();
+                    discount_on_id.append('<option value="null">N/A</option>');
+                }
             });
-        </script>
+
+            $('input[name="discount_code"]').keyup(function() {
+                $(this).val($(this).val().toUpperCase());
+            });
+
+        });
+    </script>
 
     <?php
 }

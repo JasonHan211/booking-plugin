@@ -55,21 +55,7 @@ function newBookingForm() {
                             <label for="booking_description" class="form-label">Hidden Description:</label>
                             <textarea class="form-control" name="booking_description"></textarea>
                         </div>
-                        <div class="mb-3">
-                            <label for="booking_paid" class="form-label">Paid:</label>
-                            <select class="form-select" name="booking_paid">
-                                <option value="N">No</option>
-                                <option value="Y">Yes</option>
-                            </select>
-                        </div>
-                        <div class="mb-3">
-                            <label for="booking_price" class="form-label">Price:</label>
-                            <input type="text" class="form-control" name="booking_price" required>
-                        </div>
-                        <div class="mb-3">
-                            <label for="booking_discount" class="form-label">Discount Code:</label>
-                            <input type="text" class="form-control" name="booking_discount" onchange="updatePrice()">
-                        </div>
+                        
                     </div>
 
                     <!-- Right Column -->
@@ -88,6 +74,23 @@ function newBookingForm() {
                         <div class="mb-3">
                             <label for="booking_phone" class="form-label">Phone:</label>
                             <input type="text" class="form-control" name="booking_phone" required>
+                        </div>
+                        <br>
+                        <h3>Pricing Details</h3>
+                        <div class="mb-3">
+                            <label for="booking_price" class="form-label">Price:</label>
+                            <input type="text" class="form-control" name="booking_price" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="booking_discount" class="form-label">Discount Code:</label>
+                            <input type="text" class="form-control" name="booking_discount" onchange="updatePrice()">
+                        </div>
+                        <div class="mb-3">
+                            <label for="booking_paid" class="form-label">Paid:</label>
+                            <select class="form-select" name="booking_paid">
+                                <option value="N">No</option>
+                                <option value="Y">Yes</option>
+                            </select>
                         </div>
                     </div>
                 </div>

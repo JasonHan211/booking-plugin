@@ -33,59 +33,85 @@ function bookedin_resources_submenu_page() {
     bookedInNavigation('Resources');
     ?>
     <div class="wrap">
-
+        <br>
+        <div class="container">
         <!-- Form to add new resources -->
         <h2>Add New Resource</h2>
-        <form method="post" action="">
-            <label for="resource_name">Name:</label>
-            <input type="text" name="resource_name" required>
-            <label for="resource_description">Description:</label>
-            <textarea name="resource_description"></textarea>
-            <label for="resource_price">Price:</label>
-            <select name="resource_price">
-                <?php
-                    $pricings = $pricingClass->get_pricings();
-                    foreach ($pricings as $pricing) { ?>
-                    <option value="<?php echo $pricing['id']; ?>"><?php echo $pricing['pricing_name']; ?></option>
-                <?php } ?>
-            </select>
-            <label for="resource_activeFlag">Active:</label>
-            <select name="resource_activeFlag">
-                <option value="Y">Yes</option>
-                <option value="N">No</option>
-            </select>
-            <input type="submit" name="add_resource" value="Add Resource">
-        </form>
+            <form method="post" action="">
+                <div class="row">
+                    <div class="col">
 
+                        <label class="form-label" for="resource_name">Name:</label>
+                        <input class="form-control" type="text" name="resource_name" required>
+                        
+                        <div class="row mt-3">
+                            <div class="col">
+                                <label class="form-label" for="resource_price">Price:</label>
+                                <select class="form-control" name="resource_price">
+                                    <?php
+                                        $pricings = $pricingClass->get_pricings();
+                                        foreach ($pricings as $pricing) { ?>
+                                        <option value="<?php echo $pricing['id']; ?>"><?php echo $pricing['pricing_name']; ?></option>
+                                    <?php } ?>
+                                </select>
+                            </div>
+                            <div class="col">
+                                <label class="form-label" for="resource_activeFlag">Active:</label>
+                                <select class="form-control" name="resource_activeFlag">
+                                    <option value="Y">Yes</option>
+                                    <option value="N">No</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                    </div>
+                    <div class="col">
+                        <label class="form-label" for="resource_description">Description:</label>
+                        <textarea class="form-control" name="resource_description"></textarea>
+                    </div>
+                </div>
+                
+                <br>
+                <input class="btn btn-primary" type="submit" name="add_resource" value="Add Resource">
+                
+                
+                
+            </form>
+        </div>
+        
+        <br>
+        <div class="container">
         <!-- Display existing resources -->
         <h2>Existing Resources</h2>
-        <table class="wp-list-table widefat fixed striped">
-            <thead>
-                <tr>
-                    <th>Name</th>
-                    <th>Description</th>
-                    <th>Price</th>
-                    <th>Active</th>
-                    <th>Actions</th>
-                </tr>
-            </thead>
-            <tbody>
-                <?php
-                    $resources = $resourcesClass->get_resources();
-                    foreach ($resources as $resource) { ?>
+            <table class="wp-list-table widefat fixed striped">
+                <thead>
                     <tr>
-                        <td><?php echo $resource['resource_name']; ?></td>
-                        <td><?php echo $resource['resource_description']; ?></td>
-                        <td><?php echo $resource['pricing_name']; ?></td>
-                        <td><?php echo $resource['activeFlag']; ?></td>
-                        <td>
-                            <a href="<?php echo admin_url('admin.php?page=bookedin_resources_edit&action=edit&resource_id=' . $resource['id']); ?>">Edit</a> |
-                            <a href="<?php echo admin_url('admin.php?page=bookedin_resources_submenu&action=delete&resource_id=' . $resource['id']); ?>" onclick="return confirm('Are you sure you want to delete this resource?')">Delete</a>
-                        </td>
+                        <th>Name</th>
+                        <th>Description</th>
+                        <th>Price</th>
+                        <th>Active</th>
+                        <th>Actions</th>
                     </tr>
-                <?php } ?>
-            </tbody>
-        </table>
+                </thead>
+                <tbody>
+                    <?php
+                        $resources = $resourcesClass->get_resources();
+                        foreach ($resources as $resource) { ?>
+                        <tr>
+                            <td><?php echo $resource['resource_name']; ?></td>
+                            <td><?php echo $resource['resource_description']; ?></td>
+                            <td><?php echo $resource['pricing_name']; ?></td>
+                            <td><?php echo $resource['activeFlag']; ?></td>
+                            <td>
+                                <a href="<?php echo admin_url('admin.php?page=bookedin_resources_edit&action=edit&resource_id=' . $resource['id']); ?>">Edit</a> |
+                                <a href="<?php echo admin_url('admin.php?page=bookedin_resources_submenu&action=delete&resource_id=' . $resource['id']); ?>" onclick="return confirm('Are you sure you want to delete this resource?')">Delete</a>
+                            </td>
+                        </tr>
+                    <?php } ?>
+                </tbody>
+            </table>
+        </div>                    
+        
     </div>
     <?php
     bookInFooter();

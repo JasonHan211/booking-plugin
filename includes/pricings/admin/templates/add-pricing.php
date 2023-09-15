@@ -17,6 +17,8 @@ function addPricingForm() {
             #matrixContainer {
             display: flex;
             flex-direction: column;
+            overflow: auto;
+            width: inherit;
             }
             
             .matrix-row {
@@ -67,54 +69,66 @@ function addPricingForm() {
             }
         </style>
 
-        <h2>Add New pricing</h2>
-        <form id="addPricing" method="post" action="">
-            <label for="pricing_name">Name:</label>
-            <input type="text" name="pricing_name" required>
-            <label for="pricing_description">Description:</label>
-            <textarea name="pricing_description"></textarea>
-            
-            <label for="pricing_active">Active:</label>
-            <select name="pricing_active">
-                <option value="Y">Yes</option>
-                <option value="N">No</option>
-            </select>
-            <input type="submit" name="add_pricing" value="Add pricing">
-
-            <br><br>
-            
-            <h4>Price Chart</h4>
-
-            <button id="priceMode" class="btn">Multi Price</button>
-
-            <div class="container">
+        <div class="container">
+            <h2>Add New pricing</h2>
+            <form id="addPricing" method="post" action="">
                 <div class="row">
-                    <div class="col-1"></div>
-                    <div class="col-10 button-container">
-                        <button id="reduceColumn">-</button>
-                        <label>Children</label>
-                        <button id="addColumn">+</button>
+                    <div class="col-5">
+                        <label class="form-label" for="pricing_name">Name:</label>
+                        <input class="form-control" type="text" name="pricing_name" required>
+                    </div>
+                    <div class="col-5">
+                        <label class="form-label" for="pricing_description">Description:</label>
+                        <input type="text" class="form-control" name="pricing_description">
+                    </div>
+                    <div class="col-2">
+                        <label class="form-label" for="pricing_active">Active:</label>
+                        <select class="form-control" name="pricing_active">
+                            <option value="Y">Yes</option>
+                            <option value="N">No</option>
+                        </select>
                     </div>
                 </div>
-                <div class="row">
-                    <div class="col-1" style="min-height: 130px;">
-                        <div class="button-container rotate-label">
-                            <button id="addRow">+</button>
-                            <label>Adults</label>
-                            <button id="reduceRow">-</button>
+                
+                <br>
+                
+                <h4>Price Chart</h4>
+
+                <button id="priceMode" class="btn btn-primary">Multi Price</button>
+
+                <div class=" p-3">
+                    <div class="row">
+                        <div class="col-1"></div>
+                        <div class="col-10 button-container">
+                            <button id="reduceColumn">-</button>
+                            <label>Children</label>
+                            <button id="addColumn">+</button>
                         </div>
-                        
                     </div>
-                    <div class="col-10">
-                        <div id="matrixContainer"></div>
+                    <div class="row">
+                        <div class="col-1" style="min-height: 130px;">
+                            <div class="button-container rotate-label">
+                                <button id="addRow">+</button>
+                                <label>Adults</label>
+                                <button id="reduceRow">-</button>
+                            </div>
+                            
+                        </div>
+                        <div class="col-10">
+                            <div id="matrixContainer"></div>
+                        </div>
                     </div>
                 </div>
-            </div>
-            <input type="hidden" name="pricing_structure" id="pricing_structure" value="">
+                
+                <input type="hidden" name="pricing_structure" id="pricing_structure" value="">
 
-            <br><br>
+                
+                <br>
+                <input class="btn btn-primary" type="submit" name="add_pricing" value="Add pricing">
 
-        </form>
+            </form>
+        </div>
+        
 
         <script>
             const matrixContainer = document.getElementById("matrixContainer");
@@ -238,12 +252,17 @@ function addPricingForm() {
                 if (document.getElementById("priceMode").innerHTML == "Multi Price") {
                     document.getElementById("priceMode").innerHTML = "Single Price";
                     multiPlaceholder = false;
+                    document.getElementsByClassName("button-container")[0].parentElement.hidden = true;
                     document.getElementsByClassName("button-container")[0].style.display = "none";
+                    document.getElementsByClassName("button-container")[1].parentElement.hidden = true;
                     document.getElementsByClassName("button-container")[1].style.display = "none";
                     populateMatrixWithData([[""]]);
                 } else {
                     document.getElementById("priceMode").innerHTML = "Multi Price";
                     multiPlaceholder = true;
+                    
+                    document.getElementsByClassName("button-container")[0].parentElement.hidden = false;
+                    document.getElementsByClassName("button-container")[1].parentElement.hidden = false;
                     document.getElementsByClassName("button-container")[0].style.display = "flex";
                     document.getElementsByClassName("button-container")[1].style.display = "flex";
                     populateMatrixWithData([["","",""],["","",""],["","",""]]);

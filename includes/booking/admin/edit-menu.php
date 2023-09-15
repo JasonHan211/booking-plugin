@@ -182,24 +182,22 @@ function booking_edit_page() {
                         <input type="text" class="form-control" name="booking_phone" value="<?php echo esc_attr($booking_header['booking_phone']); ?>" required>
                     </div>
                     <br>
-                    <div>
-                        <h3>Pricing Details</h3>
-                        <div class="mb-3">
-                            <label for="booking_price" class="form-label">Price:</label>
-                            <input type="text" class="form-control" name="booking_price" value="<?php echo esc_attr($booking_header['booking_price']); ?>" required>
-                        </div>
-                        
-                        <div class="mb-3">
-                            <label for="booking_discount" class="form-label">Discount Code:</label>
-                            <input type="text" class="form-control" name="booking_discount" onchange="updatePrice()" value="<?php echo esc_attr($booking_header['booking_discount']); ?>">
-                        </div>
-                        <div class="mb-3">
-                            <label for="booking_paid" class="form-label">Paid:</label>
-                            <select class="form-select" name="booking_paid">
-                                <option value="N" <?php if ($booking_header['booking_paid'] === 'N') echo 'selected'; ?>>No</option>
-                                <option value="Y" <?php if ($booking_header['booking_paid'] === 'Y') echo 'selected'; ?>>Yes</option>
-                            </select>
-                        </div>
+                    <h3>Pricing Details</h3>
+                    <div class="mb-3">
+                        <label for="booking_price" class="form-label">Price:</label>
+                        <input type="text" class="form-control" name="booking_price" value="<?php echo esc_attr($booking_header['booking_price']); ?>" required>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="booking_discount" class="form-label">Discount Code:</label>
+                        <input type="text" class="form-control" name="booking_discount" onchange="updatePrice()" value="<?php echo esc_attr($booking_header['booking_discount']); ?>">
+                    </div>
+                    <div class="mb-3">
+                        <label for="booking_paid" class="form-label">Paid:</label>
+                        <select class="form-select" name="booking_paid">
+                            <option value="N" <?php if ($booking_header['booking_paid'] === 'N') echo 'selected'; ?>>No</option>
+                            <option value="Y" <?php if ($booking_header['booking_paid'] === 'Y') echo 'selected'; ?>>Yes</option>
+                        </select>
                     </div>
                     
                 </div>
