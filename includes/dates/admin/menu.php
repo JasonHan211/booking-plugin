@@ -31,7 +31,31 @@ function bookedin_date_submenu_page() {
     <div class="container">
         <br>
         <!-- Form to add new addons -->
-        <h2>Add New Dates</h2>
+        <div class="row">
+            <div class="col">
+                <h2>Add New Dates</h2>
+            </div>
+            <div class="col">
+                <div class="row"  style="float: right;">
+                    <div class="col">
+                    <select id="year" class="form-control" name="year">
+                        <?php
+                        $limit = (int)date('Y') + 5;
+                        for ($year = (int)date('Y'); $year < $limit; $year++): ?>
+                            <option value="<?=$year;?>"><?=$year;?></option>
+                        <?php endfor; ?>
+                    </select>
+                    </div>
+                    <div class="col">
+                        <button id="importHoliday" class="btn btn-primary">
+                            Import Holidays
+                        </button>
+                    </div>
+                </div>
+                
+                
+            </div>
+        </div>
         <form method="post" action="">
 
             <div class="row">
@@ -110,6 +134,11 @@ function bookedin_date_submenu_page() {
             </tbody>
         </table>
     </div>
+
+    <script>
+
+    </script>
+
     <?php
     bookInFooter();
 }
