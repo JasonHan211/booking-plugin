@@ -35,7 +35,7 @@ function bookedin_date_submenu_page() {
             <div class="col">
                 <h2>Add New Dates</h2>
             </div>
-            <div class="col">
+            <!-- <div class="col">
                 <div class="row"  style="float: right;">
                     <div class="col">
                     <select id="year" class="form-control" name="year">
@@ -52,9 +52,7 @@ function bookedin_date_submenu_page() {
                         </button>
                     </div>
                 </div>
-                
-                
-            </div>
+            </div> -->
         </div>
         <form method="post" action="">
 

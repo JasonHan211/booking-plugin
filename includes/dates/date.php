@@ -56,6 +56,10 @@ class BookedInDates {
         return $result;
     }
 
+    public function check_is_holiday($date_time) {
+        
+    }
+
     public function delete_dates($date_id) {
 
         $this->db->delete($this->table_name, array('id' => $date_id));
