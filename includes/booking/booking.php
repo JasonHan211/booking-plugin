@@ -6,6 +6,7 @@ if (!defined('ABSPATH')) exit;
 require_once (BI_PLUGIN_PATH . '/includes/resources/resources.php');
 require_once (BI_PLUGIN_PATH . '/includes/addons/addons.php');
 require_once (BI_PLUGIN_PATH . '/includes/pricings/pricing.php');
+require_once (BI_PLUGIN_PATH . '/includes/dates/date.php');
 
 class BookedInBookings {
 
@@ -14,6 +15,7 @@ class BookedInBookings {
     private $resourcesClass;
     private $addonsClass;
     private $pricingClass;
+    private $datesClass;
     public $booking_header_table = 'bookedin_booking_header';
     public $booking_table = 'bookedin_bookings';
     public $booking_addons_table = 'bookedin_booking_addons';
@@ -29,6 +31,7 @@ class BookedInBookings {
         $this->resourcesClass = new BookedInResources();
         $this->addonsClass = new BookedInAddons();
         $this->pricingClass = new BookedInPricings();
+        $this->datesClass = new BookedInDates();
         $this->addon_table_name = $this->addonsClass->table_name;
         $this->charset_collate = $this->db->get_charset_collate();
         $this->booking_header_table_name = $this->db->prefix . $this->booking_header_table;
@@ -319,12 +322,17 @@ class BookedInBookings {
     
             $bookingSlots = $this->db->get_results(
                 "SELECT DATE(booking_date) as 'date', 
-                ($totalResources-COUNT(*)) AS 'availableSlots'
+                ($totalResources-COUNT(*)) AS 'availableSlots',
+                '' as 'day'
                 from $this->booking_table_name wbb 
                 GROUP BY DATE(booking_date)"
                 , ARRAY_A);
-    
-            return $bookingSlots;
+            
+            $breaks = $this->datesClass->get_all_break();
+
+            $all = array_merge($bookingSlots, $breaks);
+
+            return $all;
     
     }
 

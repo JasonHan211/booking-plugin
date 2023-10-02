@@ -4,9 +4,11 @@ function bookingCalendar($display=true) {
 
     $resourceClass = new BookedInResources();
     $bookingClass = new BookedInBookings();
+    $datesClass = new BookedInDates();
 
     $totalResources = $resourceClass->get_total_resources();
     $bookingSlots = $bookingClass->get_booking_slots();
+    $holiday = $datesClass->get_all_holiday();
 
     ?>
         <div class="container" id="calendarContainer"></div>
@@ -17,7 +19,8 @@ function bookingCalendar($display=true) {
             var display = <?php echo $display ? 'true' : 'false'; ?>;
             var totalResources = <?php echo $totalResources; ?>;
             var bookingSlots = <?php echo json_encode($bookingSlots); ?>;
-            
+            var holiday = <?php echo json_encode($holiday); ?>;
+            console.log(bookingSlots);
             // Get the current month and year
             var currentDate = new Date();
             var currentMonth = currentDate.getMonth() + 1; // Adding 1 to get 1-12 range
@@ -215,6 +218,10 @@ function bookingCalendar($display=true) {
                     return;
                 }
 
+                if (cell.getAttribute('data-slots') === '0') {
+                    return;
+                }
+
                 var selectedDate = new Date(cell.getAttribute('data-date'));
 
                 // Reset
@@ -362,6 +369,11 @@ function bookingCalendar($display=true) {
                     var cell = document.querySelector('#availability-table div[data-date="' + date + '"]');
                     
                     if (cell) {
+
+                        if (cell.getAttribute('data-slots') === '0') {
+                            removeSelectedRange();
+                            return;
+                        }
 
                         if (i === 0) {
                             cell.classList.add('selected-start');

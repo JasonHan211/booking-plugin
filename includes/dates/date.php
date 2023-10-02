@@ -48,7 +48,7 @@ class BookedInDates {
         if ($date_id) {
             $sql = "SELECT * FROM $this->table_name WHERE id = $date_id";
         } else {
-            $sql = "SELECT * FROM $this->table_name";
+            $sql = "SELECT * FROM $this->table_name ORDER BY date_time";
         }
 
         $result = $this->db->get_results($sql, 'ARRAY_A');
@@ -56,8 +56,67 @@ class BookedInDates {
         return $result;
     }
 
+    public function get_all_holiday() {
+
+        $result = $this->db->get_results(
+            "SELECT
+            DATE(date_time) as 'date',
+            date_name as 'day'
+            FROM $this->table_name
+            WHERE date_type = 'Holiday'
+            AND activeFlag = 'Y'
+            ", 'ARRAY_A');
+
+        return $result;
+
+    }
+
+    public function get_all_break() {
+
+        $result = $this->db->get_results(
+            "SELECT 
+            DATE(date_time) as 'date', 
+            0 AS 'availableSlots',
+            date_name as 'day'
+            FROM $this->table_name
+            WHERE date_type = 'Break'
+            AND activeFlag = 'Y'
+            ", 'ARRAY_A');
+
+        return $result;
+
+    }
+
     public function check_is_holiday($date_time) {
         
+        $result = $this->db->get_results(
+            "SELECT * 
+            FROM $this->table_name 
+            WHERE date_time = '$date_time'
+            AND date_type = 'Holiday'
+            AND activeFlag = 'Y'
+            ", 'ARRAY_A');
+
+        $output = $result? true : false;
+
+        return $output;
+
+    }
+
+    public function check_is_break($date_time) {
+
+        $result = $this->db->get_results(
+            "SELECT * 
+            FROM $this->table_name 
+            WHERE date_time = '$date_time'
+            AND date_type = 'Break'
+            AND activeFlag = 'Y'
+            ", 'ARRAY_A');
+
+        $output = $result? true : false;
+
+        return $output;
+
     }
 
     public function delete_dates($date_id) {

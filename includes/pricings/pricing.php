@@ -114,6 +114,8 @@ class BookedInpricings {
                 return null;
             }
 
+            // Holiday verification here
+
         } else if ($discount_condition == 'Weekdays') {
 
             // Check if date is a weekday
