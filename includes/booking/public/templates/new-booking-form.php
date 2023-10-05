@@ -41,12 +41,19 @@ function newBookingForm() {
                         <div class="mb-3">
                             <label for="booking_addons" class="form-label">Addons:</label>
                             
-                            <?php foreach($addons as $addon) { ?>
+                            <div class="addon-container">
+                                <?php foreach($addons as $addon) { ?>
+                                    
+                                    <div class="addon-section border p-4 m-2">
+                                        <div class="row">
+                                            <div class="col-11"><label class="form-check-label"><?php echo $addon['addon_name']; ?></label></div>
+                                            <div class="col-1"><input type="checkbox" class="form-check-input" name="booking_addon[]" value="<?php echo $addon['id']; ?>" data-price='<?php echo $addon['addon_price']; ?>' onclick="updatePrice()"></div>
+                                        </div>
+                                        <p class="mb-0" style="font-size: 13px;"><?php echo $addon['addon_description']; ?></p>
+                                    </div>
 
-                                <label class="form-check-label"><?php echo $addon['addon_name']; ?></label>
-                                <input type="checkbox" class="form-check-input" name="booking_addon[]" value="<?php echo $addon['id']; ?>" data-price='<?php echo $addon['addon_price']; ?>' onclick="updatePrice()">
-
-                             <?php } ?>
+                                <?php } ?>
+                            </div>
 
                         </div>
                         <div class="mb-3">

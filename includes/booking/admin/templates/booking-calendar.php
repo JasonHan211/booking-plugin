@@ -132,7 +132,7 @@ function bookingCalendar($display=true) {
                             if (availableSlots <= 0) {
 
                                 // Days with no available slots
-                                calendarHTML += '<br>' + '&#8203';
+                                calendarHTML += '<br>' + 'Full';
 
                             } else {
 
@@ -218,7 +218,7 @@ function bookingCalendar($display=true) {
                     return;
                 }
 
-                if (cell.getAttribute('data-slots') === '0') {
+                if (cell.getAttribute('data-slots') === '0' && selectedStartDate == null) {
                     return;
                 }
 
@@ -370,7 +370,7 @@ function bookingCalendar($display=true) {
                     
                     if (cell) {
 
-                        if (cell.getAttribute('data-slots') === '0') {
+                        if (cell.getAttribute('data-slots') === '0' && i !== selectedDates.length-1) {
                             removeSelectedRange();
                             return;
                         }

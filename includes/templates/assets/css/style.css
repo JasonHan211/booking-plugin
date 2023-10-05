@@ -142,3 +142,12 @@ a {
 .all-cap {
     text-transform: uppercase;
 }
+
+input[type='checkbox'] {
+    border: 1px solid #8c8f94;
+    border-color: lightgrey;
+}
+
+label {
+    margin-bottom: 0.5rem;
+}

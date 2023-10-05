@@ -7,6 +7,7 @@ class BookedInpricings {
 
     private $db;
     private $charset_collate;
+    private $datesClass;
     public $pricing_table = 'bookedin_pricings';
     public $discount_table = 'bookedin_discounts';
     public $table_name;
@@ -16,6 +17,7 @@ class BookedInpricings {
         global $wpdb;
         $this->db = $wpdb;
         $this->charset_collate = $this->db->get_charset_collate();
+        $this->datesClass = new BookedInDates();
         $this->table_name = $this->db->prefix . $this->pricing_table;
         $this->discount_table_name = $this->db->prefix . $this->discount_table;
     }
@@ -115,7 +117,8 @@ class BookedInpricings {
             }
 
             // Holiday verification here
-            
+            $holiday = $this->datesClass->check_is_holiday($date);
+            if ($holiday) return null;
 
         } else if ($discount_condition == 'Weekdays') {
 
