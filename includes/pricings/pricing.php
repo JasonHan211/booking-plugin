@@ -115,6 +115,7 @@ class BookedInpricings {
             }
 
             // Holiday verification here
+            
 
         } else if ($discount_condition == 'Weekdays') {
 
