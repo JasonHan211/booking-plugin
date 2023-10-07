@@ -88,19 +88,20 @@ function bookingCalendar($display=true) {
                 var calendarHTML = '<table id="availability-table" class="table table-bordered">';
                 calendarHTML += '<div class="mb-3 d-flex justify-content-between align-items-center">';
                 calendarHTML += '<button onclick="goToPreviousMonth()" class="btn btn-secondary">&lt; Previous Month</button>';
-                calendarHTML += '<h3 class="text-center">' + currentMonth + '-' + currentYear + '</h3>';
+                calendarHTML += '<h3 class="text-center mb-0">' + currentMonth + '-' + currentYear + '</h3>';
                 calendarHTML += '<button onclick="goToNextMonth()" class="btn btn-secondary">Next Month &gt;</button>';
                 calendarHTML += '</div>';
                 calendarHTML += '<thead><tr><th colspan="7"></th></tr><tr><th>Sun</th><th>Mon</th><th>Tue</th><th>Wed</th><th>Thu</th><th>Fri</th><th>Sat</th></tr></thead><tbody>';
 
                 // Get the first day of the month and the number of days in the month
                 var firstDay = new Date(currentYear, currentMonth - 1, 1).getDay();
+                console.log(firstDay);
                 var numDays = new Date(currentYear, currentMonth, 0).getDate();
 
                 // Get the last day of the previous month
                 var prevMonthLastDay = new Date(currentYear, currentMonth - 1, 0).getDate();
                 var prevMonthStartDay = prevMonthLastDay - firstDay + 1;
-                
+            
                 var day = 1;
                 
                 for (var i = 0; i < 6; i++) {
@@ -113,6 +114,8 @@ function bookingCalendar($display=true) {
 
                         var currentDate = new Date(currentYear, currentMonth - 1, day);
                         var isAvailable = currentDate >= new Date();
+
+                        // Bug on calendar date display****
 
                         // Check if the current date is available
                         if (isAvailable) {
