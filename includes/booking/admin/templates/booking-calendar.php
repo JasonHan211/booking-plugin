@@ -24,7 +24,9 @@ function bookingCalendar($display=true) {
             // Get the current month and year
             var currentDate = new Date();
             var currentMonth = currentDate.getMonth() + 1; // Adding 1 to get 1-12 range
+            var actualCurrentMonth = currentMonth;
             var currentYear = currentDate.getFullYear();
+            var actualCurrentYear = currentYear;
 
             // Selected dates
             var selectedDates = [];
@@ -59,8 +61,14 @@ function bookingCalendar($display=true) {
 
              // Function to navigate to the previous month
             function goToPreviousMonth() {
+                
+                if (currentMonth === actualCurrentMonth && currentYear === actualCurrentYear) {
+                    return;
+                } 
+
                 previousMonth();
                 generateCalendar();
+
             }
 
             // Next month
@@ -88,21 +96,23 @@ function bookingCalendar($display=true) {
                 var calendarHTML = '<table id="availability-table" class="table table-bordered">';
                 calendarHTML += '<div class="mb-3 d-flex justify-content-between align-items-center">';
                 calendarHTML += '<button onclick="goToPreviousMonth()" class="btn btn-secondary">&lt; Previous Month</button>';
-                calendarHTML += '<h3 class="text-center">' + currentMonth + '-' + currentYear + '</h3>';
+                calendarHTML += '<h3 class="text-center mb-0">' + currentMonth + '-' + currentYear + '</h3>';
                 calendarHTML += '<button onclick="goToNextMonth()" class="btn btn-secondary">Next Month &gt;</button>';
                 calendarHTML += '</div>';
                 calendarHTML += '<thead><tr><th colspan="7"></th></tr><tr><th>Sun</th><th>Mon</th><th>Tue</th><th>Wed</th><th>Thu</th><th>Fri</th><th>Sat</th></tr></thead><tbody>';
 
                 // Get the first day of the month and the number of days in the month
                 var firstDay = new Date(currentYear, currentMonth - 1, 1).getDay();
+
                 var numDays = new Date(currentYear, currentMonth, 0).getDate();
 
                 // Get the last day of the previous month
                 var prevMonthLastDay = new Date(currentYear, currentMonth - 1, 0).getDate();
                 var prevMonthStartDay = prevMonthLastDay - firstDay + 1;
-                
-                var day = 1;
-                
+            
+                // Get first day date
+                var day = (firstDay === 0)? 1 : prevMonthStartDay;
+
                 for (var i = 0; i < 6; i++) {
 
                     calendarHTML += '<tr>';
@@ -111,15 +121,20 @@ function bookingCalendar($display=true) {
 
                         calendarHTML += '<td>';
 
-                        var currentDate = new Date(currentYear, currentMonth - 1, day);
+                        var currentDate = new Date(currentYear, currentMonth - 1, day); 
+                        
+                        // Days from the previous month to first day of the month
+                        if (i === 0 && j < firstDay) {
+                            let currentDate = new Date(currentYear, currentMonth - 2, day);
+                        } 
+                        
                         var isAvailable = currentDate >= new Date();
 
-                        // Check if the current date is available
                         if (isAvailable) {
-
+                            
                             // Fill in the date and available slots
                             var formattedDate = formatDate(currentDate);
-                            
+
                             var slot = bookingSlots.find(function(slot) {
                                 return slot.date === formattedDate;
                             });
@@ -142,37 +157,27 @@ function bookingCalendar($display=true) {
                             }
                             
                             calendarHTML += '</div>';
-
-                            day++;
-
-                            if (day > numDays) {
-                                day = 1;
-                                
-                                nextMonth();
-                            }
-
                         } else {
 
-                            if (i === 0 && j < firstDay) {
-
-                                // Days from the previous month to first day of the month
-                                let prevMonthDate = new Date(currentYear, currentMonth - 2, prevMonthStartDay);
-                                calendarHTML += '<div data-slots="0" data-date="' + prevMonthDate + '" class="text-muted">';
-                                calendarHTML += '<span>' + prevMonthStartDay + '</span>';
-                                prevMonthStartDay++;
-
-                            } else {
-
-                                // Days from first day to current day
-                                calendarHTML += '<div data-slots="0" data-date="' + currentDate + '" class="text-muted">';
-                                calendarHTML += '<span>' + day + '</span>';
-                                day++;
-
-                            }
-                            
+                            calendarHTML += '<div data-slots="0" data-date="' + currentDate + '" class="text-muted">';
+                            calendarHTML += '<span>' + day + '</span>';
                             calendarHTML += '<br>' + '&#8203';
                             calendarHTML += '</div>';
 
+                        }
+                        
+
+                        day++;
+
+                        // From prev month transition to this month
+                        if (i === 0 && day == prevMonthLastDay+1) {
+                            day = 1;
+                        }
+
+                        // From this month transition to next month
+                        if (day > numDays && (i !== 0)) {
+                            day = 1;
+                            nextMonth();
                         }
 
                         calendarHTML += '</td>';
