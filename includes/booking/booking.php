@@ -141,7 +141,7 @@ class BookedInBookings {
 
     }
 
-    public function add_booking_header($booking_date_from, $booking_date_to,$booking_resource, $booking_notes, $booking_description, $booking_paid, $booking_discount, $booking_price, $booking_adults, $booking_children, $booking_user, $booking_email, $booking_phone ) {
+    public function add_booking_header($booking_date_from, $booking_date_to,$booking_resource, $booking_notes, $booking_description, $booking_paid, $booking_deposit_refund, $booking_discount, $booking_price, $booking_adults, $booking_children, $booking_user, $booking_email, $booking_phone ) {
 
         // Generate unique booking number
         $booking_number = uniqid('BNB-');
@@ -155,6 +155,7 @@ class BookedInBookings {
             'booking_notes' => $booking_notes,
             'booking_description' => $booking_description,
             'booking_paid' => $booking_paid,
+            'booking_deposit_refund' => $booking_deposit_refund,
             'booking_discount' => $booking_discount,
             'booking_price' => $booking_price,
             'booking_adults' => $booking_adults,
@@ -214,6 +215,7 @@ class BookedInBookings {
             bh.booking_notes as 'booking_notes',
             bh.booking_description as 'booking_description',
             bh.booking_paid as 'booking_paid',
+            bh.booking_deposit_refund as 'booking_deposit_refund',
             bh.booking_discount as 'booking_discount',
             bh.booking_price as 'booking_price',
             bh.booking_adults as 'booking_adults',
@@ -283,7 +285,7 @@ class BookedInBookings {
 
     }
 
-    public function update_booking_header($booking_id, $booking_number, $booking_date_from, $booking_date_to,$booking_resource, $booking_notes, $booking_description, $booking_paid, $booking_discount, $booking_price, $booking_adults, $booking_children, $booking_user, $booking_email, $booking_phone ) {
+    public function update_booking_header($booking_id, $booking_number, $booking_date_from, $booking_date_to, $booking_resource, $booking_notes, $booking_description, $booking_paid, $booking_deposit_refund, $booking_discount, $booking_price, $booking_adults, $booking_children, $booking_user, $booking_email, $booking_phone ) {
 
         $this->db->update($this->booking_header_table_name, array(
             'booking_number' => $booking_number,
@@ -293,6 +295,7 @@ class BookedInBookings {
             'booking_notes' => $booking_notes,
             'booking_description' => $booking_description,
             'booking_paid' => $booking_paid,
+            'booking_deposit_refund' => $booking_deposit_refund,
             'booking_discount' => $booking_discount,
             'booking_price' => $booking_price,
             'booking_adults' => $booking_adults,
@@ -363,6 +366,7 @@ class BookedInBookings {
             booking_notes TEXT,
             booking_description TEXT,
             booking_paid CHAR(1) NOT NULL DEFAULT 'N',
+            booking_deposit_refund CHAR(1) NOT NULL DEFAULT 'N',
             booking_discount VARCHAR(255),
             booking_price VARCHAR(255) NOT NULL DEFAULT 0,
             booking_adults INT NOT NULL DEFAULT 0,

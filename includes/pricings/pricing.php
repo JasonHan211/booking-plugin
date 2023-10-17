@@ -86,6 +86,12 @@ class BookedInpricings {
 
     }
 
+    public function get_pricing_by_name($name) {
+        $pricing = $this->db->get_row("SELECT * FROM $this->table_name WHERE pricing_name = '$name'", ARRAY_A);
+        echo $this->db->last_error;
+        return $pricing;
+    }
+
     public function check_availability($discount, $date){
         
         // Check if discount date is within apply discount date
@@ -294,9 +300,12 @@ class BookedInpricings {
 
         }
 
+        // Get deposit
+        $deposit = (int)$this->calculatePrice($this->get_pricing_by_name('DEPOSIT')['id']);
+        
         // Calculate total price
-        $raw_total = 0;
-        $total = 0;
+        $raw_total = $deposit;
+        $total = $deposit;
 
         foreach ($resourceObjs as $resourceObj) {
             $raw_total += $resourceObj['resource_price'];
@@ -332,7 +341,7 @@ class BookedInpricings {
 
         $resourceObj = array('resource'=>$resourceObjs);
         
-        $totalObj = array('raw_total'=>$raw_total, 'total_after_discount'=>$total, 'total_after_final_discounted'=>$total_discounted);
+        $totalObj = array('raw_total'=>$raw_total, 'total_after_discount'=>$total, 'total_after_final_discounted'=>$total_discounted, 'deposit'=>$deposit);
         
         $discount_used = $applied_discount;
 
@@ -488,6 +497,9 @@ class BookedInpricings {
         
         $this->createPricingDB();
         $this->createDiscoundDB();
+
+        //Auto generate deposit field
+        $this->add_pricing('DEPOSIT', 'Deposit', json_encode([["100"]]), 'Y');
 
     }
 

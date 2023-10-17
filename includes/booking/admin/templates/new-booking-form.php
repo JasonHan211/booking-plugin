@@ -100,6 +100,13 @@ function newBookingForm() {
                                 <option value="Y">Yes</option>
                             </select>
                         </div>
+                        <div class="mb-3">
+                            <label for="booking_deposit_refund" class="form-label">Deposit Refund:</label>
+                            <select class="form-select" name="booking_deposit_refund">
+                                <option value="N">No</option>
+                                <option value="Y">Yes</option>
+                            </select>
+                        </div>
                     </div>
                 </div>
 

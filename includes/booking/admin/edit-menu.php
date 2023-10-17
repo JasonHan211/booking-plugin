@@ -28,6 +28,7 @@ function booking_edit_page() {
         $booking_notes = sanitize_text_field($_POST['booking_notes']);
         $booking_description = sanitize_textarea_field($_POST['booking_description']);
         $booking_paid = sanitize_text_field($_POST['booking_paid']);
+        $booking_deposit_refund = sanitize_text_field($_POST['booking_deposit_refund']);
         $booking_price = sanitize_text_field($_POST['booking_price']);
         $booking_discount = sanitize_text_field($_POST['booking_discount']);
         $booking_adults = sanitize_text_field($_POST['booking_adults']);
@@ -53,7 +54,7 @@ function booking_edit_page() {
 
         $bookingClass->delete_booking_and_addons($booking_id);
 
-        [$booking_header_id, $booking_number] = $bookingClass->update_booking_header($booking_id, $booking_header['booking_number'], $booking_date_from, $booking_date_to, $booking_resource, $booking_notes, $booking_description, $booking_paid, $booking_discount, $booking_price, $booking_adults, $booking_children, $booking_user, $booking_email, $booking_phone);
+        [$booking_header_id, $booking_number] = $bookingClass->update_booking_header($booking_id, $booking_header['booking_number'], $booking_date_from, $booking_date_to, $booking_resource, $booking_notes, $booking_description, $booking_paid, $booking_deposit_refund, $booking_discount, $booking_price, $booking_adults, $booking_children, $booking_user, $booking_email, $booking_phone);
 
         // Add booking for selected addon with charge once
         foreach ($selectedAddons as $addon) {
@@ -197,6 +198,13 @@ function booking_edit_page() {
                         <select class="form-select" name="booking_paid">
                             <option value="N" <?php if ($booking_header['booking_paid'] === 'N') echo 'selected'; ?>>No</option>
                             <option value="Y" <?php if ($booking_header['booking_paid'] === 'Y') echo 'selected'; ?>>Yes</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="booking_deposit_refund" class="form-label">Deposit Refund:</label>
+                        <select class="form-select" name="booking_deposit_refund">
+                            <option value="N" <?php if ($booking_header['booking_deposit_refund'] === 'N') echo 'selected'; ?>>No</option>
+                            <option value="Y" <?php if ($booking_header['booking_deposit_refund'] === 'Y') echo 'selected'; ?>>Yes</option>
                         </select>
                     </div>
                     

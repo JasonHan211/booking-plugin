@@ -31,7 +31,7 @@ class BookedInMenuPage {
             // if (class_exists('BookedInPricings')) {
                 $pricing = new BookedInPricings();
                 register_activation_hook(BI_FILE, array($pricing,'pricings_activate'));
-                register_deactivation_hook(BI_FILE, array($pricing,'pricings_deactivate'));    
+                // register_deactivation_hook(BI_FILE, array($pricing,'pricings_deactivate'));    
             
                 add_action( 'admin_menu', array($this,'bookedin_pricings_submenu'));
                 add_action( 'admin_menu', array($this,'bookedin_pricings_edit_submenu'));
@@ -44,7 +44,7 @@ class BookedInMenuPage {
             // if (class_exists('BookedInResources')) {
                 $resources = new BookedInResources();
                 register_activation_hook(BI_FILE, array($resources,'resources_activate'));
-                register_deactivation_hook(BI_FILE, array($resources,'resources_deactivate'));    
+                // register_deactivation_hook(BI_FILE, array($resources,'resources_deactivate'));    
             
                 add_action( 'admin_menu', array($this,'bookedin_resources_submenu'));
                 add_action( 'admin_menu', array($this,'bookedin_resources_edit_submenu'));
@@ -57,7 +57,7 @@ class BookedInMenuPage {
             // if (class_exists('BookedInAddons')) {
                 $addons = new BookedInAddons();
                 register_activation_hook(BI_FILE, array($addons,'addons_activate'));
-                register_deactivation_hook(BI_FILE, array($addons,'addons_deactivate'));    
+                // register_deactivation_hook(BI_FILE, array($addons,'addons_deactivate'));    
             
                 add_action( 'admin_menu', array($this,'bookedin_addons_submenu'));
                 add_action( 'admin_menu', array($this,'bookedin_addons_edit_submenu'));
@@ -68,7 +68,7 @@ class BookedInMenuPage {
             require_once (BI_PLUGIN_PATH . '/includes/dates/date.php');
             $dates = new BookedInDates();
             register_activation_hook(BI_FILE, array($dates,'dates_activate'));
-            register_deactivation_hook(BI_FILE, array($dates,'dates_deactivate'));
+            // register_deactivation_hook(BI_FILE, array($dates,'dates_deactivate'));
             add_action( 'admin_menu', array($this,'bookedin_date_submenu'));
             add_action( 'admin_menu', array($this,'bookedin_date_edit_submenu'));
       
