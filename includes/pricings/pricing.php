@@ -288,7 +288,7 @@ class BookedInpricings {
                 }
 
 
-            } else if ($discount['discount_on_type'] == 'All') {
+            } else if ($discount['discount_on_type'] == 'ALL') {
                 $all_type_discount[] = $discount;
             }
 
@@ -311,25 +311,30 @@ class BookedInpricings {
         // Handles total discount
         if (!empty($all_type_discount)) {
 
-            $discount = $this->check_availability($discount, $start);
+            foreach ($all_type_discount as $discount) {
 
-            if ($discount !== null) {
+                $discount = $this->check_availability($discount, $start);
 
-                $total_discounted = $this->apply_discount($discount, $total);
+                if ($discount !== null) {
 
-                // If discount code not in array
-                if (!in_array($discount, $applied_discount)) {
-                    $applied_discount[] = $discount;
+                    $total_discounted = $this->apply_discount($discount, $total);
+
+                    // If discount code not in array
+                    if (!in_array($discount, $applied_discount)) {
+                        $applied_discount[] = $discount;
+                    }
+
                 }
 
             }
+
         }
 
         $resourceObj = array('resource'=>$resourceObjs);
         
         $totalObj = array('raw_total'=>$raw_total, 'total_after_discount'=>$total, 'total_after_final_discounted'=>$total_discounted);
         
-        $discount_used = $discounts;
+        $discount_used = $applied_discount;
 
         return [$resourceObj, $addonsObjs, $totalObj, $discount_used];
 

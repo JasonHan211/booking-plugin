@@ -378,7 +378,7 @@ function pricings_edit_page() {
                     <div class="col">
                         <label class="form-label" for="discount_on_type">Discount On Type:</label>
                         <select class="form-control" name="discount_on_type">
-                            <option value="All" <?php if ($discount['discount_on_type'] === 'All') echo 'selected'; ?>>All</option>
+                            <option value="All" <?php if ($discount['discount_on_type'] === 'ALL') echo 'selected'; ?>>All</option>
                             <option value="Resources" <?php if ($discount['discount_on_type'] === 'Resources') echo 'selected'; ?>>Resources</option>
                             <option value="Addon" <?php if ($discount['discount_on_type'] === 'Addon') echo 'selected'; ?>>Addon</option>
                         </select>

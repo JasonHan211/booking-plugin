@@ -113,6 +113,9 @@ function bookingCalendar($display=true) {
                 // Get first day date
                 var day = (firstDay === 0)? 1 : prevMonthStartDay;
 
+                // Marking for next month
+                var nextMonthFlag = false;
+
                 for (var i = 0; i < 6; i++) {
 
                     calendarHTML += '<tr>';
@@ -141,7 +144,12 @@ function bookingCalendar($display=true) {
                             
                             var availableSlots = slot ? slot.availableSlots : totalResources;
                             
-                            calendarHTML += '<div data-slots="' + availableSlots + '" data-date="' + currentDate + '" onclick="selectDate(this)">';
+                            if (nextMonthFlag || (i === 0 && j < firstDay)) {
+                                calendarHTML += '<div data-slots="' + availableSlots + '" data-date="' + currentDate + '" onclick="selectDate(this)"  class="text-muted">';
+                            } else {
+                                calendarHTML += '<div data-slots="' + availableSlots + '" data-date="' + currentDate + '" onclick="selectDate(this)">';
+                            }
+     
                             calendarHTML +=  day;
 
                             if (availableSlots <= 0) {
@@ -177,6 +185,7 @@ function bookingCalendar($display=true) {
                         // From this month transition to next month
                         if (day > numDays && (i !== 0)) {
                             day = 1;
+                            nextMonthFlag = true;
                             nextMonth();
                         }
 

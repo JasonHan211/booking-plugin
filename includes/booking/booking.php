@@ -170,12 +170,13 @@ class BookedInBookings {
 
     }
 
-    public function add_booking($booking_header_id, $booking_date, $booking_resource) {
+    public function add_booking($booking_header_id, $booking_date, $booking_resource, $booking_paid) {
 
         $this->db->insert($this->booking_table_name, array(
             'booking_header_id' => $booking_header_id,
             'booking_date' => $booking_date,
             'booking_resource' => $booking_resource,
+            'booking_paid' => $booking_paid,
         ));
 
         $id = $this->db->insert_id;
@@ -223,7 +224,7 @@ class BookedInBookings {
             br.resource_name as 'resource_name'
             FROM $this->booking_header_table_name bh 
             LEFT JOIN $resourceTable br on br.id = bh.booking_resource
-            ORDER BY bh.booking_date_from DESC
+            ORDER BY bh.booking_date_from ASC
             LIMIT $recordsPerPage
             OFFSET $offset", ARRAY_A);
             return $booking_header;
@@ -325,6 +326,7 @@ class BookedInBookings {
                 ($totalResources-COUNT(*)) AS 'availableSlots',
                 '' as 'day'
                 from $this->booking_table_name wbb 
+                where wbb.booking_paid = 'Y'
                 GROUP BY DATE(booking_date)"
                 , ARRAY_A);
             
@@ -384,6 +386,7 @@ class BookedInBookings {
             booking_header_id INT NOT NULL,
             booking_date DATE NOT NULL,
             booking_resource VARCHAR(255),
+            booking_paid CHAR(1) NOT NULL DEFAULT 'N',
             created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
             edited_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
             PRIMARY KEY (id)

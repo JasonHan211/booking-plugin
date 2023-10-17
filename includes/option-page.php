@@ -11,58 +11,58 @@ class BookedInMenuPage {
             //Booking
             require_once (BI_PLUGIN_PATH . '/includes/booking/booking.php');
 
-            if (class_exists('BookedInBookings')) {
+            // if (class_exists('BookedInBookings')) {
                 $bookings = new BookedInBookings();
                 register_activation_hook(BI_FILE, array($bookings,'activate'));
-                // register_deactivation_hook(BI_FILE, array($bookings,'deactivate')); 
+                register_deactivation_hook(BI_FILE, array($bookings,'deactivate')); 
 
                 require_once (BI_PLUGIN_PATH . '/includes/booking/public/add-booking-form.php');
                 
                 add_action('admin_menu', array($this, 'bookedin_add_menu_page'));
                 add_action( 'admin_menu', array($this,'bookedin_booking_edit_submenu'));
             
-            }
+            // }
 
 
         // Submenu
             // Pricing
             require_once (BI_PLUGIN_PATH . '/includes/pricings/pricing.php');
 
-            if (class_exists('BookedInPricings')) {
+            // if (class_exists('BookedInPricings')) {
                 $pricing = new BookedInPricings();
                 register_activation_hook(BI_FILE, array($pricing,'pricings_activate'));
-                // register_deactivation_hook(BI_FILE, array($pricing,'pricings_deactivate'));    
+                register_deactivation_hook(BI_FILE, array($pricing,'pricings_deactivate'));    
             
                 add_action( 'admin_menu', array($this,'bookedin_pricings_submenu'));
                 add_action( 'admin_menu', array($this,'bookedin_pricings_edit_submenu'));
     
-            }
+            // }
 
             // Resources
             require_once (BI_PLUGIN_PATH . '/includes/resources/resources.php');
 
-            if (class_exists('BookedInResources')) {
+            // if (class_exists('BookedInResources')) {
                 $resources = new BookedInResources();
                 register_activation_hook(BI_FILE, array($resources,'resources_activate'));
-                // register_deactivation_hook(BI_FILE, array($resources,'resources_deactivate'));    
+                register_deactivation_hook(BI_FILE, array($resources,'resources_deactivate'));    
             
                 add_action( 'admin_menu', array($this,'bookedin_resources_submenu'));
                 add_action( 'admin_menu', array($this,'bookedin_resources_edit_submenu'));
     
-            }
+            // }
                     
             // Addons
             require_once (BI_PLUGIN_PATH . '/includes/addons/addons.php');
 
-            if (class_exists('BookedInAddons')) {
+            // if (class_exists('BookedInAddons')) {
                 $addons = new BookedInAddons();
                 register_activation_hook(BI_FILE, array($addons,'addons_activate'));
-                // register_deactivation_hook(BI_FILE, array($addons,'addons_deactivate'));    
+                register_deactivation_hook(BI_FILE, array($addons,'addons_deactivate'));    
             
                 add_action( 'admin_menu', array($this,'bookedin_addons_submenu'));
                 add_action( 'admin_menu', array($this,'bookedin_addons_edit_submenu'));
     
-            }
+            // }
 
             // Dates
             require_once (BI_PLUGIN_PATH . '/includes/dates/date.php');
