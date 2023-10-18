@@ -93,6 +93,7 @@ function newBookingForm() {
                             <label for="booking_discount" class="form-label">Discount Code:</label>
                             <input type="text" class="form-control" name="booking_discount" onchange="updatePrice()">
                         </div>
+                        <!-- To add price breakdown -->
                         <div class="mb-3">
                             <label for="booking_paid" class="form-label">Paid:</label>
                             <select class="form-select" name="booking_paid">
