@@ -86,14 +86,60 @@ function newBookingForm() {
                         <br>
                         <h3>Pricing Details</h3>
                         <div class="mb-3">
-                            <label for="booking_price" class="form-label">Price:</label>
-                            <input type="text" class="form-control" name="booking_price" required>
-                        </div>
-                        <div class="mb-3">
                             <label for="booking_discount" class="form-label">Discount Code:</label>
                             <input type="text" class="form-control" name="booking_discount" onchange="updatePrice()">
                         </div>
                         <!-- To add price breakdown -->
+
+                        <div class="mt-4 mb-4" id="priceBreakdown" hidden>
+                            <div class="card mw-100">
+                                <div class="card-header">
+                                    Price Breakdown
+                                </div>
+                                <div class="card-body">
+                                    <ul class="list-group">
+                                        <li class="list-group-item d-flex justify-content-between">
+                                            <span>Price of Stay:</span>
+                                            <span id="stayPrice">$250.00</span>
+                                        </li>
+                                        <li class="list-group-item justify-content-between">
+                                            <span>Addons:</span>
+
+                                            <ul class="list-group mt-3" id="addonList">
+                                                <li class="list-group-item d-flex justify-content-between">
+                                                    <span>Parking:</span>
+                                                    <span>$20.00</span>
+                                                </li>
+                                            </ul>
+                                        </li>
+                                   
+                                        <li class="list-group-item d-flex justify-content-between">
+                                            <span>Deposit Amount:</span>
+                                            <span id="depositPrice">$100.00</span>
+                                        </li>
+                                        <li class="list-group-item d-flex justify-content-between">
+                                            <span>Discount Applied:</span>
+                                            <span id="discountPrice">-$20.00</span>
+                                        </li>
+                                    </ul>
+                                </div>
+                                <div class="card-footer">
+                                    <div class="row">
+                                        <div class="col-8">
+                                            <strong>Total Price:</strong>
+                                        </div>
+                                        <div class="col-4 ">
+                                            <div class="input-group">
+                                                <span class="input-group-text">RM</span>
+                                                <input type="text" class="form-control text-end pe-3" name="booking_price" required>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                </div>
+                            </div>
+                        </div>
+
                         <div class="mb-3">
                             <label for="booking_paid" class="form-label">Paid:</label>
                             <select class="form-select" name="booking_paid">
@@ -156,8 +202,23 @@ function newBookingForm() {
                     },
                     success: function (data) {
                         
+                        document.getElementById('priceBreakdown').hidden = false;
+                        document.getElementById('stayPrice').innerHTML = `RM ${Number(data.resource.resource[0].resource_price).toFixed(2)}`;
+                        
+
+                        if (data.addons.length > 0) {
+                            document.getElementById('addonPrice').innerHTML = `RM ${data.addons.addon_price.toFixed(2)}`;
+                        } else {
+                            document.getElementById('addonPrice').innerHTML = `RM 0.00`;
+                        }
+
+                        document.getElementById('depositPrice').innerHTML = `RM ${data.total.total_deposit_price.toFixed(2)}`;
+                        document.getElementById('discountPrice').innerHTML = `RM ${data.total.total_discount_price.toFixed(2)}`;
+                        if (data.total.total_discount_price > 0) {
+                            document.getElementById('discountPrice').innerHTML = `- RM ${data.total.total_discount_price.toFixed(2)}`;
+                        }
                         totalPrice = data.total.total_after_final_discounted;
-                        document.getElementsByName('booking_price')[0].value = totalPrice;
+                        document.getElementsByName('booking_price')[0].value = totalPrice.toFixed(2);
                     }
                 });
 
