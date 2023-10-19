@@ -488,3 +488,4 @@ function calculate_price_callback($request) {
 
     return new WP_REST_Response(array('resource'=>$resource_output, 'addons'=>$addon_output, 'total'=>$total, 'discount'=>$discount, 'message'=>'Success'), 200);
 }
+

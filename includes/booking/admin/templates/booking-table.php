@@ -20,41 +20,63 @@ function bookingTable() {
     
     ?>
 
-        <!-- <div class="filter-form">
-            <label for="filterDate">Filter by Date:</label>
-            <input type="date" id="filterDate" name="filterDate">
-            
-            <label for="filterResource">Filter by Resource:</label>
-            <select id="filterResource" name="filterResource">
-                <option value="">All Resources</option>
-                <option value="resource1">Resource 1</option>
-                <option value="resource2">Resource 2</option>
-            </select>
-            <label for="filterBirthday">Filter by Birthday:</label>
-            <select id="filterBirthday" name="filterBirthday">
-                <option value="">All</option>
-                <option value="1">Birthday</option>
-                <option value="0">Not Birthday</option>
-            </select>
-            
-            <label for="filterPaid">Filter by Paid Status:</label>
-            <select id="filterPaid" name="filterPaid">
-                <option value="">All</option>
-                <option value="1">Paid</option>
-                <option value="0">Not Paid</option>
-            </select>
-            
-            <label for="filterName">Filter by Name:</label>
-            <input type="text" id="filterName" name="filterName">
-            
-            <label for="filterEmail">Filter by Email:</label>
-            <input type="email" id="filterEmail" name="filterEmail">
-            
-            <label for="filterPhone">Filter by Phone:</label>
-            <input type="tel" id="filterPhone" name="filterPhone">
-            
-            <button id="applyFilterButton" class="filter-button">Apply Filter</button>
-        </div> -->
+<div class="container">
+        <br>
+        <div class="row mb-3">
+            <div class="col-md-3">
+                <label for="filterBooking" class="form-label">Booking Number:</label>
+                <input type="text" id="filterBooking" name="filterBooking" class="form-control">
+            </div>
+            <div class="col-md-3">
+                <label for="filterDate" class="form-label">Date:</label>
+                <input type="date" id="filterDate" name="filterDate" class="form-control">
+            </div>
+            <div class="col-md-3">
+                <label for="filterResource" class="form-label">Resource:</label>
+                <select id="filterResource" name="filterResource" class="form-select">
+                    <option value="">All Resources</option>
+                    <option value="resource1">Resource 1</option>
+                    <option value="resource2">Resource 2</option>
+                </select>
+            </div>
+            <div class="col-md-3">
+                <label for="filterBirthday" class="form-label">Birthday:</label>
+                <select id="filterBirthday" name="filterBirthday" class="form-select">
+                    <option value="">All</option>
+                    <option value="1">Birthday</option>
+                    <option value="0">No Birthday</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="row mb-3">
+            <div class="col-md-3">
+                <label for="filterPaid" class="form-label">Paid Status:</label>
+                <select id="filterPaid" name="filterPaid" class="form-select">
+                    <option value="">All</option>
+                    <option value="1">Paid</option>
+                    <option value="0">Not Paid</option>
+                </select>
+            </div>
+            <div class="col-md-3">
+                <label for="filterName" class="form-label">Name:</label>
+                <input type="text" id="filterName" name="filterName" class="form-control">
+            </div>
+            <div class="col-md-3">
+                <label for="filterEmail" class="form-label">Email:</label>
+                <input type="email" id="filterEmail" name="filterEmail" class="form-control">
+            </div>
+            <div class="col-md-3">
+                <label for="filterPhone" class="form-label">Phone:</label>
+                <input type="tel" id="filterPhone" name="filterPhone" class="form-control">
+            </div>
+        </div>
+
+        <button id="applyFilterButton" class="btn btn-primary">Apply Filter</button>
+
+    </div>
+
+        <br>
 
         <table class="wp-list-table widefat striped">
             <thead>

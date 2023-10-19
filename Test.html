@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Invoice Example</title>
+  <style type="text/css">
+@media print {
+      /* Hide header and footer information */
+      @page {
+        size: auto;
+        margin: 200mm;
+      }
+      body {
+        font-family: Arial, sans-serif;
+      }
+      .invoice {
+        width: 100%;
+        padding: 10px;
+      }
+      /* Add more print-specific styles here */
+    }
+  </style>
+</head>
+<body>
+  <div class="invoice">
+    <h1>Invoice</h1>
+    <p>Invoice Number: <span id="invoiceNumber">INV-001</span></p>
+    <p>Date: <span id="invoiceDate">2023-10-19</span></p>
+    <p>Customer Name: <span id="customerName">John Doe</span></p>
+
+    <!-- Invoice items -->
+    <table>
+      <tr>
+        <th>Item</th>
+        <th>Quantity</th>
+        <th>Price</th>
+        <th>Total</th>
+      </tr>
+      <tr>
+        <td>Item 1</td>
+        <td>2</td>
+        <td>$50.00</td>
+        <td>$100.00</td>
+      </tr>
+      <!-- Add more rows for other items -->
+    </table>
+
+    <p>Total Amount: <span id="totalAmount">$100.00</span></p>
+
+    <button id="printButton">Print Invoice</button>
+  </div>
+
+  <script type="text/javascript">
+    // Function to populate the invoice with custom data
+    function populateInvoice() {
+      const invoiceData = {
+        invoiceNumber: 'INV-002',
+        date: '2023-10-20',
+        customerName: 'Jane Smith',
+        totalAmount: '$150.00',
+      };
+
+      document.getElementById('invoiceNumber').textContent = invoiceData.invoiceNumber;
+      document.getElementById('invoiceDate').textContent = invoiceData.date;
+      document.getElementById('customerName').textContent = invoiceData.customerName;
+      document.getElementById('totalAmount').textContent = invoiceData.totalAmount;
+    }
+
+    // Function to print the invoice
+    function printInvoice() {
+      populateInvoice(); // Populate the invoice with data
+
+      // Open a new window and populate it with the invoice content
+      const printWindow = window.open('', '_blank');
+      printWindow.document.write(document.querySelector('.invoice').outerHTML);
+      printWindow.document.close();
+
+      // Add print styles for the new window
+      printWindow.document.getElementsByTagName('head')[0].innerHTML += '<style type="text/css">@media print { /* Define print styles here */ }</style>';
+
+      // Trigger the print dialog
+      printWindow.print();
+
+      // Close the print window after printing
+      printWindow.close();
+    }
+
+    // Attach the printInvoice function to the button click event
+    document.getElementById('printButton').addEventListener('click', printInvoice);
+  </script>
+</body>
+</html>
