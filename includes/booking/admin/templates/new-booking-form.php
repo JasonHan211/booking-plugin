@@ -100,26 +100,20 @@ function newBookingForm() {
                                     <ul class="list-group">
                                         <li class="list-group-item d-flex justify-content-between">
                                             <span>Price of Stay:</span>
-                                            <span id="stayPrice">$250.00</span>
+                                            <span id="stayPrice"></span>
                                         </li>
-                                        <li class="list-group-item justify-content-between">
+                                        <li class="list-group-item justify-content-between" id="addonContainer" hidden>
                                             <span>Addons:</span>
-
-                                            <ul class="list-group mt-3" id="addonList">
-                                                <li class="list-group-item d-flex justify-content-between">
-                                                    <span>Parking:</span>
-                                                    <span>$20.00</span>
-                                                </li>
-                                            </ul>
+                                            <ul class="list-group mt-3" id="addonList"></ul>
                                         </li>
                                    
                                         <li class="list-group-item d-flex justify-content-between">
                                             <span>Deposit Amount:</span>
-                                            <span id="depositPrice">$100.00</span>
+                                            <span id="depositPrice"></span>
                                         </li>
                                         <li class="list-group-item d-flex justify-content-between">
                                             <span>Discount Applied:</span>
-                                            <span id="discountPrice">-$20.00</span>
+                                            <span id="discountPrice"></span>
                                         </li>
                                     </ul>
                                 </div>
@@ -202,21 +196,38 @@ function newBookingForm() {
                     },
                     success: function (data) {
                         
+                        let nights = data.resource.resource.length;
+
                         document.getElementById('priceBreakdown').hidden = false;
-                        document.getElementById('stayPrice').innerHTML = `RM ${Number(data.resource.resource[0].resource_price).toFixed(2)}`;
-                        
+                        document.getElementById('stayPrice').innerHTML = `RM ${Number(data.resource.resource[0].resource_price).toFixed(2)} x ${nights} nights`;
 
                         if (data.addons.length > 0) {
-                            document.getElementById('addonPrice').innerHTML = `RM ${data.addons.addon_price.toFixed(2)}`;
-                        } else {
-                            document.getElementById('addonPrice').innerHTML = `RM 0.00`;
-                        }
+                            document.getElementById('addonContainer').hidden = false;
+                            let addonList = document.getElementById('addonList');
+                            addonList.innerHTML = '';
+                            data.addons.forEach(addon => {
 
-                        document.getElementById('depositPrice').innerHTML = `RM ${data.total.total_deposit_price.toFixed(2)}`;
-                        document.getElementById('discountPrice').innerHTML = `RM ${data.total.total_discount_price.toFixed(2)}`;
-                        if (data.total.total_discount_price > 0) {
-                            document.getElementById('discountPrice').innerHTML = `- RM ${data.total.total_discount_price.toFixed(2)}`;
+                                let price = (addon.addon_perday == 'Y') ? addon.addon_price/nights : addon.addon_price;
+                                let addonHtml = `
+                                <li class="list-group-item d-flex justify-content-between">
+                                    <span>${addon.addon.addon_name}:</span>
+                                    <span>RM ${Number(price).toFixed(2)} x ${nights} nights</span>
+                                </li>`;
+
+                                addonList.insertAdjacentHTML('beforeend', addonHtml);
+
+                            })
+                        } else {
+                            document.getElementById('addonContainer').hidden = true;
                         }
+                        
+
+                        document.getElementById('depositPrice').innerHTML = `RM ${data.total.deposit.toFixed(2)}`;
+                        
+                        let discount = 0
+                        discount = data.total.raw_total - data.total.total_after_final_discounted
+                        document.getElementById('discountPrice').innerHTML = `- RM ${discount.toFixed(2)}`;
+
                         totalPrice = data.total.total_after_final_discounted;
                         document.getElementsByName('booking_price')[0].value = totalPrice.toFixed(2);
                     }

@@ -167,11 +167,13 @@ class BookedInpricings {
         // Loop per day to check on each day
         $resourceObjs = array();
         $booking_date = date('Y-m-d', strtotime($start));
+        $nights = 0;
         while (strtotime($booking_date) < strtotime($end)) {
 
             $resourceObjs[] = array('resource'=>$resource, 'resource_price'=>$resource_price, 'resource_discounted_price'=>$resource_price, 'booking_date'=>$booking_date);
 
             $booking_date = date('Y-m-d', strtotime($booking_date . ' +1 day'));
+            $nights++;
         }
         
         // Addons Price
@@ -179,6 +181,9 @@ class BookedInpricings {
         foreach ($addons as $addon) {
 
             $addon_price = $this->calculatePrice($addon['addon_price'], $adults, $children);
+            if ($addon['addon_perday'] == 'Y') {
+                $addon_price = $addon_price * $nights;
+            }
             $condition = $condition." OR (discount_on_type = 'Addon' AND discount_on_id = ".$addon['id'].")";
             $addonsObjs[] = array('addon'=>$addon, 'addon_price'=>$addon_price, 'addon_discounted_price'=>$addon_price);
 
