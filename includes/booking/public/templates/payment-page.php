@@ -17,6 +17,7 @@ function bankTransferWhatsapp() {
             </p>
             <p>
                 Booking Number: <?php echo $_GET['booking_number']; ?> <br>
+                Amount: RM <?php echo $_GET['amount']; ?>.00 <br> 
                 <br>
                 Maybank: <br>
                 Account Name: Jason Han Zhi Kwang <br>

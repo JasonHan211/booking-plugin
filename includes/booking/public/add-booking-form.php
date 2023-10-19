@@ -132,7 +132,7 @@ function new_booking_callback($data) {
 
     $confirmation_message = 'Successfully add booking';
 
-    $redirect_url = home_url('/payment/?booking_number=' . $booking_number);
+    $redirect_url = home_url('/payment/?booking_number=' . $booking_number . '&amount=' . $booking_price_total);
 
     return new WP_Rest_Response(array('success' => true, 'redirect_url' => $redirect_url, 'booking_number' => $booking_number, 'message' => $confirmation_message), 200);
 }
