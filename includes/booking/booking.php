@@ -202,47 +202,99 @@ class BookedInBookings {
 
     }
 
-    public function get_booking_header($booking_id = null, $recordsPerPage = 10, $offset = 0) {
+    public function get_booking_header($booking_id = null, $page = 1, $recordsPerPage = 10, $number='', $date = '', $resource = '', $paid = '', $depositRefund = '', $range = '', $name = '', $email = '', $phone = '') {
+
+        $offset = $recordsPerPage * ($page - 1);
+
+        $condition = '1=1';
+        if ($number != '') {
+            $condition .= " AND bh.booking_number LIKE '%$number%'";
+        }
+        if ($date != '') {
+            $condition .= " AND bh.booking_date_from = '$date'";
+        }
+        if ($range != '') {
+            if ($range == '0') {
+                //Get date starting from today onwards
+                $today = date('Y-m-d');
+                $condition .= " AND bh.booking_date_from >= '$today'";
+            } else {
+                //Get date from weeks ago
+                $weeksAgo = (int)$range;
+                $startDate = date('Y-m-d', strtotime("-$weeksAgo weeks"));
+                $condition .= " AND bh.booking_date_from >= '$startDate'";
+            }
+        }
+        if ($resource != '') {
+            $condition .= " AND br.id = $resource";
+        }
+        if ($paid != '') {
+            $condition .= " AND bh.booking_paid = '$paid'";
+        }
+        if ($depositRefund != '') {
+            $condition .= " AND bh.booking_deposit_refund = '$depositRefund'";
+        }
+        if ($name != '') {
+            $condition .= " AND bh.booking_user LIKE '%$name%'";
+        }
+        if ($email != '') {
+            $condition .= " AND bh.booking_email LIKE '%$email%'";
+        }
+        if ($phone != '') {
+            $condition .= " AND bh.booking_phone LIKE '%$phone%'";
+        }
 
         if ($booking_id === null) {
+
             $offset = intval($offset);
             $resourceTable = $this->resourcesClass->table_name;
+
             $booking_header = $this->db->get_results("SELECT 
-            bh.id as 'id',
-            bh.booking_number as 'booking_number',
-            bh.booking_date_from as 'booking_date_from',
-            bh.booking_date_to as 'booking_date_to',
-            bh.booking_notes as 'booking_notes',
-            bh.booking_description as 'booking_description',
-            bh.booking_paid as 'booking_paid',
-            bh.booking_deposit_refund as 'booking_deposit_refund',
-            bh.booking_discount as 'booking_discount',
-            bh.booking_price as 'booking_price',
-            bh.booking_adults as 'booking_adults',
-            bh.booking_children as 'booking_children',
-            bh.booking_user as 'booking_user',
-            bh.booking_email as 'booking_email',
-            bh.booking_phone as 'booking_phone',
-            br.resource_name as 'resource_name'
-            FROM $this->booking_header_table_name bh 
-            LEFT JOIN $resourceTable br on br.id = bh.booking_resource
-            ORDER BY bh.booking_date_from ASC
-            LIMIT $recordsPerPage
-            OFFSET $offset", ARRAY_A);
-            return $booking_header;
+                bh.id as 'id',
+                bh.booking_number as 'booking_number',
+                bh.booking_date_from as 'booking_date_from',
+                bh.booking_date_to as 'booking_date_to',
+                bh.booking_notes as 'booking_notes',
+                bh.booking_description as 'booking_description',
+                bh.booking_paid as 'booking_paid',
+                bh.booking_deposit_refund as 'booking_deposit_refund',
+                bh.booking_discount as 'booking_discount',
+                bh.booking_price as 'booking_price',
+                bh.booking_adults as 'booking_adults',
+                bh.booking_children as 'booking_children',
+                bh.booking_user as 'booking_user',
+                bh.booking_email as 'booking_email',
+                bh.booking_phone as 'booking_phone',
+                br.resource_name as 'resource_name'
+                FROM $this->booking_header_table_name bh 
+                LEFT JOIN $resourceTable br on br.id = bh.booking_resource
+                WHERE $condition
+                ORDER BY bh.booking_date_from ASC
+                LIMIT $recordsPerPage
+                OFFSET $offset", ARRAY_A);
+
+            $count = $this->get_booking_header_count($condition);
+
+            return array($booking_header,$count);
         }
 
         $booking_header = $this->db->get_row("SELECT * FROM $this->booking_header_table_name WHERE id = $booking_id", ARRAY_A);
-
         return $booking_header;
 
     }
 
-    public function get_booking_header_count() {
+    public function get_booking_header_count($condition) {
             
-            $booking_header = $this->db->get_row("SELECT COUNT(*) as 'count' FROM $this->booking_header_table_name", ARRAY_A);
-    
-            return $booking_header['count'];
+        $resourceTable = $this->resourcesClass->table_name;
+
+        $booking_header = $this->db->get_row("SELECT 
+            COUNT(*) as 'count' 
+            FROM $this->booking_header_table_name bh
+            LEFT JOIN $resourceTable br on br.id = bh.booking_resource
+            WHERE $condition
+            ", ARRAY_A);
+
+        return $booking_header['count'];
     
     }
 
@@ -489,3 +541,37 @@ function calculate_price_callback($request) {
     return new WP_REST_Response(array('resource'=>$resource_output, 'addons'=>$addon_output, 'total'=>$total, 'discount'=>$discount, 'message'=>'Success'), 200);
 }
 
+// REST API ENDPOINTS
+add_action('rest_api_init', 'register_get_booking_table');
+
+function register_get_booking_table() {
+    register_rest_route('v1/booking', 'get_booking_table', array(
+          'methods' => 'POST',
+          'callback' => 'get_booking_table_callback'
+    ));
+} 
+
+function get_booking_table_callback($request) {
+
+    $bookingID = $request->get_param('bookingID');
+    $date = $request->get_param('date');
+    $resource = $request->get_param('resource');
+    $paid = $request->get_param('paid');
+    $depositRefund = $request->get_param('depositRefund');
+    $range = $request->get_param('range');
+    $name = $request->get_param('name');
+    $email = $request->get_param('email');
+    $phone = $request->get_param('phone');
+    $page = $request->get_param('page');
+    $recordsPerPage = $request->get_param('recordsPerPage');
+
+    $bookingClass = new BookedInBookings();
+    [$bookings,$count] = $bookingClass->get_booking_header(null, $page, $recordsPerPage,$bookingID, $date, $resource, $paid, $depositRefund,$range, $name, $email, $phone);
+    $addonArray = array();
+    foreach($bookings as $booking) {
+        $addon = $bookingClass->get_booking_addons($booking["id"]);
+        $addonArray[] = $addon;
+    }
+
+    return new WP_REST_Response(array('bookings'=>$bookings,'addons'=>$addonArray,'totalCount'=>$count, 'message'=>'Success'), 200);
+}
