@@ -100,6 +100,7 @@ function new_booking_callback($data) {
             $pricingClass->use_discount($discount);
         }
 
+        // For public
         $booking_price_total = $total['total_after_final_discounted'];
 
         [$booking_header_id, $booking_number] = $bookingClass->add_booking_header($booking_date_from, $booking_date_to, $booking_resource, $booking_notes, 'From Website', 'N', 'N', json_encode($booking_discount_used), $booking_price_total, $booking_adults, $booking_children, $booking_user, $booking_email, $booking_phone);

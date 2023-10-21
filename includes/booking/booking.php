@@ -19,9 +19,11 @@ class BookedInBookings {
     public $booking_header_table = 'bookedin_booking_header';
     public $booking_table = 'bookedin_bookings';
     public $booking_addons_table = 'bookedin_booking_addons';
+    public $booking_invoice_table = 'bookedin_booking_invoice';
     public $booking_header_table_name;
     public $booking_table_name;
     public $booking_addons_table_name;
+    public $booking_invoice_table_name;
     public $addon_table_name;
 
 
@@ -37,6 +39,7 @@ class BookedInBookings {
         $this->booking_header_table_name = $this->db->prefix . $this->booking_header_table;
         $this->booking_table_name = $this->db->prefix . $this->booking_table;
         $this->booking_addons_table_name = $this->db->prefix . $this->booking_addons_table;
+        $this->booking_invoice_table_name = $this->db->prefix . $this->booking_invoice_table;
     }
 
     public function get_available($booking_date_from, $booking_date_to) {
@@ -121,7 +124,7 @@ class BookedInBookings {
         return [$total_price, $ori_price, $applied_discount];
     }
 
-    public function calculate_price($booking_date_from, $booking_date_to, $booking_resource, $booking_addon, $booking_adult, $booking_children, $booking_discount) {
+    public function calculate_price($booking_date_from, $booking_date_to, $booking_resource, $booking_addon, $booking_adult, $booking_children, $booking_discount, $check = true) {
 
         // Get the resource
         $resource = $this->resourcesClass->get_resources($booking_resource);
@@ -135,7 +138,7 @@ class BookedInBookings {
             }
         }
 
-        [$resource_output, $addon_output, $total, $discount_used] = $this->pricingClass->get_price_after_discount($booking_discount, $booking_date_from, $booking_date_to, $resource, $addons, $booking_adult, $booking_children);
+        [$resource_output, $addon_output, $total, $discount_used] = $this->pricingClass->get_price_after_discount($booking_discount, $booking_date_from, $booking_date_to, $resource, $addons, $booking_adult, $booking_children, $check);
 
         return [$resource_output, $addon_output, $total, $discount_used];
 
@@ -468,6 +471,21 @@ class BookedInBookings {
 
         dbDelta($sql);
     
+    }
+
+    public function createInvoiceDB() {
+
+        $sql = "CREATE TABLE IF NOT EXISTS $this->booking_invoice_table_name (
+            id INT NOT NULL AUTO_INCREMENT,
+            booking_header_id INT NOT NULL,
+            
+            created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+            edited_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+            PRIMARY KEY (id)
+        ) $this->charset_collate;";
+
+        dbDelta($sql);
+
     }
 
     public function deleteDB($table_name) {

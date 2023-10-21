@@ -92,8 +92,10 @@ class BookedInpricings {
         return $pricing;
     }
 
-    public function check_availability($discount, $date){
+    public function check_availability($discount, $date, $check = true){
         
+        if (!$check) return $discount;
+
         // Check if discount date is within apply discount date
         $today = date('Y-m-d');
         if ($discount['discount_start_date'] > $today) {   
@@ -154,7 +156,7 @@ class BookedInpricings {
         return $discount;
     }
 
-    public function get_price_after_discount($discount_code = null, $start, $end, $resource, $addons, $adults, $children) {
+    public function get_price_after_discount($discount_code = null, $start, $end, $resource, $addons, $adults, $children, $check = true) {
 
         // Condition string
         $condition = "((discount_on_type = 'Resources' AND (discount_on_id = 'All' OR discount_on_id = ".$resource['id']."))";
@@ -216,7 +218,7 @@ class BookedInpricings {
 
                 foreach ($resourceObjs as $i => $resourceObj) {
                     
-                    $eligible_discount = $this->check_availability($discount, $resourceObjs[$i]['booking_date']);
+                    $eligible_discount = $this->check_availability($discount, $resourceObjs[$i]['booking_date'], $check);
                 
                     if ($eligible_discount !== null) {
 
@@ -251,7 +253,7 @@ class BookedInpricings {
                         $booking_date = date('Y-m-d', strtotime($start));
                         while (strtotime($booking_date) < strtotime($end)) {
 
-                            $discount = $this->check_availability($discount, $booking_date);
+                            $discount = $this->check_availability($discount, $booking_date, $check);
 
                             if ($discount !== null) {
 
@@ -281,7 +283,7 @@ class BookedInpricings {
 
                     } else {
 
-                        $discount = $this->check_availability($discount, $start);
+                        $discount = $this->check_availability($discount, $start, $check);
 
                         if ($discount !== null) {
 
@@ -327,7 +329,7 @@ class BookedInpricings {
 
             foreach ($all_type_discount as $discount) {
 
-                $discount = $this->check_availability($discount, $start);
+                $discount = $this->check_availability($discount, $start, $check);
 
                 if ($discount !== null) {
 
