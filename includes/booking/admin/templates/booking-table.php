@@ -10,6 +10,7 @@ function bookingTable() {
 ?>
     <!-- Booking Filter -->
     <div class="container">
+        <form action="" onsubmit="return false;">
         <br>
         <div class="row mb-3">
             <div class="col-md-3">
@@ -73,7 +74,8 @@ function bookingTable() {
             </div>
         </div>
 
-        <button id="applyFilterButton" class="btn btn-primary" onclick="getBookingTable()">Apply Filter</button>
+        <button type="submit" id="applyFilterButton" class="btn btn-primary" onclick="getBookingTable()">Apply Filter</button>
+        </form>
     </div>
 
     <br>
