@@ -19,42 +19,10 @@ function newBookingForm() {
 
                         </div>
                         <div class="mb-3">
-                            <div class="row">
-                                <div class="col">
-                                    <label for="booking_adults" class="form-label">Adults:</label>
-                                    <input type="number" class="form-control" name="booking_adults" value="1" min="1" onchange="updatePrice()" required>
-                                </div>
-                                <div class="col">
-                                    <label for="booking_children" class="form-label">Children:</label>
-                                    <input type="number" class="form-control" name="booking_children" value="0" min="0" onchange="updatePrice()" required>
-                                </div>
-                            </div>
+                            <label for="booking_resource_count" class="form-label">Number of Resource:</label>
+                            <input type="number" class="form-control" name="booking_resource_count" onchange="updateResources()" value="0" min="1" max="" required disabled>
                         </div>
-                        <div class="mb-3">
-                            <label for="booking_resource" class="form-label">Resource:</label>
-                            <select class="form-select" name="booking_resource" onchange="updatePrice()" disabled>
-                                    <option value="">Please select dates</option>
-                            </select>
-                        </div>
-                        <div class="mb-3">
-                            <label for="booking_addons" class="form-label">Addons:</label>
-                            <br>
-
-                            <div class="addon-container">
-                                <?php foreach($addons as $addon) { ?>
-                                    
-                                    <div class="addon-section border p-4 m-2">
-                                        <div class="row">
-                                            <div class="col-11"><label class="form-label"><?php echo $addon['addon_name']; ?></label></div>
-                                            <div class="col-1"><input type="checkbox" class="form-control" name="booking_addon[]" value="<?php echo $addon['id']; ?>" data-price='<?php echo $addon['addon_price']; ?>' onclick="updatePrice()"></div>
-                                        </div>
-                                        <p class="mb-0"><?php echo $addon['addon_description']; ?></p>
-                                    </div>
-
-                                <?php } ?>
-                            </div>
-
-                        </div>
+                        <div id="resourceDetails" hidden></div>
                         <div class="mb-3">
                             <label for="booking_notes" class="form-label">Customer Notes:</label>
                             <textarea class="form-control" name="booking_notes"></textarea>
@@ -158,7 +126,10 @@ function newBookingForm() {
 
         <script>
 
+            let addons = <?php echo json_encode($addons); ?>;
             let totalPrice = 0;
+            let resourcesAvailable = [];
+            let resourceCount = 0;
 
             function updatePrice() {
                 
@@ -261,7 +232,7 @@ function newBookingForm() {
             function getResources() {
                 
                 // Get the select element
-                var selectElement = document.getElementsByName('booking_resource')[0];
+                var selectElement = document.getElementsByName('booking_resource_count')[0];
 
                 startDate = document.getElementById('booking_date_from').value;
                 endDate = document.getElementById('booking_date_to').value;
@@ -289,26 +260,107 @@ function newBookingForm() {
                         // Remove all options from the select element
                         selectElement.innerHTML = '';
 
-                        let availableResources = data.availables;
-
-                        if (availableResources.length == 0) {
-                            let option = document.createElement('option');
-                            option.value = "";
-                            option.text = 'No available resources';
-                            selectElement.appendChild(option);
+                        resourcesAvailable = data.availables;
+                        
+                        document.getElementsByName('booking_resource_count')[0].max = resourcesAvailable.length;
+                        
+                        if (resourcesAvailable.length == 0) {
+                            document.getElementsByName('booking_resource_count')[0].min = 0;
+                            document.getElementsByName('booking_resource_count')[0].value = 0;
+                            document.getElementsByName('booking_resource_count')[0].disabled = true;
+                        } else {
+                            document.getElementsByName('booking_resource_count')[0].min = 1;
+                            document.getElementsByName('booking_resource_count')[0].value = 1;
+                            document.getElementsByName('booking_resource_count')[0].disabled = false;
                         }
 
-                        // Add the available resources as options to the select element
-                        availableResources.forEach(function (resource) {
-                            var option = document.createElement('option');
-                            option.value = resource.id;
-                            option.text = resource.name;
-                            option.setAttribute('data-price', resource.price);
-                            selectElement.appendChild(option);
-                        });
-                        updatePrice();
+                        updateResources();
                     }
                 });
+            }
+
+            function updateResources() {
+                let newResourceCount = document.getElementsByName('booking_resource_count')[0].value;
+
+                let change = newResourceCount - resourceCount;
+                console.log("change: ",change);
+                
+                let resourceDetails = document.getElementById('resourceDetails');
+
+                // Add resources
+                if (change > 0) {
+
+                    let resourceForm = ``;
+                    resourceForm += `
+                        <div class="mb-3 p-4 border" name="resourcesForm">
+                            <h5>Tent ${Number(resourceCount) + 1}</h5>
+                                <div class="mb-3">
+                                    <div class="row">
+                                        <div class="col">
+                                            <label for="booking_adults" class="form-label">Adults:</label>
+                                            <input type="number" class="form-control" name="booking_adults" value="1" min="1" onchange="updatePrice()" required>
+                                        </div>
+                                        <div class="col">
+                                            <label for="booking_children" class="form-label">Children:</label>
+                                            <input type="number" class="form-control" name="booking_children" value="0" min="0" onchange="updatePrice()" required>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="booking_resource" class="form-label">Resource:</label>
+                                    <select class="form-select" name="booking_resource" onchange="updatePrice()">`;
+                                
+                                if (resourcesAvailable.length == 0) {
+                                    resourceForm += `<option value="">No available resources</option>`;
+                                }
+
+                                // Add the available resources as options to the select element
+                                resourcesAvailable.forEach(function (resource) {
+                                    resourceForm += `<option value="${resource.id}" data-price="${resource.price}">${resource.name}</option>`;
+                                });
+
+                    resourceForm += `
+                                    </select>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="booking_addons" class="form-label">Addons:</label>
+                                    <br>
+                                    <div class="addon-container">`;
+
+                                addons.forEach(function (addon) {
+                                    resourceForm += `
+                                        <div class="addon-section border p-4 m-2">
+                                            <div class="row">
+                                                <div class="col-11"><label class="form-label">${addon.addon_name}</label></div>
+                                                <div class="col-1"><input type="checkbox" class="form-control" name="booking_addon${resourceCount}[]" value="${addon.id}" data-price='${addon.addon_price}' onclick="updatePrice()"></div>
+                                            </div>
+                                            <p class="mb-0">${addon.addon_description}</p>
+                                        </div>`;
+                                })
+
+                    resourceForm += `
+                                    </div>
+                                </div>
+                            </div>`;
+
+                    resourceDetails.innerHTML += resourceForm;
+
+                // Remove resources
+                } else if (change < 0) {
+
+                    // BUG
+                    resourceDetails.removeChild(resourceDetails.lastChild);
+                    
+                }
+
+                resourceCount = newResourceCount;
+
+                if (resourceCount != 0) {
+                    resourceDetails.hidden = false;
+                } else {
+                    resourceDetails.hidden = true;
+                }
+
             }
 
             // Set the selected date range into the hidden input fields before form submission

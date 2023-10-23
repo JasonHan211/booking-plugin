@@ -9,7 +9,7 @@ function bookingTable() {
 
 ?>
     <!-- Booking Filter -->
-    <div class="container">
+    <div class="container"  >
         <form action="" onsubmit="return false;">
         <br>
         <div class="row mb-3">
@@ -84,6 +84,7 @@ function bookingTable() {
     <table class="wp-list-table widefat striped">
         <thead>
             <tr>
+                <th><input type="checkbox" id="selectAll" style="margin: 0px;"></th>
                 <th>Booking Number</th>
                 <th>Date From</th>
                 <th>Date To</th>
@@ -106,7 +107,15 @@ function bookingTable() {
     </table>
     
     <!-- Pagination -->
-    <div class="pagination" id="pagination"></div>
+    <div class="row">
+        <div class="col">
+            <div class="pagination ps-4" id="pagination"></div>
+        </div>
+        <div class="col m-4">
+            <button class="btn btn-primary float-end" onclick="generateInvoice()">Generate Invoice</button>
+        </div>
+    </div>
+    
 
     <!-- Page Search -->
     <div class="page-search">
@@ -114,6 +123,8 @@ function bookingTable() {
         <input type="number" id="recordPage" value="1" min="1" max="1">
         <button onclick="searchPage()">Go</button>
     </div>
+
+    <div id="invoice-template" hidden></div>
 
     <script>
 
@@ -247,6 +258,7 @@ function bookingTable() {
 
                         // Add header
                         content += `
+                                <td><input type="checkbox"></td>
                                 <td>${bookingID}</td>
                                 <td>${dateFrom}</td>
                                 <td>${dateTo}</td>
@@ -263,7 +275,7 @@ function bookingTable() {
                                 <td>${email}</td>
                                 <td>${phone}</td>
                                 <td>
-                                    <a href="<?php echo get_admin_url(); ?>admin.php?page=bookedin_booking_edit&action=edit&booking_id=${booking.id}">Edit</a>
+                                    <a href="<?php echo get_admin_url(); ?>admin.php?page=bookedin_booking_edit&action=edit&booking_id=${booking.id}">Edit</a> |
                                     <a href="<?php echo get_admin_url(); ?>admin.php?page=bookedin_main_menu&action=delete&booking_id=${bookingID}" onclick="return confirm('Are you sure you want to delete this booking?')">Delete</a>
                                 </td>
                             </tr>
@@ -311,6 +323,59 @@ function bookingTable() {
                 tomorrow.getMonth() === dateToCheck.getMonth() &&
                 tomorrow.getFullYear() === dateToCheck.getFullYear()
             );
+        }
+
+        // Select All
+        document.getElementById("selectAll").addEventListener("click", function () {
+            let checkboxes = document.querySelectorAll("input[type=checkbox]");
+ 
+            checkboxes.forEach(checkbox => {
+                checkbox.checked = this.checked;
+            });
+        
+        })
+
+        // Generate Invoice
+        function generateInvoice() {
+            let checkboxes = document.querySelectorAll("input[type=checkbox]:checked");
+            let bookingIDs = [];
+            checkboxes.forEach(checkbox => {
+                bookingIDs.push(checkbox.parentElement.parentElement.children[1].innerText);
+            });
+
+            if (bookingIDs.length == 0) {
+                alert('Please select at least one booking to generate the invoice.');
+                return;
+            }
+
+            $.ajax({
+                url: '<?php echo get_rest_url(null, 'v1/booking/get_invoice');?>',
+                type: 'POST',
+                data: {
+                    action: 'get_invoice',
+                    bookingIDs: bookingIDs
+                },
+                success: function (data) {
+                    
+                    // let invoice = data.invoice;
+                    // document.getElementById('invoice-template').innerHTML = invoice;
+                    // printInvoice();
+
+                }    
+                
+            });
+            
+        }
+
+        function printInvoice() {
+            var invoiceTemplate = document.getElementById("invoice-template");
+            var printWindow = window.open('', '', 'width=2000,height=3000');
+            printWindow.document.open();
+            printWindow.document.write('<html><head><title>Print Invoice</title></head><body>');
+            printWindow.document.write('<div>' + invoiceTemplate.innerHTML + '</div>');
+            printWindow.document.write('</body></html>');
+            printWindow.document.close();
+            printWindow.print();
         }
 
     </script>

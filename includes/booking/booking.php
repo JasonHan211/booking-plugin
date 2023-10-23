@@ -49,8 +49,11 @@ class BookedInBookings {
 
         // SQL get all bookings between dates
         $bookings = $this->db->get_results(
-            "SELECT * FROM $this->booking_table_name WHERE booking_date BETWEEN '$booking_date_from' AND '$booking_date_to'"
-            , ARRAY_A);    
+            "SELECT * 
+            FROM $this->booking_table_name 
+            WHERE booking_date BETWEEN '$booking_date_from' AND '$booking_date_to'
+            AND booking_paid = 'Y'
+            ", ARRAY_A);    
 
         // SQL get all resources
         $resources = $this->resourcesClass->get_resources(null,'Y');
@@ -396,6 +399,19 @@ class BookedInBookings {
     
     }
 
+    public function add_booking_invoice($booking_number, $resources, $addons, $total) {
+        $this->db->insert($this->booking_invoice_table_name, array(
+            'booking_number' => $booking_number,
+            'resource_info' => $resources,
+            'addon_info' => $addons,
+            'total_info' => $total,
+        ));
+
+        $id = $this->db->insert_id;
+
+        return $id;
+    }
+
     public function delete_booking_and_addons($booking_id) {
         $this->db->delete($this->booking_table_name, array('booking_header_id' => $booking_id));
         $this->db->delete($this->booking_addons_table_name, array('booking_header_id' => $booking_id));
@@ -477,8 +493,10 @@ class BookedInBookings {
 
         $sql = "CREATE TABLE IF NOT EXISTS $this->booking_invoice_table_name (
             id INT NOT NULL AUTO_INCREMENT,
-            booking_header_id INT NOT NULL,
-            
+            booking_number VARCHAR(255) NOT NULL,
+            resource_info JSON,
+            addon_info JSON,
+            total_info JSON,
             created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
             edited_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
             PRIMARY KEY (id)
@@ -592,4 +610,24 @@ function get_booking_table_callback($request) {
     }
 
     return new WP_REST_Response(array('bookings'=>$bookings,'addons'=>$addonArray,'totalCount'=>$count, 'message'=>'Success'), 200);
+}
+
+// REST API ENDPOINTS
+add_action('rest_api_init', 'register_get_invoice');
+
+function register_get_invoice() {
+    register_rest_route('v1/booking', 'get_invoice', array(
+          'methods' => 'POST',
+          'callback' => 'get_invoice_callback'
+    ));
+} 
+
+function get_invoice_callback($request) {
+
+    $bookingIDs = $request->get_param('bookingIDs');
+
+    $booking = new BookedInBookings();
+    
+
+    return new WP_REST_Response(array('invoice'=>'', 'debug'=>$bookingIDs, 'message'=>'Success'), 200);
 }

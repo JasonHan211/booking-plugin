@@ -63,8 +63,6 @@ function my_booking_plugin_option_page() {
         $resource = $resourcesClass->get_resources($booking_resource);
 
         [$resource_output, $addon_output, $total, $discount_used] = $pricingClass->get_price_after_discount($booking_discount, $booking_date_from, $booking_date_to, $resource, $selectedAddons, $booking_adults, $booking_children);
-        
-        
 
         $booking_discount_used = array();
         foreach ($discount_used as $discount) {
@@ -76,6 +74,8 @@ function my_booking_plugin_option_page() {
         $booking_price_total = $total['total_after_final_discounted'];
         
         [$booking_header_id, $booking_number] = $bookingClass->add_booking_header($booking_date_from, $booking_date_to, $booking_resource, $booking_notes, $booking_description, $booking_paid, $booking_deposit_refund, json_encode($booking_discount_used), $booking_price, $booking_adults, $booking_children, $booking_user, $booking_email, $booking_phone);
+
+        
 
         // Add booking for selected addon with charge once
         foreach ($selectedAddons as $addon) {
