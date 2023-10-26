@@ -92,7 +92,7 @@ function new_booking_callback($data) {
 
         $resource = $resourcesClass->get_resources($booking_resource);
 
-        [$resource_output, $addon_output, $total, $discount_used] = $pricingClass->get_price_after_discount($booking_discount, $booking_date_from, $booking_date_to, $resource, $selectedAddons, $booking_adults, $booking_children);
+        [$bookings, $total, $discount_used] = $pricingClass->get_price_after_discount($booking_discount, $booking_date_from, $booking_date_to, $resource, $selectedAddons, $booking_adults, $booking_children);
         
         $booking_discount_used = array();
         foreach ($discount_used as $discount) {

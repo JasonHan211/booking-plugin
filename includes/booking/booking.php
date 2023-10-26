@@ -140,9 +140,9 @@ class BookedInBookings {
             }
         }
 
-        [$resource_output, $addon_output, $total, $discount_used] = $this->pricingClass->get_price_after_discount($booking_discount, $booking_date_from, $booking_date_to, $bookings, $check);
+        [$bookings, $total, $discount_used] = $this->pricingClass->get_price_after_discount($booking_discount, $booking_date_from, $booking_date_to, $bookings, $check);
 
-        return [$resource_output, $addon_output, $total, $discount_used];
+        return [$bookings, $total, $discount_used];
 
     }
 
@@ -567,9 +567,9 @@ function calculate_price_callback($request) {
     $bookings = json_decode($request->get_param('bookings'));
     $discount = $request->get_param('booking_discount');
     $booking = new BookedInBookings();
-    [$resource_output, $addon_output, $total, $discount] = $booking->calculate_price($start, $end, $bookings, $discount);
+    [$bookings, $total, $discount] = $booking->calculate_price($start, $end, $bookings, $discount);
 
-    return new WP_REST_Response(array('resource'=>$resource_output, 'addons'=>$addon_output, 'total'=>$total, 'discount'=>$discount, 'message'=>'Success'), 200);
+    return new WP_REST_Response(array('bookings'=>$bookings, 'total'=>$total, 'discount'=>$discount, 'message'=>'Success'), 200);
 }
 
 // REST API ENDPOINTS

@@ -182,9 +182,19 @@ function newBookingForm() {
                     },
                     success: function (data) {
                         
-                        let nights = data.resource.resource.length;
+                        let nights = data.total.nights;
 
                         document.getElementById('priceBreakdown').hidden = false;
+
+                        let bookings = data.bookings;
+                        let stayHtml = '';
+
+                        bookings.forEach((booking,index) => {
+                            // Display price here
+                            
+
+                        });
+
                         document.getElementById('stayPrice').innerHTML = `RM ${Number(data.resource.resource[0].resource_price).toFixed(2)} x ${nights} nights`;
 
                         if (data.addons.length > 0) {
