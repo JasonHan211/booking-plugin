@@ -156,7 +156,10 @@ class BookedInpricings {
         return $discount;
     }
 
-    public function get_price_after_discount($discount_code = null, $start, $end, $resource, $addons, $adults, $children, $check = true) {
+    public function get_price_after_discount($discount_code = null, $start, $end, $bookings, $check = true) {
+
+        // To process each bookings
+
 
         // Condition string
         $condition = "((discount_on_type = 'Resources' AND (discount_on_id = 'All' OR discount_on_id = ".$resource['id']."))";

@@ -127,21 +127,20 @@ class BookedInBookings {
         return [$total_price, $ori_price, $applied_discount];
     }
 
-    public function calculate_price($booking_date_from, $booking_date_to, $booking_resource, $booking_addon, $booking_adult, $booking_children, $booking_discount, $check = true) {
+    public function calculate_price($booking_date_from, $booking_date_to, $bookings, $booking_discount, $check = true) {
 
-        // Get the resource
-        $resource = $this->resourcesClass->get_resources($booking_resource);
-
-        // Get all the addons
-        $addons = array();
-        if ($booking_addon != null) {
-            foreach ($booking_addon as $addonid) {
-                $addon = $this->addonsClass->get_addons($addonid);
-                $addons[] = $addon;
+        foreach ($bookings as $booking) {
+            $booking->resource = $this->resourcesClass->get_resources($booking->resource);
+            
+            // Get all the addons
+            if (count($booking->addons) > 0) {
+                foreach ($booking->addons as &$addonid) {
+                    $addonid = $this->addonsClass->get_addons($addonid);
+                }
             }
         }
 
-        [$resource_output, $addon_output, $total, $discount_used] = $this->pricingClass->get_price_after_discount($booking_discount, $booking_date_from, $booking_date_to, $resource, $addons, $booking_adult, $booking_children, $check);
+        [$resource_output, $addon_output, $total, $discount_used] = $this->pricingClass->get_price_after_discount($booking_discount, $booking_date_from, $booking_date_to, $bookings, $check);
 
         return [$resource_output, $addon_output, $total, $discount_used];
 
@@ -565,14 +564,10 @@ function calculate_price_callback($request) {
 
     $start = $request->get_param('booking_date_from');
     $end = $request->get_param('booking_date_to');
-    $resource = $request->get_param('booking_resource');
-    $addon = $request->get_param('booking_addon');
-    $adults = $request->get_param('booking_adults');
-    $children = $request->get_param('booking_children');
+    $bookings = json_decode($request->get_param('bookings'));
     $discount = $request->get_param('booking_discount');
-
     $booking = new BookedInBookings();
-    [$resource_output, $addon_output, $total, $discount] = $booking->calculate_price($start, $end, $resource, $addon, $adults, $children, $discount);
+    [$resource_output, $addon_output, $total, $discount] = $booking->calculate_price($start, $end, $bookings, $discount);
 
     return new WP_REST_Response(array('resource'=>$resource_output, 'addons'=>$addon_output, 'total'=>$total, 'discount'=>$discount, 'message'=>'Success'), 200);
 }
