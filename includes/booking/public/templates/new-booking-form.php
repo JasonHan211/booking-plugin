@@ -21,45 +21,19 @@ function newBookingForm() {
 
                         </div>
                         <div class="mb-3">
-                            <div class="row">
-                                <div class="col">
-                                    <label for="booking_adults" class="form-label">Adults:</label>
-                                    <input type="number" class="form-control" name="booking_adults" value="1" min="1" onchange="updatePrice()" required>
-                                </div>
-                                <div class="col">
-                                    <label for="booking_children" class="form-label">Children:</label>
-                                    <input type="number" class="form-control" name="booking_children" value="0" min="0" onchange="updatePrice()" required>
-                                </div>
-                            </div>
+                            <label for="booking_resource_count" class="form-label">Number of Resource:</label>
+                            <input type="number" class="form-control" name="booking_resource_count" onchange="updateResources()" value="0" min="1" max="" required disabled>
                         </div>
-                        <div class="mb-3" hidden>
-                            <label for="booking_resource" class="form-label">Resource:</label>
-                            <select class="form-select" name="booking_resource" onchange="updatePrice()" disabled>
-                                    <option value="">Please select dates</option>
-                            </select>
-                        </div>
-                        <div class="mb-3">
-                            <label for="booking_addons" class="form-label">Addons:</label>
-                            
-                            <div class="addon-container">
-                                <?php foreach($addons as $addon) { ?>
-                                    
-                                    <div class="addon-section border p-4 m-2">
-                                        <div class="row">
-                                            <div class="col-11"><label class="form-check-label"><?php echo $addon['addon_name']; ?></label></div>
-                                            <div class="col-1"><input type="checkbox" class="form-check-input" name="booking_addon[]" value="<?php echo $addon['id']; ?>" data-price='<?php echo $addon['addon_price']; ?>' onclick="updatePrice()"></div>
-                                        </div>
-                                        <p class="mb-0" style="font-size: 13px;"><?php echo $addon['addon_description']; ?></p>
-                                    </div>
-
-                                <?php } ?>
-                            </div>
-
-                        </div>
+                        <div id="resourceDetails" hidden></div>
                         <div class="mb-3">
                             <label for="booking_notes" class="form-label">Customer Notes:</label>
                             <textarea class="form-control" name="booking_notes"></textarea>
                         </div>
+                        <div class="mb-3">
+                            <label for="booking_description" class="form-label">Hidden Description:</label>
+                            <textarea class="form-control" name="booking_description"></textarea>
+                        </div>
+                        
                     </div>
 
                     <!-- Right Column -->
@@ -80,51 +54,28 @@ function newBookingForm() {
                             <input type="text" class="form-control" name="booking_phone" required>
                         </div>
                         <br>
-
-                        <div>
-                            <h3>Pricing Details</h3>
-                            
-                            
+                        <h3>Pricing Details</h3>
                         <div class="mb-3">
                             <label for="booking_discount" class="form-label">Discount Code:</label>
                             <input type="text" class="form-control" name="booking_discount" onchange="updatePrice()">
                         </div>
+                        <!-- To add price breakdown -->
 
                         <div class="mt-4 mb-4" id="priceBreakdown" hidden>
                             <div class="card mw-100">
                                 <div class="card-header">
                                     Price Breakdown
                                 </div>
-                                <div class="card-body">
-                                    <ul class="list-group">
-                                        <li class="list-group-item d-flex justify-content-between">
-                                            <span>Price of Stay:</span>
-                                            <span id="stayPrice"></span>
-                                        </li>
-                                        <li class="list-group-item justify-content-between" id="addonContainer" hidden>
-                                            <span>Addons:</span>
-                                            <ul class="list-group mt-3" id="addonList"></ul>
-                                        </li>
-                                
-                                        <li class="list-group-item d-flex justify-content-between">
-                                            <span>Deposit Amount:</span>
-                                            <span id="depositPrice"></span>
-                                        </li>
-                                        <li class="list-group-item d-flex justify-content-between">
-                                            <span>Discount Applied:</span>
-                                            <span id="discountPrice"></span>
-                                        </li>
-                                    </ul>
-                                </div>
+                                <div class="card-body" id="priceBreakdownContent"></div>
                                 <div class="card-footer">
                                     <div class="row">
-                                        <div class="col-8">
+                                        <div class="col-7">
                                             <strong>Total Price:</strong>
                                         </div>
-                                        <div class="col-4 ">
+                                        <div class="col-5 ">
                                             <div class="input-group">
                                                 <span class="input-group-text">RM</span>
-                                                <span class="form-control text-end pe-3" id="booking_price"></span>
+                                                <span class="form-control text-end pe-4" name="booking_price"></span>
                                             </div>
                                         </div>
                                     </div>
@@ -132,7 +83,21 @@ function newBookingForm() {
                                 </div>
                             </div>
                         </div>
-                        
+
+                        <div class="mb-3">
+                            <label for="booking_paid" class="form-label">Paid:</label>
+                            <select class="form-select" name="booking_paid">
+                                <option value="N">No</option>
+                                <option value="Y">Yes</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="booking_deposit_refund" class="form-label">Deposit Refund:</label>
+                            <select class="form-select" name="booking_deposit_refund">
+                                <option value="N">No</option>
+                                <option value="Y">Yes</option>
+                            </select>
+                        </div>
                     </div>
                 </div>
 
@@ -143,28 +108,49 @@ function newBookingForm() {
 
         <script>
 
+            let addons = <?php echo json_encode($addons); ?>;
             let totalPrice = 0;
+            let resourcesAvailable = [];
+            let resourceCount = 0;
 
             function updatePrice() {
                 
                 let startDate = document.getElementById('booking_date_from').value;
                 let endDate = document.getElementById('booking_date_to').value;
-                let resource = document.getElementsByName('booking_resource')[0].value;
-                let adult = document.getElementsByName('booking_adults')[0].value;
-                let children = document.getElementsByName('booking_children')[0].value;
-                let discount = document.getElementsByName('booking_discount')[0].value;    
-                let addons = [];
-                const checkboxes = document.querySelectorAll('[name="booking_addon[]"]');
-            
-                checkboxes.forEach(checkbox => {
-                    if (checkbox.checked) {
-                        addons.push(checkbox.value);
-                    }
-                });
-    
-                if (startDate == '' || endDate == '' || resource == '') {
+                let discount = document.getElementsByName('booking_discount')[0].value; 
+                
+                if (startDate == '' || endDate == '') {
                     return;
                 }
+
+                let bookings = [];
+
+                let resourceForms = document.getElementsByName('resourcesForm'); 
+
+                Array.from(resourceForms).forEach((form, index) => {
+                    let resource = form.querySelectorAll('[name="booking_resource"]')[0].value; 
+                    let adult = form.querySelectorAll('[name="booking_adults"]')[0].value; 
+                    let children = form.querySelectorAll('[name="booking_children"]')[0].value;   
+                    let addons = [];
+                    let checkboxes = form.querySelectorAll('[name="booking_addon[]"]');
+                    checkboxes.forEach(checkbox => {
+                        if (checkbox.checked) {
+                            addons.push(checkbox.value);
+                        }
+                    });
+
+                    let eachResourceForm = {
+                        resource: resource,
+                        adult: adult,
+                        children: children,
+                        addons: addons
+                    };
+
+                    bookings.push(eachResourceForm);
+
+                });
+
+                console.log(bookings);
                 
                 $.ajax({
                     url: '<?php echo get_rest_url(null, 'v1/booking/calculate_price');?>',
@@ -173,48 +159,87 @@ function newBookingForm() {
                         action: 'calculate_price',
                         booking_date_from: startDate,
                         booking_date_to: endDate,
-                        booking_resource: resource,
-                        booking_addon: addons,
-                        booking_adults: adult,
-                        booking_children: children,
+                        bookings: JSON.stringify(bookings),
                         booking_discount: discount
                     },
                     success: function (data) {
                         
-                        let nights = data.resource.resource.length;
+                        let nights = data.total.nights;
 
                         document.getElementById('priceBreakdown').hidden = false;
-                        document.getElementById('stayPrice').innerHTML = `RM ${Number(data.resource.resource[0].resource_price).toFixed(2)} x ${nights} nights`;
 
-                        if (data.addons.length > 0) {
-                            document.getElementById('addonContainer').hidden = false;
-                            let addonList = document.getElementById('addonList');
-                            addonList.innerHTML = '';
-                            data.addons.forEach(addon => {
+                        let bookings = data.bookings;
+                        let priceBreakdownContent = document.getElementById('priceBreakdownContent');
+                        let stayHtml = '';
 
-                                let price = (addon.addon_perday == 'Y') ? addon.addon_price/nights : addon.addon_price;
-                                let addonHtml = `
-                                <li class="list-group-item d-flex justify-content-between">
-                                    <span>${addon.addon.addon_name}:</span>
-                                    <span>RM ${Number(price).toFixed(2)} x ${nights} nights</span>
+                        bookings.forEach((booking,index) => {
+                            
+                            stayHtml += `
+                            <ul class="list-group">
+                                <h6>Tent ${index + 1}</h6>
+                                <li class="list-group-item justify-content-between">
+                                    <span>Price of Stay:</span>
+                                    <ul class="list-group mt-3">`;
+                                    booking.resource.forEach(night => {
+
+                                        stayHtml += `
+                                        <li class="list-group-item d-flex justify-content-between">
+                                            <span>${night.booking_date}</span>
+                                            <span>RM ${Number(booking.resource[0].resource_price).toFixed(2)}</span>
+                                        </li>`;
+
+                                    });
+
+                            stayHtml += `
+                                    </ul>
+                                </li>`;  
+
+                            if (booking.addon.length >0) {
+                            
+                            stayHtml += `     
+                                <li class="list-group-item justify-content-between">
+                                    <span>Addons:</span>
+                                    <ul class="list-group mt-3">`;
+                                    booking.addon.forEach(addon => {
+                                        stayHtml += `
+                                        <li class="list-group-item d-flex justify-content-between">
+                                            <span>${addon.addon.addon_name}:</span>
+                                            <span>RM ${Number(addon.addon_price).toFixed(2)} for ${nights} nights</span>
+                                        </li>`;
+
+                                    })
+                            stayHtml +=`        
+                                    </ul>
                                 </li>`;
 
-                                addonList.insertAdjacentHTML('beforeend', addonHtml);
+                            }
+                            stayHtml +=`
+                            </ul>
+                            <br>`;
 
-                            })
-                        } else {
-                            document.getElementById('addonContainer').hidden = true;
-                        }
-                        
 
-                        document.getElementById('depositPrice').innerHTML = `RM ${data.total.deposit.toFixed(2)}`;
-                        
-                        let discount = 0
-                        discount = data.total.raw_total - data.total.total_after_final_discounted
-                        document.getElementById('discountPrice').innerHTML = `- RM ${discount.toFixed(2)}`;
+                        });
+
+                        let discount = 0;
+                        discount = data.total.original - data.total.total_after_final_discounted;
+
+                        stayHtml +=`
+                        <ul class="list-group">
+                            <h6>Others</h6>
+                            <li class="list-group-item d-flex justify-content-between">
+                                <span>Deposit Amount:</span>
+                                <span>RM ${data.total.deposit.toFixed(2)}</span>
+                            </li>
+                            <li class="list-group-item d-flex justify-content-between">
+                                <span>Discount Applied:</span>
+                                <span>- RM ${discount.toFixed(2)}</span>
+                            </li>
+                        </ul>`;
+
+                        priceBreakdownContent.innerHTML = stayHtml;
 
                         totalPrice = data.total.total_after_final_discounted;
-                        document.getElementById('booking_price').innerHTML = totalPrice.toFixed(2);
+                        document.getElementsByName('booking_price')[0].innerHTML = totalPrice.toFixed(2);
                     }
                 });
 
@@ -246,7 +271,7 @@ function newBookingForm() {
             function getResources() {
                 
                 // Get the select element
-                var selectElement = document.getElementsByName('booking_resource')[0];
+                var selectElement = document.getElementsByName('booking_resource_count')[0];
 
                 startDate = document.getElementById('booking_date_from').value;
                 endDate = document.getElementById('booking_date_to').value;
@@ -274,27 +299,128 @@ function newBookingForm() {
                         // Remove all options from the select element
                         selectElement.innerHTML = '';
 
-                        let availableResources = data.availables;
-
-                        if (availableResources.length == 0) {
-                            let option = document.createElement('option');
-                            option.value = "";
-                            option.text = 'No available resources';
-                            selectElement.appendChild(option);
+                        resourcesAvailable = data.availables;
+                        
+                        document.getElementsByName('booking_resource_count')[0].max = resourcesAvailable.length;
+                        
+                        if (resourcesAvailable.length == 0) {
+                            document.getElementsByName('booking_resource_count')[0].min = 0;
+                            document.getElementsByName('booking_resource_count')[0].value = 0;
+                            document.getElementsByName('booking_resource_count')[0].disabled = true;
+                        } else {
+                            document.getElementsByName('booking_resource_count')[0].min = 1;
+                            document.getElementsByName('booking_resource_count')[0].value = 1;
+                            document.getElementsByName('booking_resource_count')[0].disabled = false;
                         }
 
-                        // Add the available resources as options to the select element
-                        availableResources.forEach(function (resource) {
-                            var option = document.createElement('option');
-                            option.value = resource.id;
-                            option.text = resource.name;
-                            option.setAttribute('data-price', resource.price);
-                            selectElement.appendChild(option);
-                        });
-                        updatePrice();
+                        updateResources();
                     }
                 });
             }
+
+            function updateResources() {
+                let newResourceCount = document.getElementsByName('booking_resource_count')[0].value;
+
+                let change = newResourceCount - resourceCount;
+                console.log("change: ",change);
+                
+                let resourceDetails = document.getElementById('resourceDetails');
+
+                // Add resources
+                if (change > 0) {
+
+                    for (let i = 0; i < Math.abs(change); i++) {
+                        let resourceForm = ``;
+                        resourceForm += `
+                            <div class="mb-3 p-4 border" name="resourcesForm">
+                                <h5>Tent ${Number(resourceCount) + 1}</h5>
+                                    <div class="mb-3">
+                                        <div class="row">
+                                            <div class="col">
+                                                <label for="booking_adults" class="form-label">Adults:</label>
+                                                <input type="number" class="form-control" name="booking_adults" value="1" min="1" onchange="updatePrice()" required>
+                                            </div>
+                                            <div class="col">
+                                                <label for="booking_children" class="form-label">Children:</label>
+                                                <input type="number" class="form-control" name="booking_children" value="0" min="0" onchange="updatePrice()" required>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="mb-3" hidden>
+                                        <label for="booking_resource" class="form-label">Resource:</label>
+                                        <select class="form-select" name="booking_resource" onchange="updatePrice()" disabled>`;
+                                    
+                                    if (resourcesAvailable.length == 0) {
+                                        resourceForm += `<option value="">No available resources</option>`;
+                                    }
+
+                                    // Add the available resources as options to the select element
+                                    resourcesAvailable.forEach(function (resource) {
+                                        resourceForm += `<option value="${resource.id}" data-price="${resource.price}">${resource.name}</option>`;
+                                    });
+
+                        resourceForm += `
+                                        </select>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="booking_addons" class="form-label">Addons:</label>
+                                        <br>
+                                        <div class="addon-container">`;
+
+                                    addons.forEach(function (addon) {
+                                        resourceForm += `
+                                            <div class="addon-section border p-4 m-2">
+                                                <div class="row">
+                                                    <div class="col-11"><label class="form-check-label">${addon.addon_name}</label></div>
+                                                    <div class="col-1"><input type="checkbox" class="form-check-input" name="booking_addon[]" value="${addon.id}" data-price='${addon.addon_price}' onclick="updatePrice()"></div>
+                                                </div>
+                                                <p class="mb-0">${addon.addon_description}</p>
+                                            </div>`;
+                                    })
+
+                        resourceForm += `
+                                        </div>
+                                    </div>
+                                </div>`;
+
+                        resourceDetails.innerHTML += resourceForm;
+                        resourceCount++;
+                    }
+
+                // Remove resources
+                } else if (change < 0) {
+
+                    for (let i = 0; i < Math.abs(change); i++) {
+                        // Find the last child element with the name 'resourcesForm' and remove it
+                        const resourceForms = document.getElementsByName('resourcesForm');
+                        if (resourceForms.length > 0) {
+                            resourceDetails.removeChild(resourceForms[resourceForms.length - 1]);
+                        }
+                    }
+                    
+                }
+
+                resourceCount = newResourceCount;
+                updatePrice();
+
+                if (resourceCount != 0) {
+                    resourceDetails.hidden = false;
+                } else {
+                    resourceDetails.hidden = true;
+                }
+
+            }
+
+            const numberInput = document.getElementsByName('booking_resource_count')[0];
+
+            numberInput.addEventListener('input', function () {
+                const inputValue = parseFloat(numberInput.value);
+                const max = parseFloat(numberInput.getAttribute('max'));
+
+                if (!isNaN(inputValue) && inputValue > max) {
+                    numberInput.value = max; // Reset the input value to the maximum allowed value
+                }
+            });
 
             // Set the selected date range into the hidden input fields before form submission
             $('form').submit(function (e) {
