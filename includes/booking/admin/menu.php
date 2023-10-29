@@ -25,20 +25,20 @@ function my_booking_plugin_option_page() {
     if (isset($_POST['add_booking'])) {
         $booking_date_from = sanitize_text_field($_POST['booking_date_from']);
         $booking_date_to = sanitize_text_field($_POST['booking_date_to']);
-        $booking_resource = sanitize_text_field($_POST['booking_resource']);
+        $booking_resource = sanitize_text_field($_POST['booking_resource']);// Gone
         $booking_notes = sanitize_text_field($_POST['booking_notes']);
         $booking_description = sanitize_textarea_field($_POST['booking_description']);
         $booking_paid = sanitize_text_field($_POST['booking_paid']);
         $booking_deposit_refund = sanitize_text_field($_POST['booking_deposit_refund']);
         $booking_price = sanitize_text_field($_POST['booking_price']);
         $booking_discount = sanitize_text_field($_POST['booking_discount']);
-        $booking_adults = sanitize_text_field($_POST['booking_adults']);
-        $booking_children = sanitize_text_field($_POST['booking_children']);    
+        $booking_adults = sanitize_text_field($_POST['booking_adults']);// Gone
+        $booking_children = sanitize_text_field($_POST['booking_children']);// Gone    
         $booking_user = sanitize_text_field($_POST['booking_user']);
         $booking_email = sanitize_text_field($_POST['booking_email']);
         $booking_phone = sanitize_text_field($_POST['booking_phone']);
 
-        
+        // Gone
         $selectedAddons = array();
         $booking_addon = array();
         if (isset($_POST['booking_addon']) && !empty($_POST['booking_addon'])) {
