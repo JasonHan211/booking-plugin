@@ -35,11 +35,11 @@ class BookedInBookings {
         $this->pricingClass = new BookedInPricings();
         $this->datesClass = new BookedInDates();
         $this->addon_table_name = $this->addonsClass->table_name;
-        $this->charset_collate = $this->db->get_charset_collate();
         $this->booking_header_table_name = $this->db->prefix . $this->booking_header_table;
         $this->booking_table_name = $this->db->prefix . $this->booking_table;
         $this->booking_addons_table_name = $this->db->prefix . $this->booking_addons_table;
         $this->booking_invoice_table_name = $this->db->prefix . $this->booking_invoice_table;
+        $this->charset_collate = $this->db->get_charset_collate();
     }
 
     public function get_available($booking_date_from, $booking_date_to) {
@@ -146,11 +146,13 @@ class BookedInBookings {
 
     }
 
-    public function add_booking_header($booking_date_from, $booking_date_to,$booking_resource, $booking_notes, $booking_description, $booking_paid, $booking_deposit_refund, $booking_discount, $booking_price, $booking_adults, $booking_children, $booking_user, $booking_email, $booking_phone ) {
+    public function add_booking_header($booking_number = null, $booking_date_from, $booking_date_to,$booking_resource, $booking_notes, $booking_description, $booking_paid, $booking_deposit_refund, $booking_discount, $booking_price, $booking_adults, $booking_children, $booking_user, $booking_email, $booking_phone ) {
 
         // Generate unique booking number
-        $booking_number = uniqid('BNB-');
-        $booking_number = strtoupper($booking_number);
+        if ($booking_number == null) {
+            $booking_number = uniqid('BNB-');
+            $booking_number = strtoupper($booking_number);
+        }
 
         $this->db->insert($this->booking_header_table_name, array(
             'booking_number' => $booking_number,
@@ -210,7 +212,7 @@ class BookedInBookings {
     public function get_booking_header($booking_id = null, $page = 1, $recordsPerPage = 10, $number='', $date = '', $resource = '', $paid = '', $depositRefund = '', $range = '', $name = '', $email = '', $phone = '') {
 
         $offset = $recordsPerPage * ($page - 1);
-
+        
         $condition = '1=1';
         if ($number != '') {
             $condition .= " AND bh.booking_number LIKE '%$number%'";
@@ -277,14 +279,14 @@ class BookedInBookings {
                 ORDER BY bh.booking_date_from ASC
                 LIMIT $recordsPerPage
                 OFFSET $offset", ARRAY_A);
-
+                
             $count = $this->get_booking_header_count($condition);
 
             return array($booking_header,$count);
         }
 
-        $booking_header = $this->db->get_row("SELECT * FROM $this->booking_header_table_name WHERE id = $booking_id", ARRAY_A);
-        return $booking_header;
+        $booking_header1 = $this->db->get_row("SELECT * FROM $this->booking_header_table_name WHERE id = $booking_id", ARRAY_A);
+        return $booking_header1;
 
     }
 
@@ -396,6 +398,76 @@ class BookedInBookings {
 
             return $all;
     
+    }
+
+    public function new_booking($booking_date_from, $booking_date_to, $bookings, $booking_notes, $booking_description, $booking_name, $booking_email, $booking_phone, $booking_discount, $booking_price, $booking_paid, $booking_deposit_refund) {
+
+        // Check if its available
+        $available = $this->get_available($booking_date_from, $booking_date_to);
+        if (count($available) == 0) {
+            echo '<script>alert("Sorry, this date is not available. Please try another date.");location.reload(); </script>';
+            return;
+        }
+
+        $mainBookingNumber = null;
+
+        foreach($bookings as $booking) {
+
+            $booking_resource = $booking->resource;
+            $booking_adults = $booking->adult;
+            $booking_children = $booking->children;
+            // Get all the addons
+            if (count($booking->addons) > 0) {
+                foreach ($booking->addons as &$addonid) {
+                    $addonid = $this->addonsClass->get_addons($addonid);
+                }
+            }
+
+            $selectedAddons = $booking->addons;
+
+            $booking->resource = $this->resourcesClass->get_resources($booking_resource);
+
+            [$bookings, $total, $discount_used] = $this->pricingClass->get_price_after_discount($booking_discount, $booking_date_from, $booking_date_to, array($booking), true);
+
+            $booking_discount_used = array();
+            foreach ($discount_used as $discount) {
+                $booking_discount_used[] = $discount['discount_name'];
+                $this->pricingClass->use_discount($discount);
+            }
+
+            // For public
+            $booking_price_total = $total['total_after_final_discounted'];
+            
+            [$booking_header_id, $booking_number] = $this->add_booking_header($mainBookingNumber, $booking_date_from, $booking_date_to, $booking_resource, $booking_notes, $booking_description, $booking_paid, $booking_deposit_refund, json_encode($booking_discount_used), $booking_price, $booking_adults, $booking_children, $booking_name, $booking_email, $booking_phone);
+
+            if ($mainBookingNumber == null) {
+                $mainBookingNumber = $booking_number;
+            }
+
+            // Add booking for selected addon with charge once
+            foreach ($selectedAddons as $addon) {
+                if ($addon['addon_perday'] == 'N') {
+                    $this->add_booking_addon($booking_header_id, $booking_date_from, $addon['id'], $booking_paid, $booking_discount);
+                }
+            }
+
+            $nights = $this->get_nights($booking_date_from, $booking_date_to);
+            for ($i = 0; $i < $nights; $i++) {
+                $booking_date = date('Y-m-d', strtotime("$booking_date_from + $i days"));           
+                $this->add_booking($booking_header_id, $booking_date, $booking_resource, $booking_paid);
+                
+                // Add booking for selected addon with charge per day
+                foreach ($selectedAddons as $addon) {
+                    if ($addon['addon_perday'] == 'Y') {
+                        $this->add_booking_addon($booking_header_id, $booking_date, $addon['id'], $booking_paid, $booking_discount);
+                    }
+                }
+            }
+
+        }
+
+        return;
+
     }
 
     public function add_booking_invoice($booking_number, $resources, $addons, $total) {
@@ -625,4 +697,36 @@ function get_invoice_callback($request) {
     
 
     return new WP_REST_Response(array('invoice'=>'', 'debug'=>$bookingIDs, 'message'=>'Success'), 200);
+}
+
+// REST API ENDPOINTS
+add_action('rest_api_init', 'register_new_booking');
+
+function register_new_booking() {
+    register_rest_route('v1/booking', 'new_booking', array(
+          'methods' => 'POST',
+          'callback' => 'new_booking_callback'
+    ));
+} 
+
+function new_booking_callback($request) {
+
+    $start = $request->get_param('booking_date_from');
+    $end = $request->get_param('booking_date_to');
+    $bookings = json_decode($request->get_param('bookings'));
+    $booking_notes = $request->get_param('booking_notes');
+    $booking_description = $request->get_param('booking_description');
+    $booking_name = $request->get_param('booking_name');
+    $booking_email = $request->get_param('booking_email');
+    $booking_phone = $request->get_param('booking_phone');
+    $booking_discount = $request->get_param('booking_discount');
+    $booking_price = $request->get_param('booking_price');
+    $booking_paid = $request->get_param('booking_paid');
+    $booking_deposit_refund = $request->get_param('booking_deposit_refund');
+
+    $booking = new BookedInBookings();
+    
+    $booking->new_booking($start, $end, $bookings, $booking_notes, $booking_description, $booking_name, $booking_email, $booking_phone, $booking_discount, $booking_price, $booking_paid, $booking_deposit_refund);
+
+    return new WP_REST_Response(array('invoice'=>'', 'debug'=>$bookings, 'message'=>'Success'), 200);
 }

@@ -13,8 +13,9 @@ require_once (BI_PLUGIN_PATH . '/includes/pricings/pricing.php');
 require_once (BI_PLUGIN_PATH . '/includes/resources/resources.php');
 require_once (BI_PLUGIN_PATH . '/includes/addons/addons.php');
 
+$bookingClass = new BookedInBookings();
 
-
+// Booking Page
 function show_booking_form() {
 
     require_once (BI_PLUGIN_PATH . '/includes/booking/public/templates/booking-calendar.php');
@@ -24,6 +25,16 @@ function show_booking_form() {
     newBookingForm();
 }
 
+// Payment Page
+function show_payment_page() {
+    require_once (BI_PLUGIN_PATH . '/includes/booking/public/templates/payment-page.php');
+
+    // Payment Option
+    bankTransferWhatsapp();
+
+}
+
+// Create New Booking
 function create_new_booking_rest_endpoint() {
     register_rest_route('v1/new_booking', 'submit', array(
           'methods' => 'POST',
@@ -31,9 +42,8 @@ function create_new_booking_rest_endpoint() {
     ));
 }
 
-function new_booking_callback($data) {
+$new_booking_callback = function ($data) use ($bookingClass) {
 
-    $bookingClass = new BookedInBookings();
     $addonClass = new BookedInAddons();
     $pricingClass = new BookedInPricings();
     $resourcesClass = new BookedInResources();
@@ -136,14 +146,5 @@ function new_booking_callback($data) {
     $redirect_url = home_url('/payment/?booking_number=' . $booking_number . '&amount=' . $booking_price_total);
 
     return new WP_Rest_Response(array('success' => true, 'redirect_url' => $redirect_url, 'booking_number' => $booking_number, 'message' => $confirmation_message), 200);
-}
+};
 
-// Payment
-
-function show_payment_page() {
-    require_once (BI_PLUGIN_PATH . '/includes/booking/public/templates/payment-page.php');
-
-    // Payment Option
-    bankTransferWhatsapp();
-
-}

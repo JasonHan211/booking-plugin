@@ -74,7 +74,7 @@ function bookingTable() {
             </div>
         </div>
 
-        <button type="submit" id="applyFilterButton" class="btn btn-primary" onclick="getBookingTable()">Apply Filter</button>
+        <button type="submit" id="applyFilterButton" class="btn btn-primary" onclick="getBookingTable(0)">Apply Filter</button>
         </form>
     </div>
 
@@ -190,6 +190,11 @@ function bookingTable() {
         }
 
         function getBookingTable(page = currentPage) {
+            
+            if (page == 0){
+                currentPage = 1;
+                page = currentPage;
+            }
 
             // Get data
             let filterBooking = document.getElementById('filterBooking').value;
@@ -220,7 +225,7 @@ function bookingTable() {
                     recordsPerPage: recordsPerPage
                 },
                 success: function (data) {
-                    
+
                     let bookingTable = document.getElementById('bookingTable');
                     bookingTable.innerHTML = '';
 
@@ -304,7 +309,6 @@ function bookingTable() {
 
                     let totalRow = data.totalCount;
                     totalPages = Math.ceil(totalRow / recordsPerPage);
-                    console.log(totalPages);
                     updatePagination();
                 }    
                 

@@ -422,6 +422,7 @@ function newBookingForm() {
             // Set the selected date range into the hidden input fields before form submission
             $('form').submit(function (e) {
 
+                e.preventDefault();
                 startDate = document.getElementById('booking_date_from').value;
                 endDate = document.getElementById('booking_date_to').value;
 
@@ -429,6 +430,74 @@ function newBookingForm() {
                     alert('Please select a date range.');
                     e.preventDefault();
                 }
+
+                // Form details
+                let notes = document.getElementsByName('booking_notes')[0].value;
+                let description = document.getElementsByName('booking_description')[0].value;
+                let name = document.getElementsByName('booking_user')[0].value;
+                let email = document.getElementsByName('booking_email')[0].value;
+                let phone = document.getElementsByName('booking_phone')[0].value;
+                let discount = document.getElementsByName('booking_discount')[0].value; 
+                let price = document.getElementsByName('booking_price')[0].value;
+
+                // Admin Page
+                let paid = document.getElementsByName('booking_paid')[0].value;
+                let deposit = document.getElementsByName('booking_deposit_refund')[0].value;
+
+                let bookings = [];
+
+                let resourceForms = document.getElementsByName('resourcesForm'); 
+
+                Array.from(resourceForms).forEach((form, index) => {
+                    let resource = form.querySelectorAll('[name="booking_resource"]')[0].value; 
+                    let adult = form.querySelectorAll('[name="booking_adults"]')[0].value; 
+                    let children = form.querySelectorAll('[name="booking_children"]')[0].value;   
+                    let addons = [];
+                    let checkboxes = form.querySelectorAll('[name="booking_addon[]"]');
+                    checkboxes.forEach(checkbox => {
+                        if (checkbox.checked) {
+                            addons.push(checkbox.value);
+                        }
+                    });
+
+                    let eachResourceForm = {
+                        resource: resource,
+                        adult: adult,
+                        children: children,
+                        addons: addons
+                    };
+
+                    bookings.push(eachResourceForm);
+
+                });
+
+                console.log(bookings);
+                
+                $.ajax({
+                    url: '<?php echo get_rest_url(null, 'v1/booking/new_booking');?>',
+                    type: 'POST',
+                    data: {
+                        action: 'new_booking',
+                        booking_date_from: startDate,
+                        booking_date_to: endDate,
+                        bookings: JSON.stringify(bookings),
+                        booking_notes: notes,
+                        booking_description: description,
+                        booking_name: name,
+                        booking_email: email,
+                        booking_phone: phone,
+                        booking_discount: discount,
+                        booking_price: price,
+                        booking_paid: paid,
+                        booking_deposit_refund: deposit
+                    },
+                    success: function (data) {
+                        
+                        //Refresh page
+                        location.reload();
+                        
+                    }
+                })
                 
             });
 
