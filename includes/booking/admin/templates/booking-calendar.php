@@ -128,10 +128,10 @@ function bookingCalendar($display=true) {
                         
                         // Days from the previous month to first day of the month
                         if (i === 0 && j < firstDay) {
-                            let currentDate = new Date(currentYear, currentMonth - 2, day);
+                            currentDate = new Date(currentYear, currentMonth - 2, day);
                         } 
                         
-                        var isAvailable = currentDate >= new Date();
+                        var isAvailable = (currentDate >= new Date());
 
                         if (isAvailable) {
                             
