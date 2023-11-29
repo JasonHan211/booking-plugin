@@ -292,7 +292,7 @@ function bookingTable() {
                             thisAddons.forEach(addon => {
                                 content += `
                                     <tr>
-                                        <td colspan="1"></td>
+                                        <td colspan="2"></td>
                                         <td>${addon.booking_date}</td>
                                         <td colspan="1"></td>
                                         <td>${addon.addon_name}</td>

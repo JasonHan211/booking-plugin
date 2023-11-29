@@ -38,112 +38,123 @@ function show_payment_page() {
 function create_new_booking_rest_endpoint() {
     register_rest_route('v1/new_booking', 'submit', array(
           'methods' => 'POST',
-          'callback' => 'new_booking_callback'
+          'callback' => 'new_booking_public_callback'
     ));
 }
 
-$new_booking_callback = function ($data) use ($bookingClass) {
-
-    $addonClass = new BookedInAddons();
-    $pricingClass = new BookedInPricings();
-    $resourcesClass = new BookedInResources();
-
-    $params = $data->get_params();
+function new_booking_public_callback($request) {
     
-    if (!wp_verify_nonce($params['_wpnonce'], 'wp_rest')) {
+    $bookingClass = new BookedInBookings();
+    
+    if (!wp_verify_nonce($request['_wpnonce'], 'wp_rest')) {
           return new WP_Error('invalid_nonce', 'Invalid nonce', array('status' => 401));
     }
 
-    $booking_date_from = sanitize_text_field($params['booking_date_from']);
-    $booking_date_to = sanitize_text_field($params['booking_date_to']);
-    $booking_resource = sanitize_text_field($params['booking_resource']);
-    $booking_notes = sanitize_text_field($params['booking_notes']);
-    $booking_discount = sanitize_text_field($params['booking_discount']);
-    $booking_adults = sanitize_text_field($params['booking_adults']);
-    $booking_children = sanitize_text_field($params['booking_children']);    
-    $booking_user = sanitize_text_field($params['booking_user']);
-    $booking_email = sanitize_text_field($params['booking_email']);
-    $booking_phone = sanitize_text_field($params['booking_phone']);
+    $start = $request->get_param('booking_date_from');
+    $end = $request->get_param('booking_date_to');
+    $bookings = json_decode($request->get_param('bookings'));
+    $booking_notes = $request->get_param('booking_notes');
+    $booking_description = $request->get_param('booking_description');
+    $booking_name = $request->get_param('booking_name');
+    $booking_email = $request->get_param('booking_email');
+    $booking_phone = $request->get_param('booking_phone');
+    $booking_discount = $request->get_param('booking_discount');
+    $booking_price = $request->get_param('booking_price');
+    $booking_paid = $request->get_param('booking_paid');
+    $booking_deposit_refund = $request->get_param('booking_deposit_refund');
+    echo var_dump($bookings);
+    [$booking_number,$total] = $bookingClass->new_booking($start, $end, $bookings, $booking_notes, $booking_description, $booking_name, $booking_email, $booking_phone, $booking_discount, $booking_price, $booking_paid, $booking_deposit_refund);
+
+    // $booking_date_from = sanitize_text_field($params['booking_date_from']);
+    // $booking_date_to = sanitize_text_field($params['booking_date_to']);
+    // $booking_resource = sanitize_text_field($params['booking_resource']);
+    // $booking_notes = sanitize_text_field($params['booking_notes']);
+    // $booking_discount = sanitize_text_field($params['booking_discount']);
+    // $booking_adults = sanitize_text_field($params['booking_adults']);
+    // $booking_children = sanitize_text_field($params['booking_children']);    
+    // $booking_user = sanitize_text_field($params['booking_user']);
+    // $booking_email = sanitize_text_field($params['booking_email']);
+    // $booking_phone = sanitize_text_field($params['booking_phone']);
 
     // if (empty($name) || empty($phone) || empty($email) || empty($message)) {
     //       return new WP_Error('fields_required', 'All fields are required', array('status' => 400));
     // }
 
-    $selectedAddons = array();
-        $booking_addon = array();
-        if (isset($_POST['booking_addon']) && !empty($_POST['booking_addon'])) {
-            $booking_addon = array_map('sanitize_text_field', $_POST['booking_addon']);
-            $allAddon = $addonClass->get_addons(null,'Y');
+    // $selectedAddons = array();
+    //     $booking_addon = array();
+    //     if (isset($_POST['booking_addon']) && !empty($_POST['booking_addon'])) {
+    //         $booking_addon = array_map('sanitize_text_field', $_POST['booking_addon']);
+    //         $allAddon = $addonClass->get_addons(null,'Y');
 
-            // Get all addon that are selected
-            foreach ($allAddon as $addon) {
-                if (in_array($addon['id'], $booking_addon)) {
-                    $selectedAddons[] = $addon;
-                }
-            }
-        }
+    //         // Get all addon that are selected
+    //         foreach ($allAddon as $addon) {
+    //             if (in_array($addon['id'], $booking_addon)) {
+    //                 $selectedAddons[] = $addon;
+    //             }
+    //         }
+    //     }
 
-        // Check if its available
-        $available = $bookingClass->get_available($booking_date_from, $booking_date_to);
+    //     // Check if its available
+    //     $available = $bookingClass->get_available($booking_date_from, $booking_date_to);
 
-        $allow = false;
-        foreach ($available as $slot) {
-            if ($slot['id'] == $booking_resource) {
-                $allow = true;
-                break;
-            }
-        }
+    //     $allow = false;
+    //     foreach ($available as $slot) {
+    //         if ($slot['id'] == $booking_resource) {
+    //             $allow = true;
+    //             break;
+    //         }
+    //     }
 
-        // Check if its available
-        if (!$allow) {
-            $confirmation_message = 'Sorry, this resource is not available on this date.';
-            return new WP_Rest_Response(array('success' => false, 'message' => $confirmation_message), 200);
-        }
+    //     // Check if its available
+    //     if (!$allow) {
+    //         $confirmation_message = 'Sorry, this resource is not available on this date.';
+    //         return new WP_Rest_Response(array('success' => false, 'message' => $confirmation_message), 200);
+    //     }
 
-        $resource = $resourcesClass->get_resources($booking_resource);
+    //     $resource = $resourcesClass->get_resources($booking_resource);
 
-        [$bookings, $total, $discount_used] = $pricingClass->get_price_after_discount($booking_discount, $booking_date_from, $booking_date_to, $resource, $selectedAddons, $booking_adults, $booking_children);
+    //     [$bookings, $total, $discount_used] = $pricingClass->get_price_after_discount($booking_discount, $booking_date_from, $booking_date_to, $resource, $selectedAddons, $booking_adults, $booking_children);
         
-        $booking_discount_used = array();
-        foreach ($discount_used as $discount) {
-            $booking_discount_used[] = $discount['discount_name'];
-            $pricingClass->use_discount($discount);
-        }
+    //     $booking_discount_used = array();
+    //     foreach ($discount_used as $discount) {
+    //         $booking_discount_used[] = $discount['discount_name'];
+    //         $pricingClass->use_discount($discount);
+    //     }
 
-        // For public
-        $booking_price_total = $total['total_after_final_discounted'];
+    //     // For public
+    //     $booking_price_total = $total['total_after_final_discounted'];
 
-        [$booking_header_id, $booking_number] = $bookingClass->add_booking_header($booking_date_from, $booking_date_to, $booking_resource, $booking_notes, 'From Website', 'N', 'N', json_encode($booking_discount_used), $booking_price_total, $booking_adults, $booking_children, $booking_user, $booking_email, $booking_phone);
+    //     [$booking_header_id, $booking_number] = $bookingClass->add_booking_header($booking_date_from, $booking_date_to, $booking_resource, $booking_notes, 'From Website', 'N', 'N', json_encode($booking_discount_used), $booking_price_total, $booking_adults, $booking_children, $booking_user, $booking_email, $booking_phone);
 
-        // Add booking for selected addon with charge once
-        foreach ($selectedAddons as $addon) {
-            if ($addon['addon_perday'] == 'N') {
-                $bookingClass->add_booking_addon($booking_header_id, $booking_date_from, $addon['id'], 'N', $booking_discount);
-            }
-        }
+    //     // Add booking for selected addon with charge once
+    //     foreach ($selectedAddons as $addon) {
+    //         if ($addon['addon_perday'] == 'N') {
+    //             $bookingClass->add_booking_addon($booking_header_id, $booking_date_from, $addon['id'], 'N', $booking_discount);
+    //         }
+    //     }
 
-        $nights = $bookingClass->get_nights($booking_date_from, $booking_date_to);
+    //     $nights = $bookingClass->get_nights($booking_date_from, $booking_date_to);
 
-        for ($i = 0; $i < $nights; $i++) {
-            $booking_date = date('Y-m-d', strtotime("$booking_date_from + $i days"));           
-            $bookingClass->add_booking($booking_header_id, $booking_date, $booking_resource, 'N');
+    //     for ($i = 0; $i < $nights; $i++) {
+    //         $booking_date = date('Y-m-d', strtotime("$booking_date_from + $i days"));           
+    //         $bookingClass->add_booking($booking_header_id, $booking_date, $booking_resource, 'N');
             
-            // Add booking for selected addon with charge per day
-            foreach ($selectedAddons as $addon) {
-                if ($addon['addon_perday'] == 'Y') {
-                    $bookingClass->add_booking_addon($booking_header_id, $booking_date, $addon['id'], 'N', $booking_discount);
-                }
-            }
-        }
+    //         // Add booking for selected addon with charge per day
+    //         foreach ($selectedAddons as $addon) {
+    //             if ($addon['addon_perday'] == 'Y') {
+    //                 $bookingClass->add_booking_addon($booking_header_id, $booking_date, $addon['id'], 'N', $booking_discount);
+    //             }
+    //         }
+    //     }
 
 
     // Remove unneeded data from paramaters
-    unset($params['_wpnonce']);
-    unset($params['_wp_http_referer']);
+    // unset($params['_wpnonce']);
+    // unset($params['_wp_http_referer']);
 
     $confirmation_message = 'Successfully add booking';
 
-    $redirect_url = home_url('/payment/?booking_number=' . $booking_number . '&amount=' . $booking_price_total);
+    $redirect_url = home_url('/payment/?booking_number=' . $booking_number . '&amount=' . $total);
 
     return new WP_Rest_Response(array('success' => true, 'redirect_url' => $redirect_url, 'booking_number' => $booking_number, 'message' => $confirmation_message), 200);
 };

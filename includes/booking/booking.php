@@ -410,6 +410,7 @@ class BookedInBookings {
         }
 
         $mainBookingNumber = null;
+        $booking_price_total = 0;
 
         foreach($bookings as $booking) {
 
@@ -463,10 +464,12 @@ class BookedInBookings {
                     }
                 }
             }
+            
+            $this->add_booking_invoice($booking_number, json_encode($booking->resource), json_encode($selectedAddons), json_encode($total));
 
         }
 
-        return;
+        return array($mainBookingNumber,$booking_price_total);
 
     }
 
@@ -479,7 +482,7 @@ class BookedInBookings {
         ));
 
         $id = $this->db->insert_id;
-
+        echo var_dump($this->db->last_error);
         return $id;
     }
 
@@ -588,6 +591,7 @@ class BookedInBookings {
         $this->createBookingHeaderDB();    
         $this->createBookingsDB();
         $this->createBookingAddonsDB();
+        $this->createInvoiceDB();
 
     }
 
@@ -597,6 +601,7 @@ class BookedInBookings {
         $this->deleteDB($this->booking_header_table_name);
         $this->deleteDB($this->booking_table_name);
         $this->deleteDB($this->booking_addons_table_name);
+        $this->deleteDB($this->booking_invoice_table_name);
 
     }
     
