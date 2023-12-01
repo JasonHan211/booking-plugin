@@ -63,7 +63,7 @@ function new_booking_public_callback($request) {
     $booking_paid = $request->get_param('booking_paid');
     $booking_deposit_refund = $request->get_param('booking_deposit_refund');
     
-    [$booking_number,$total] = $bookingClass->new_booking($start, $end, $bookings, $booking_notes, $booking_description, $booking_name, $booking_email, $booking_phone, $booking_discount, $booking_price, $booking_paid, $booking_deposit_refund);
+    [$booking_number,$total] = $bookingClass->new_booking(false, $start, $end, $bookings, $booking_notes, $booking_description, $booking_name, $booking_email, $booking_phone, $booking_discount, $booking_price, $booking_paid, $booking_deposit_refund);
 
     $confirmation_message = 'Successfully add booking';
 

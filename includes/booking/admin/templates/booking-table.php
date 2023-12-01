@@ -361,9 +361,9 @@ function bookingTable() {
                 },
                 success: function (data) {
                     
-                    // let invoice = data.invoice;
-                    // document.getElementById('invoice-template').innerHTML = invoice;
-                    // printInvoice();
+                    let invoice = data.invoice;
+                    document.getElementById('invoice-template').innerHTML = invoice;
+                    printInvoice();
 
                 }    
                 

@@ -400,7 +400,7 @@ class BookedInBookings {
     
     }
 
-    public function new_booking($booking_date_from, $booking_date_to, $bookings, $booking_notes, $booking_description, $booking_name, $booking_email, $booking_phone, $booking_discount, $booking_price, $booking_paid, $booking_deposit_refund) {
+    public function new_booking($admin, $booking_date_from, $booking_date_to, $bookings, $booking_notes, $booking_description, $booking_name, $booking_email, $booking_phone, $booking_discount, $booking_price, $booking_paid, $booking_deposit_refund) {
 
         // Check if its available
         $available = $this->get_available($booking_date_from, $booking_date_to);
@@ -438,8 +438,13 @@ class BookedInBookings {
 
             // For public
             $booking_price_total = $total['total_after_final_discounted'];
+
+            $price = $booking_price;
+            if (!$admin) {
+                $price = $booking_price_total;
+            }
             
-            [$booking_header_id, $booking_number] = $this->add_booking_header($mainBookingNumber, $booking_date_from, $booking_date_to, $booking_resource, $booking_notes, $booking_description, $booking_paid, $booking_deposit_refund, json_encode($booking_discount_used), $booking_price, $booking_adults, $booking_children, $booking_name, $booking_email, $booking_phone);
+            [$booking_header_id, $booking_number] = $this->add_booking_header($mainBookingNumber, $booking_date_from, $booking_date_to, $booking_resource, $booking_notes, $booking_description, $booking_paid, $booking_deposit_refund, json_encode($booking_discount_used), $price, $booking_adults, $booking_children, $booking_name, $booking_email, $booking_phone);
 
             if ($mainBookingNumber == null) {
                 $mainBookingNumber = $booking_number;
@@ -469,7 +474,7 @@ class BookedInBookings {
 
         }
 
-        return array($mainBookingNumber,$booking_price_total);
+        return array($mainBookingNumber, $price);
 
     }
 
@@ -484,6 +489,28 @@ class BookedInBookings {
         $id = $this->db->insert_id;
         
         return $id;
+    }
+
+    public function get_invoice_by_id($booking_id) {
+        echo var_dump($booking_id);
+        $booking = $this->db->get_results(
+            "SELECT *
+            FROM $this->booking_invoice_table_name
+            WHERE booking_number = '$booking_id'", ARRAY_A);
+        return $booking;
+    }
+
+    public function get_invoice_html($booking_ids) {
+
+        $outputString = '';
+
+        foreach($booking_ids as $booking_id) {
+
+            $data = $this->get_invoice_by_id($booking_id);
+
+        }
+
+        return $outputString;
     }
 
     public function delete_booking_and_addons($booking_id) {
@@ -698,10 +725,11 @@ function get_invoice_callback($request) {
 
     $bookingIDs = $request->get_param('bookingIDs');
 
-    $booking = new BookedInBookings();
-    
+    $bookingClass = new BookedInBookings();
 
-    return new WP_REST_Response(array('invoice'=>'', 'debug'=>$bookingIDs, 'message'=>'Success'), 200);
+    $output = $bookingClass->get_invoice_html($bookingIDs);
+
+    return new WP_REST_Response(array('invoice'=>$output, 'debug'=>$bookingIDs, 'message'=>'Success'), 200);
 }
 
 // REST API ENDPOINTS
@@ -731,7 +759,8 @@ function new_booking_callback($request) {
 
     $booking = new BookedInBookings();
     
-    $booking->new_booking($start, $end, $bookings, $booking_notes, $booking_description, $booking_name, $booking_email, $booking_phone, $booking_discount, $booking_price, $booking_paid, $booking_deposit_refund);
+    $booking->new_booking(true, $start, $end, $bookings, $booking_notes, $booking_description, $booking_name, $booking_email, $booking_phone, $booking_discount, $booking_price, $booking_paid, $booking_deposit_refund);
 
     return new WP_REST_Response(array('invoice'=>'', 'debug'=>$bookings, 'message'=>'Success'), 200);
 }
+
