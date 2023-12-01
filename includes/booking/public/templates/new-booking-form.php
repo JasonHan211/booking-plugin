@@ -440,8 +440,8 @@ function newBookingForm() {
                     let email = document.getElementsByName('booking_email')[0].value;
                     let phone = document.getElementsByName('booking_phone')[0].value;
                     let discount = document.getElementsByName('booking_discount')[0].value; 
-                    let price = document.getElementsByName('booking_price')[0].value;
-
+                    let price = document.getElementsByName('booking_price')[0].innerHTML;
+                    
                     // Admin Page
                     let paid = document.getElementsByName('booking_paid')[0].value;
                     let deposit = document.getElementsByName('booking_deposit_refund')[0].value;
@@ -479,7 +479,7 @@ function newBookingForm() {
                     var formData = new FormData(form[0]);
                     
                     $.ajax({
-                        url: '<?php echo get_rest_url(null, 'v1/booking/new_booking');?>',
+                        url: '<?php echo get_rest_url(null, 'v1/new_booking/submit');?>',
                         type: 'POST',
                         data: {
                             action: 'new_booking',
@@ -493,47 +493,28 @@ function newBookingForm() {
                             booking_email: email,
                             booking_phone: phone,
                             booking_discount: discount,
-                            booking_price: price, // Problem
+                            booking_price: price,
                             booking_paid: paid,
                             booking_deposit_refund: deposit
                         },
-                        success: function (data) {
-                            
-                            //Refresh page
-                            location.reload();
-                            
+                        success: function (response) {
+                            let data = response
+                            if (data.success === true) {
+                                    
+                                window.location.href = data.redirect_url;
+
+                            } else {
+
+                            }
+
+                        },
+                        error: function (data) {
+
+                            console.log(data);
+
                         }
                     })
 
-                    // var form = $(this);
-
-                    // var formdata = new FormData(form[0]);
-
-                    // formdata.append('action', 'new_booking');
-
-                    // $.ajax({
-                    //         url: '<?php echo get_rest_url(null, 'v1/new_booking/submit');?>',
-                    //         type: 'POST',
-                    //         data: formdata,
-                    //         processData: false,
-                    //         contentType: false,
-                    //         success: function (data) {
-
-                    //             if (data.success === true) {
-                                    
-                    //                 window.location.href = data.redirect_url;
-
-                    //             } else {
-
-                    //             }
-
-                    //         },
-                    //         error: function (data) {
-
-                    //             console.log(data);
-
-                    //         }
-                    // });
                 }
                 
             });

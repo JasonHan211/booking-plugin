@@ -482,7 +482,7 @@ class BookedInBookings {
         ));
 
         $id = $this->db->insert_id;
-        echo var_dump($this->db->last_error);
+        
         return $id;
     }
 
