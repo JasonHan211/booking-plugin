@@ -7,6 +7,8 @@ require_once (BI_PLUGIN_PATH . '/includes/resources/resources.php');
 require_once (BI_PLUGIN_PATH . '/includes/addons/addons.php');
 require_once (BI_PLUGIN_PATH . '/includes/pricings/pricing.php');
 require_once (BI_PLUGIN_PATH . '/includes/dates/date.php');
+require_once (BI_PLUGIN_PATH . '/includes/invoice/invoice.php');
+
 
 class BookedInBookings {
 
@@ -16,10 +18,10 @@ class BookedInBookings {
     private $addonsClass;
     private $pricingClass;
     private $datesClass;
+    private $invoiceClass;
     public $booking_header_table = 'bookedin_booking_header';
     public $booking_table = 'bookedin_bookings';
     public $booking_addons_table = 'bookedin_booking_addons';
-    public $booking_invoice_table = 'bookedin_booking_invoice';
     public $booking_header_table_name;
     public $booking_table_name;
     public $booking_addons_table_name;
@@ -34,11 +36,11 @@ class BookedInBookings {
         $this->addonsClass = new BookedInAddons();
         $this->pricingClass = new BookedInPricings();
         $this->datesClass = new BookedInDates();
+        $this->invoiceClass = new BookedInInvoice();
         $this->addon_table_name = $this->addonsClass->table_name;
         $this->booking_header_table_name = $this->db->prefix . $this->booking_header_table;
         $this->booking_table_name = $this->db->prefix . $this->booking_table;
         $this->booking_addons_table_name = $this->db->prefix . $this->booking_addons_table;
-        $this->booking_invoice_table_name = $this->db->prefix . $this->booking_invoice_table;
         $this->charset_collate = $this->db->get_charset_collate();
     }
 
@@ -469,48 +471,15 @@ class BookedInBookings {
                     }
                 }
             }
+
+            $contact = array("name:"=>$booking_name, "email:"=>$booking_email, "phone:"=>$booking_phone);
             
-            $this->add_booking_invoice($booking_number, json_encode($booking->resource), json_encode($selectedAddons), json_encode($total));
+            $this->invoiceClass->add_booking_invoice($booking_number, json_encode($contact), json_encode($booking->resource), json_encode($selectedAddons), json_encode($total));
 
         }
 
         return array($mainBookingNumber, $price);
 
-    }
-
-    public function add_booking_invoice($booking_number, $resources, $addons, $total) {
-        $this->db->insert($this->booking_invoice_table_name, array(
-            'booking_number' => $booking_number,
-            'resource_info' => $resources,
-            'addon_info' => $addons,
-            'total_info' => $total,
-        ));
-
-        $id = $this->db->insert_id;
-        
-        return $id;
-    }
-
-    public function get_invoice_by_id($booking_id) {
-        echo var_dump($booking_id);
-        $booking = $this->db->get_results(
-            "SELECT *
-            FROM $this->booking_invoice_table_name
-            WHERE booking_number = '$booking_id'", ARRAY_A);
-        return $booking;
-    }
-
-    public function get_invoice_html($booking_ids) {
-
-        $outputString = '';
-
-        foreach($booking_ids as $booking_id) {
-
-            $data = $this->get_invoice_by_id($booking_id);
-
-        }
-
-        return $outputString;
     }
 
     public function delete_booking_and_addons($booking_id) {
@@ -590,23 +559,6 @@ class BookedInBookings {
     
     }
 
-    public function createInvoiceDB() {
-
-        $sql = "CREATE TABLE IF NOT EXISTS $this->booking_invoice_table_name (
-            id INT NOT NULL AUTO_INCREMENT,
-            booking_number VARCHAR(255) NOT NULL,
-            resource_info JSON,
-            addon_info JSON,
-            total_info JSON,
-            created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-            edited_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-            PRIMARY KEY (id)
-        ) $this->charset_collate;";
-
-        dbDelta($sql);
-
-    }
-
     public function deleteDB($table_name) {
 
         $this->db->query("DROP TABLE IF EXISTS $table_name");
@@ -618,7 +570,6 @@ class BookedInBookings {
         $this->createBookingHeaderDB();    
         $this->createBookingsDB();
         $this->createBookingAddonsDB();
-        $this->createInvoiceDB();
 
     }
 
@@ -628,7 +579,6 @@ class BookedInBookings {
         $this->deleteDB($this->booking_header_table_name);
         $this->deleteDB($this->booking_table_name);
         $this->deleteDB($this->booking_addons_table_name);
-        $this->deleteDB($this->booking_invoice_table_name);
 
     }
     
@@ -719,15 +669,15 @@ function register_get_invoice() {
           'methods' => 'POST',
           'callback' => 'get_invoice_callback'
     ));
-} 
+}
 
 function get_invoice_callback($request) {
 
     $bookingIDs = $request->get_param('bookingIDs');
 
-    $bookingClass = new BookedInBookings();
+    $invoiceClass = new BookedInInvoice();
 
-    $output = $bookingClass->get_invoice_html($bookingIDs);
+    $output = $invoiceClass->get_invoice_html($bookingIDs);
 
     return new WP_REST_Response(array('invoice'=>$output, 'debug'=>$bookingIDs, 'message'=>'Success'), 200);
 }

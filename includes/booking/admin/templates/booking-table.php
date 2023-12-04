@@ -351,7 +351,7 @@ function bookingTable() {
                 alert('Please select at least one booking to generate the invoice.');
                 return;
             }
-
+            console.log("call");
             $.ajax({
                 url: '<?php echo get_rest_url(null, 'v1/booking/get_invoice');?>',
                 type: 'POST',
@@ -362,6 +362,7 @@ function bookingTable() {
                 success: function (data) {
                     
                     let invoice = data.invoice;
+                    console.log(data);
                     document.getElementById('invoice-template').innerHTML = invoice;
                     printInvoice();
 

@@ -78,7 +78,15 @@ class BookedInMenuPage {
                 require_once (BI_PLUGIN_PATH . '/includes/contact-form/contact-form.php');
                 add_action( 'admin_menu', array($this,'bookedin_contact_form_submenu'));
             }
-                
+              
+            // Invoice
+            if (file_exists(BI_PLUGIN_PATH . '/includes/invoice/invoice.php')) {
+                require_once (BI_PLUGIN_PATH . '/includes/invoice/invoice.php');
+                $invoice = new BookedInInvoice();
+                register_activation_hook(BI_FILE, array($invoice,'activate'));
+                register_deactivation_hook(BI_FILE, array($invoice,'deactivate'));    
+            }
+
         // Settings
             require_once (BI_PLUGIN_PATH . '/includes/settings/settings.php');
             $settings = new BookedInSettings();
