@@ -56,9 +56,10 @@ class BookedInInvoice {
         return $outputString;
     }
   
-    public function add_booking_invoice($booking_number, $contact, $resources, $addons, $total) {
+    public function add_booking_invoice($booking_number, $bookingDetails, $contact, $resources, $addons, $total) {
         $this->db->insert($this->booking_invoice_table_name, array(
             'booking_number' => $booking_number,
+            'booking_info' => $bookingDetails,
             'contact_info' => $contact,
             'resource_info' => $resources,
             'addon_info' => $addons,
@@ -75,6 +76,7 @@ class BookedInInvoice {
         $sql = "CREATE TABLE IF NOT EXISTS $this->booking_invoice_table_name (
             id INT NOT NULL AUTO_INCREMENT,
             booking_number VARCHAR(255) NOT NULL,
+            booking_info JSON,
             contact_info JSON,
             resource_info JSON,
             addon_info JSON,

@@ -472,9 +472,11 @@ class BookedInBookings {
                 }
             }
 
-            $contact = array("name:"=>$booking_name, "email:"=>$booking_email, "phone:"=>$booking_phone);
+
+            $bookingDetails = array("from" => $booking_date_from, "to" => $booking_date_to, "nights" => $nights, "adults" => $booking_adults, "children" => $booking_children);
+            $contact = array("name"=>$booking_name, "email"=>$booking_email, "phone"=>$booking_phone);
             
-            $this->invoiceClass->add_booking_invoice($booking_number, json_encode($contact), json_encode($booking->resource), json_encode($selectedAddons), json_encode($total));
+            $this->invoiceClass->add_booking_invoice($booking_number, json_encode($bookingDetails), json_encode($contact), json_encode($booking->resource), json_encode($selectedAddons), json_encode($total));
 
         }
 

@@ -376,9 +376,7 @@ function bookingTable() {
             var invoiceTemplate = document.getElementById("invoice-template");
             var printWindow = window.open('', '', 'width=2000,height=3000');
             printWindow.document.open();
-            printWindow.document.write('<html><head><title>Print Invoice</title></head><body>');
-            printWindow.document.write('<div>' + invoiceTemplate.innerHTML + '</div>');
-            printWindow.document.write('</body></html>');
+            printWindow.document.write('<html>'+ invoiceTemplate.innerHTML + '</html>');
             printWindow.document.close();
             printWindow.print();
         }
