@@ -38,7 +38,7 @@ class BookedInInvoice {
             $currentItem++;
 
             $data = $this->get_invoice_by_id($booking_id);
-
+            
             // Company Header
             $outputString .= headerTemplate();
 
@@ -56,13 +56,11 @@ class BookedInInvoice {
         return $outputString;
     }
   
-    public function add_booking_invoice($booking_number, $bookingDetails, $contact, $resources, $addons, $total) {
+    public function add_booking_invoice($booking_number, $bookingDetails, $contact, $total) {
         $this->db->insert($this->booking_invoice_table_name, array(
             'booking_number' => $booking_number,
             'booking_info' => $bookingDetails,
             'contact_info' => $contact,
-            'resource_info' => $resources,
-            'addon_info' => $addons,
             'total_info' => $total,
         ));
 
@@ -78,8 +76,6 @@ class BookedInInvoice {
             booking_number VARCHAR(255) NOT NULL,
             booking_info JSON,
             contact_info JSON,
-            resource_info JSON,
-            addon_info JSON,
             total_info JSON,
             created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
             edited_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,

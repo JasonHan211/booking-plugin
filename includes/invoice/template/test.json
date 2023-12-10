@@ -1,0 +1,57 @@
+{
+    "to": "2023-12-23",
+    "from": "2023-12-21",
+    "adults": "2",
+    "nights": "2",
+    "bookings": [
+        {
+            "addon": [
+                {
+                    "addon": {
+                        "id": "1",
+                        "edited_at": "2023-10-17 23:53:31",
+                        "activeFlag": "Y",
+                        "addon_name": "Meal",
+                        "created_at": "2023-10-17 20:55:26",
+                        "addon_price": "3",
+                        "addon_perday": "Y",
+                        "addon_description": "We provide meals for each person.                                                             \r\n - Dinner\r\n- Breakfast\r\nRM40 per pax"
+                    },
+                    "addon_price": 160,
+                    "addon_discounted_price": 160
+                }
+            ],
+            "resource": [
+                {
+                    "resource": {
+                        "id": "1",
+                        "edited_at": "2023-10-17 23:53:49",
+                        "activeFlag": "Y",
+                        "created_at": "2023-10-17 20:56:35",
+                        "resource_name": "Tent 1",
+                        "resource_price": "2",
+                        "resource_description": ""
+                    },
+                    "booking_date": "2023-12-21",
+                    "resource_price": "500",
+                    "resource_discounted_price": 450
+                },
+                {
+                    "resource": {
+                        "id": "1",
+                        "edited_at": "2023-10-17 23:53:49",
+                        "activeFlag": "Y",
+                        "created_at": "2023-10-17 20:56:35",
+                        "resource_name": "Tent 1",
+                        "resource_price": "2",
+                        "resource_description": ""
+                    },
+                    "booking_date": "2023-12-22",
+                    "resource_price": "500",
+                    "resource_discounted_price": "500"
+                }
+            ]
+        }
+    ],
+    "children": "0"
+}
