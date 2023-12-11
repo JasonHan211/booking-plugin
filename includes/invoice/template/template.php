@@ -3,9 +3,7 @@
 // Exit if accessed directly
 if (!defined('ABSPATH')) exit;
 
-function headerTemplate() {
-    
-    $base_url = BI_PLUGIN_URL . 'includes/invoice/template/images/logo.png';
+function heading() {
 
     $header = <<<HTML
             <head>
@@ -26,6 +24,7 @@ function headerTemplate() {
                             page-break-after: always; /* or page-break-after: always; */
                         }
                         /* Add more print-specific styles here */
+                        
                     }
                     
                     body {
@@ -105,6 +104,7 @@ function headerTemplate() {
                     /* Adjust the width of specific columns */
                     .invoice-details th:nth-child(1),
                     .invoice-details td:nth-child(1) {
+                        text-align: center;
                         width: 20%; /* Set the width for the "Date" column */
                     }
 
@@ -116,6 +116,10 @@ function headerTemplate() {
                     .invoice-details th:nth-child(3),
                     .invoice-details td:nth-child(3) {
                         text-align: right; /* Align the text to the right */
+                    }
+
+                    .invoice-details-header {
+                        text-align: center !important;
                     }
 
                     .invoice-summary {
@@ -151,6 +155,17 @@ function headerTemplate() {
                 </style>
             </head>
             <body>
+        HTML;
+
+        return $header;
+
+}
+
+function headerTemplate() {
+    
+    $base_url = BI_PLUGIN_URL . 'includes/invoice/template/images/logo.png';
+
+    $header = <<<HTML
                 <div class="container text-center">
                     <img src="$base_url" class="logo" alt="Logo">
                     <p class="header">Beach & Breeze Glamping</p>
@@ -159,82 +174,54 @@ function headerTemplate() {
                     <p class="header">Tel No: +6012-9869961</p>
                     <p class="header">Reg No: 202301042359 (1536276-P)</p>
                 </div>
+                <br>  
+                <div class="invoice">
         HTML;
 
         return $header;
 
 }
 
-function footerTemplate($data) {
+function footerTemplate() {
     $footer = <<<HTML
-            <p class="footerText">This is a computer generated invoice. No signature is required.</p>
-            <p class="footerText">Thank you for staying with us. Hope to see you soon!</p>  
+            </div>
+            <div class="footer">
+                <p class="footerText">This is a computer generated invoice. No signature is required.</p>
+                <p class="footerText">Thank you for staying with us. Hope to see you soon!</p>  
+            </div>
+            <div class="page-break"></div> 
     HTML;
 
     return $footer;
 }
 
 function nextPageTemplate() {
-    $output = <<<HTML
-            <div class="page-break"> Page Break </div> 
-        </body>
+    $footer = <<<HTML
+        <div class="page-break"></div> 
     HTML;
+
+    return $footer;
+}
+
+function bodyTemplate($data) {
+
+    $output = headerTemplate();
+    $output .= invoiceHeader($data);
+    $output .= invoiceDetail($data);
+    $output .= footerTemplate();
 
     return $output;
 }
 
-function template1($data) {
+
+function invoiceHeader($data) {
+
     $result = $data[0];
     $contact = json_decode($result["contact_info"]);
     $bookingNo = $result["booking_number"];
     $bookingInfo = json_decode($result["booking_info"]);
 
-    $detailString = "<tr>";
-
-    // Summary Build
-    $totalOriginalSum = 0;
-    $totalDiscountedSum = 0;
-    $totalDiscount = 0;
-
-    foreach ($data as $row) {
-
-        $booking = json_decode($row["booking_info"]);
-        $resources = $booking->bookings[0]->resource;
-        $addons = $booking->bookings[0]->addon;
-        $total = json_decode($row["total_info"]);
-        $totalOriginalSum += $total->original;
-        $totalDiscountedSum += $total->total_after_final_discounted;
-        $discount = $total->original - $total->total_after_final_discounted;
-        $totalDiscount += $discount;
-
-        foreach ($resources as $resource) {
-            $detailString .= "<td>". $resource->booking_date . "</td>";
-            $detailString .= "<td>". $resource->resource->resource_name . " | Adults: " . $booking->adults . " | Children: " . $booking->children . "</td>";
-            $detailString .= "<td>RM ". $resource->resource_price . "</td>";
-            $detailString .= "</tr>";
-        }
-
-        foreach ($addons as $addon) {
-            $detailString .= "<td colspan='1'></td>";
-            $detailString .= "<td>". $addon->addon->addon_name . " | Adults: " . $booking->adults . " | Children: " . $booking->children . "</td>";
-            $detailString .= "<td>RM ". $addon->addon_price . "</td>";
-            $detailString .= "</tr>";
-        }
-
-        $detailString .= "<td colspan='1'></td>";
-        $detailString .= "<td> Deposit | " . $resources[0]->resource->resource_name . " | Refundable</td>";
-        $detailString .= "<td>RM ". $total->deposit . "</td>";
-        $detailString .= "</tr>";
-
-        $detailString .= "<td colspan='1'></td>";
-        $detailString .= "<td> Discount </td>";
-        $detailString .= "<td>- RM ". $discount . "</td>";
-        $detailString .= "</tr>";
-
-    }
-
     $output = <<<HTML
-            <div class="invoice">
                 <table class="invoice-table">
                     <tr>
                         <td colspan="3"></td>
@@ -269,41 +256,104 @@ function template1($data) {
                     </tr>
                 </table>
                 <br>
-                
+        HTML;
+
+    return $output;
+}
+
+function invoiceDetail($data) {
+
+    $output = <<<HTML
+        <table class="invoice-details">
+            <tr>
+                <th class="invoice-details-header">Date</th>
+                <th class="invoice-details-header">Description</th>
+                <th class="invoice-details-header">Total</th>
+            </tr>
+            <tr>
+        HTML;
+
+    // Summary Build
+    $totalOriginalSum = 0;
+    $totalDiscountedSum = 0;
+    $totalDiscount = 0;
+
+    foreach ($data as $index => $row) {
+
+        $booking = json_decode($row["booking_info"]);
+        $resources = $booking->bookings[0]->resource;
+        $addons = $booking->bookings[0]->addon;
+        $total = json_decode($row["total_info"]);
+        $totalOriginalSum += $total->original;
+        $totalDiscountedSum += $total->total_after_final_discounted;
+        $discount = $total->original - $total->total_after_final_discounted;
+        $totalDiscount += $discount;
+
+        foreach ($resources as $resource) {
+            $output .= "<td>". $resource->booking_date . "</td>";
+            $output .= "<td>". $resource->resource->resource_name . " | Adults: " . $booking->adults . " | Children: " . $booking->children . "</td>";
+            $output .= "<td>RM ". $resource->resource_price . "</td>";
+            $output .= "</tr>";
+        }
+
+        foreach ($addons as $addon) {
+            $output .= "<td colspan='1'></td>";
+            $output .= "<td>". $addon->addon->addon_name . " | Adults: " . $booking->adults . " | Children: " . $booking->children . "</td>";
+            $output .= "<td>RM ". $addon->addon_price . "</td>";
+            $output .= "</tr>";
+        }
+
+        $output .= "<td colspan='1'></td>";
+        $output .= "<td> Deposit | " . $resources[0]->resource->resource_name . " | Refundable</td>";
+        $output .= "<td>RM ". $total->deposit . "</td>";
+        $output .= "</tr>";
+
+        $output .= "<td colspan='1'></td>";
+        $output .= "<td> Discount </td>";
+        $output .= "<td>- RM ". $discount . "</td>";
+        $output .= "</tr>";
+
+        if ((($index + 1) % 2 == 0) && (($index + 1) != count($data))) {
+            $output .= "</table>";
+            $output .= footerTemplate();
+            $output .= headerTemplate();
+            $output .= invoiceHeader($data);
+            $output .= <<<HTML
                 <table class="invoice-details">
                     <tr>
-                        <th>Date</th>
-                        <th>Description</th>
-                        <th>Total</th>
-                    </tr>
-                    {$detailString}
-                </table>
-                <br>
-                <table class="invoice-summary">
-                    <tr>
-                        <td colspan="1"></td>
-                        <td>Total</td>
-                        <td>RM {$totalOriginalSum}</td>
+                        <th class="invoice-details-header">Date</th>
+                        <th class="invoice-details-header">Description</th>
+                        <th class="invoice-details-header">Total</th>
                     </tr>
                     <tr>
-                        <td colspan="1"></td>
-                        <td>Discount</td>
-                        <td>- RM {$totalDiscount}</td>
-                    </tr>
-                    <tr>
-                        <td colspan="1"></td>
-                        <td>Net Amount Due</td>
-                        <td>RM {$totalDiscountedSum}</td>
-                    </tr>
-                </table>
+                HTML;
+        }
+    }
+        
+    $output .= <<<HTML
+        </table>
+        <br>
+        <table class="invoice-summary">
+            <tr>
+                <td colspan="1"></td>
+                <td>Total</td>
+                <td>RM {$totalOriginalSum}</td>
+            </tr>
+            <tr>
+                <td colspan="1"></td>
+                <td>Discount</td>
+                <td>- RM {$totalDiscount}</td>
+            </tr>
+            <tr>
+                <td colspan="1"></td>
+                <td>Net Amount Due</td>
+                <td>RM {$totalDiscountedSum}</td>
+            </tr>
+        </table>
 
-                <br>
-                <br>
-
-                
-
-            </div>
-        HTML;
+        <br>
+        <br>
+    HTML;
 
     return $output;
 }

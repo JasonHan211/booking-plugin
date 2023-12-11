@@ -54,14 +54,14 @@ function new_booking_public_callback($request) {
     $end = $request->get_param('booking_date_to');
     $bookings = json_decode($request->get_param('bookings'));
     $booking_notes = $request->get_param('booking_notes');
-    $booking_description = $request->get_param('booking_description');
+    $booking_description = 'From Website';
     $booking_name = $request->get_param('booking_name');
     $booking_email = $request->get_param('booking_email');
     $booking_phone = $request->get_param('booking_phone');
     $booking_discount = $request->get_param('booking_discount');
-    $booking_price = $request->get_param('booking_price');
-    $booking_paid = $request->get_param('booking_paid');
-    $booking_deposit_refund = $request->get_param('booking_deposit_refund');
+    $booking_price = 0;
+    $booking_paid = 'N';
+    $booking_deposit_refund = 'N';
     
     [$booking_number,$total] = $bookingClass->new_booking(false, $start, $end, $bookings, $booking_notes, $booking_description, $booking_name, $booking_email, $booking_phone, $booking_discount, $booking_price, $booking_paid, $booking_deposit_refund);
 

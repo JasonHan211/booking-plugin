@@ -29,10 +29,6 @@ function newBookingForm() {
                             <label for="booking_notes" class="form-label">Customer Notes:</label>
                             <textarea class="form-control" name="booking_notes"></textarea>
                         </div>
-                        <div class="mb-3">
-                            <label for="booking_description" class="form-label">Hidden Description:</label>
-                            <textarea class="form-control" name="booking_description"></textarea>
-                        </div>
                         
                     </div>
 
@@ -84,20 +80,6 @@ function newBookingForm() {
                             </div>
                         </div>
 
-                        <div class="mb-3">
-                            <label for="booking_paid" class="form-label">Paid:</label>
-                            <select class="form-select" name="booking_paid">
-                                <option value="N">No</option>
-                                <option value="Y">Yes</option>
-                            </select>
-                        </div>
-                        <div class="mb-3">
-                            <label for="booking_deposit_refund" class="form-label">Deposit Refund:</label>
-                            <select class="form-select" name="booking_deposit_refund">
-                                <option value="N">No</option>
-                                <option value="Y">Yes</option>
-                            </select>
-                        </div>
                     </div>
                 </div>
 
@@ -435,17 +417,12 @@ function newBookingForm() {
 
                     // Form details
                     let notes = document.getElementsByName('booking_notes')[0].value;
-                    let description = document.getElementsByName('booking_description')[0].value;
                     let name = document.getElementsByName('booking_user')[0].value;
                     let email = document.getElementsByName('booking_email')[0].value;
                     let phone = document.getElementsByName('booking_phone')[0].value;
                     let discount = document.getElementsByName('booking_discount')[0].value; 
                     let price = document.getElementsByName('booking_price')[0].innerHTML;
                     
-                    // Admin Page
-                    let paid = document.getElementsByName('booking_paid')[0].value;
-                    let deposit = document.getElementsByName('booking_deposit_refund')[0].value;
-
                     let bookings = [];
 
                     let resourceForms = document.getElementsByName('resourcesForm'); 
@@ -488,14 +465,10 @@ function newBookingForm() {
                             booking_date_to: endDate,
                             bookings: JSON.stringify(bookings),
                             booking_notes: notes,
-                            booking_description: description,
                             booking_name: name,
                             booking_email: email,
                             booking_phone: phone,
-                            booking_discount: discount,
-                            booking_price: price,
-                            booking_paid: paid,
-                            booking_deposit_refund: deposit
+                            booking_discount: discount
                         },
                         success: function (response) {
                             let data = response

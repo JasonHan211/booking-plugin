@@ -34,19 +34,15 @@ class BookedInInvoice {
         $currentItem = 0;
         $outputString = '';
 
+        $outputString .= heading();
+
         foreach($booking_ids as $booking_id) {
             $currentItem++;
 
             $data = $this->get_invoice_by_id($booking_id);
-            
-            // Company Header
-            $outputString .= headerTemplate();
 
             // Invoice Header
-            $outputString .= template1($data);
-    
-            // Footer 
-            $outputString .= footerTemplate($data);
+            $outputString .= bodyTemplate($data);
 
             if ($currentItem < $totalItems) {
                 $outputString .= nextPageTemplate();
